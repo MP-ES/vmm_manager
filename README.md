@@ -2,6 +2,8 @@
 
 Script python que gerencia um inventário de máquinas no SCVMM, com base em um arquivo de configuração YAML.
 
+![Check application](https://github.com/MP-ES/vmm_manager/workflows/Check%20application/badge.svg)
+
 ## Pré-requisitos
 
 É necessário instalar o OpenSSH na máquina Windows que será utilizada para gerenciar o inventário (**VMM_SERVIDOR_ACESSO**). Também é necessário executar o comando `set-executionpolicy unrestricted` no PowerShell, com poderes administrativos.
