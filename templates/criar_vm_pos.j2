@@ -1,0 +1,10 @@
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
+$custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_imagem }}"
+$custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
+$vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Name "{{ nome }}"
+
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento -Value "{{ agrupamento }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id -Value "{{ nome }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem -Value "{{ imagem }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao -Value "{{ regiao }}"

@@ -1,0 +1,24 @@
+$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
+if (!$nuvem ) {
+  Write-Host "Nuvem (Cloud) '{{ nuvem }}' não encontrada."
+}
+
+{% for imagem in imagens %}
+$imagem = Get-SCVMTemplate -VMMServer "{{ servidor_vmm }}" | Where {$_.Name -eq "{{ imagem }}"}
+if (!$imagem ) {
+  Write-Host "Imagem (Template) '{{ imagem }}' não encontrada."
+}
+{% endfor %}
+
+$qtde_minima_regioes = {{ qtde_minima_regioes }}
+$qtde_regioes = (Get-SCVMHost -VMMServer "{{ servidor_vmm }}" | Where-Object {$_.OverallState -eq "OK"} | Measure-Object).Count
+if ($qtde_minima_regioes -gt $qtde_regioes) {
+  Write-Host "Há apenas $qtde_regioes regiões disponíveis no servidor. Quantidade solicitada: $qtde_minima_regioes."
+}
+
+{% for rede in redes %}
+$rede = Get-SCVMNetwork -VMMServer "{{ servidor_vmm }}" -Name "{{ rede }}"
+if (!$rede ) {
+  Write-Host "Rede '{{ rede }}' não encontrada."
+}
+{% endfor %} 

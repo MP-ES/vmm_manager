@@ -1,0 +1,8 @@
+$jobs = Get-SCJob -VMMServer "{{ servidor_vmm }}" | Where-Object { $_.ID -in {% for job in jobs %} "{{ job }}"{{ "," if not loop.last }} {% endfor %} } |
+Select-Object -Property ID, ProgressValue, IsCompleted, Name, Status, @{Name = "ErrorInfo"; Expression = { $_.ErrorInfo | Select-Object Code, CSMMessageString, IsSuccess, Problem, RecommendedAction } }
+if (!$jobs) {
+  Write-Host []
+}
+else {
+  ConvertTo-Json @($jobs)
+}

@@ -1,0 +1,40 @@
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
+$custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_imagem }}"
+$custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
+$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$vms_agrupamento = @()
+
+foreach($vm in $vms_nuvem) {
+  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+    $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id
+    $imagem = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem
+    $regiao = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao
+
+    $redes = @()
+    foreach($interface in $vm.VirtualNetworkAdapters) {
+      $rede = [PSCustomObject]@{
+        Nome = $interface.VMNetwork.Name
+      }
+      $redes += $rede
+    }
+
+    $vm_agrupamento = [PSCustomObject]@{
+      ID = $vm.ID
+      Nome = if ($nome_id.Value -ne $null) { $nome_id.Value } else { $vm.ID } 
+      Descricao = $vm.Description
+      Status = $vm.Status
+      NoRegiao = $vm.VMHost.Name
+      QtdeCpu = $vm.CPUCount
+      QtdeRam = $vm.Memory
+      Redes = $redes
+      Imagem = $imagem.Value
+      Regiao = $regiao.Value
+    }
+    $vms_agrupamento += $vm_agrupamento
+  }
+}
+
+ConvertTo-Json -Depth 3 $vms_agrupamento

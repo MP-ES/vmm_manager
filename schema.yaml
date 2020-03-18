@@ -1,0 +1,19 @@
+agrupamento: regex('^[a-z]{1}[a-z0-9_]{2,39}$', name='caracteres alfanuméricos', ignore_case=True)
+nuvem: str(min=3, required=False)
+imagem_padrao: str(min=3, required=False)
+qtde_cpu_padrao: int(min=1, max=64, required=False)
+qtde_ram_mb_padrao: int(min=512, max=524288, required=False)
+redes_padrao: list(include('rede'), required=False)
+vms: list(include('vm'), min=1)
+---
+vm:
+  nome: regex('^[a-z]{1}[a-z0-9_]{2,39}$', name='caracteres alfanuméricos', ignore_case=True)
+  descricao: str(min=3, required=False)
+  imagem: str(min=3, required=False)
+  regiao: regex('^[A-Z]{1}$', name='letra maiúscula do alfabeto', ignore_case=False, required=False)
+  qtde_cpu: int(min=1, max=64, required=False)
+  qtde_ram_mb: int(min=512, max=524288, required=False)
+  redes: list(include('rede'), required=False)
+
+rede:
+  nome: str(min=3)

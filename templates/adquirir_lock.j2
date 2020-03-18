@@ -1,0 +1,22 @@
+$lockfile = "{{ lockfile }}"
+$pid_processo = "{{ pid }}"
+$host_processo = "{{ host }}"
+$data_lock = "{{ data }}"
+$agrupamento = "{{ agrupamento }}"
+$nuvem = "{{ nuvem }}"
+
+$dados_processo = [PSCustomObject]@{
+  PIDProcesso = $pid_processo
+  HostLock    = $host_processo
+  DataLock    = $data_lock
+  Agrupamento = $agrupamento
+  Nuvem       = $nuvem
+} | ConvertTo-Json
+
+if (Test-Path $lockfile) {
+  Get-Content -Path $lockfile | ConvertFrom-Json | Select-Object *, @{n = "Sucesso"; e = { $false } } | ConvertTo-Json
+}
+else {
+  Set-Content -Path $lockfile -Value $dados_processo
+  [PSCustomObject]@{ Sucesso = $true } | ConvertTo-Json
+}

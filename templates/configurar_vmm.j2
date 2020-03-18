@@ -1,0 +1,9 @@
+# Criando propriedades customizadas
+{% for campo_customizado in campos_customizados %}
+$custom = Get-SCCustomProperty -Name "{{ campo_customizado[0] }}" -VMMServer "{{ servidor_vmm }}"
+if (!$custom ) {
+  New-SCCustomProperty -Name "{{ campo_customizado[0] }}" -Description "{{ campo_customizado[1] }}" -AddMember @("VM")
+}else{
+  Set-SCCustomProperty -CustomProperty $custom -Description "{{ campo_customizado[1] }}"
+}
+{% endfor %} 

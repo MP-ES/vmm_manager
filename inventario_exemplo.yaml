@@ -1,0 +1,17 @@
+agrupamento: vmm_manager_test
+nuvem: "developer"
+imagem_padrao: "vm_linux"
+qtde_cpu_padrao: 1
+qtde_ram_mb_padrao: 512
+redes_padrao:
+  - nome: "vlan1"
+vms:
+  - nome: VMM_TEST1
+    descricao: "Test VM"
+    redes:
+      - nome: "vlan1"
+      - nome: "vlan2"
+    regiao: A
+  - nome: VMM_TEST2
+    regiao: B
+  - nome: VMM_TEST3

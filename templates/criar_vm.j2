@@ -1,0 +1,36 @@
+# Parâmetros do script
+$VMMServer="{{ servidor_vmm }}"
+$VMName = "{{ nome }}"
+$Description = "{{ descricao }}"
+$TemplateName = "{{ imagem }}"
+$CPUCount = "{{ qtde_cpu }}"
+$MemoryMB = "{{ qtde_ram_mb }}"
+$CloudName = "{{ nuvem }}"
+
+# Variáveis de controle
+$JobGroupID = "{{ guid }}"
+$TemporaryName = "$JobGroupID"
+$Template = Get-SCVMTemplate -VMMServer $VMMServer -Name $TemplateName
+$CPUType = $Template.CPUType
+$CapabilityProfile = $Template.CapabilityProfile
+$OperatingSystem = $Template.OperatingSystem
+$MemoryMBMin = [math]::min( 512 , $MemoryMB )
+
+
+New-SCVirtualScsiAdapter -VMMServer $VMMServer  -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
+New-SCVirtualDVDDrive -VMMServer $VMMServer -JobGroup $JobGroupID -Bus 0 -LUN 1
+
+{% for rede in redes %}
+$VMNetwork{{ loop.index }} = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ rede }}"
+New-SCVirtualNetworkAdapter -VMMServer $VMMServer -JobGroup $JobGroupID  -VMNetwork $VMNetwork{{ loop.index }} -MACAddress "00:00:00:00:00:00" -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -DevicePropertiesAdapterNameMode Disabled 
+{% endfor %}
+
+$HardwareProfile = New-SCHardwareProfile -VMMServer $VMMServer -JobGroup $JobGroupID -Name $TemporaryName -CPUType $CPUType -CapabilityProfile $CapabilityProfile -Description "Perfil temporário do vmm_manager" -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $true -DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20 -MemoryWeight 5000 -CPUExpectedUtilizationPercent 20 -DiskIops 0 -CPUMaximumPercent 100 -CPUReserve 0 -NumaIsolationRequired $false -NetworkUtilizationMbps 0 -CPURelativeWeight 100 -HighlyAvailable $true -HAVMPriority 2000 -DRProtectionRequired $false -SecureBootEnabled $false -CPULimitFunctionality $false -CPULimitForMigration $false -CheckpointType Production -Generation 2
+$Template = New-SCVMTemplate -JobGroup $JobGroupID -Name $TemporaryName  -ComputerName $VMName -Template $Template -HardwareProfile $HardwareProfile -OperatingSystem $OperatingSystem -UpdateManagementProfile $null -LocalAdministratorCredential $null
+
+$virtualMachineConfiguration = New-SCVMConfiguration -VMTemplate $Template -Name $VMName
+$cloud = Get-SCCloud -Name $CloudName
+New-SCVirtualMachine -Name $VMName -VMConfiguration $virtualMachineConfiguration -Cloud $cloud -Description $Description -JobVariable "VMMJob" -JobGroup $JobGroupID -ReturnImmediately -StartAction "TurnOnVMIfRunningWhenVSStopped" -StopAction "SaveVM" -StartVM
+
+
+Write-Host -NoNewline $VMMJob.ID.Guid

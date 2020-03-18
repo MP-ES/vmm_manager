@@ -1,0 +1,15 @@
+{% for guid in guids %}
+# Template
+$template = Get-SCVMTemplate -VMMServer "{{ servidor_vmm }}" -Name "{{ guid }}"
+if ($template) {
+  Remove-SCVMTemplate -VMTemplate $template| Out-Null
+}
+
+# HardwareProfile
+$hardware_profile = Get-SCHardwareProfile -VMMServer "{{ servidor_vmm }}" | Where-Object { $_.Name -eq "{{ guid }}" }
+if ($hardware_profile) {
+  Remove-SCHardwareProfile -HardwareProfile $hardware_profile | Out-Null
+}
+{% endfor %} 
+
+Write-Host -NoNewline True
