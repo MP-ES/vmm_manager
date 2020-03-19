@@ -1,3 +1,6 @@
+"""
+Testes do script interativo
+"""
 from vmm_manager import __version__
 
 

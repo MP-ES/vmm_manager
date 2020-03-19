@@ -3,7 +3,7 @@ Testes do ParserLocal
 """
 from unittest import mock
 from random import randrange, randint
-from app.inventario import ParserLocal
+from vmm_manager.app.inventario import ParserLocal
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 
