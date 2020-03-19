@@ -8,29 +8,40 @@ Script python que gerencia um inventário de máquinas no SCVMM, com base em um 
 
 É necessário instalar o OpenSSH na máquina Windows que será utilizada para gerenciar o inventário (**VMM_SERVIDOR_ACESSO**). Também é necessário executar o comando `set-executionpolicy unrestricted` no PowerShell, com poderes administrativos.
 
+### Poetry
+
+Execute os comandos a seguir:
+
+```shell
+# instalar o poetry
+curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+echo 'source $HOME/.poetry/env' >>~/.bashrc
+
+# Configurar autocomplete
+# Bash
+poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
+```
+
 ## Como usar
 
 ```shell
-pipenv run python vmm_manager.py -h
+poetry run python vmm_manager/vmm_manager.py -h
 ```
 
 ## Comandos para DEV
 
 ```shell
-# Instalando dependências do pipenv
-pipenv install --dev
+# Instalando dependências
+poetry install
 
 # Habilitando shell
-pipenv shell
+poetry shell
 
 # Instalando uma dependência específica
-pipenv install <pacote> [--dev]
-
-# Gerar requirements
-pipenv lock -r > requirements.txt
+poetry add <pacote> [--dev]
 
 # Executar lint
-pylint app/* tests/* vmm_manager.py
+pylint tests/* vmm_manager/*
 
 # Executar testes
 python -m pytest -v
