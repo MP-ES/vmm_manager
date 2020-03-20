@@ -12,7 +12,7 @@ from vmm_manager.app.plano_execucao import PlanoExecucao, Acao
 
 class ParserLocal:
     REGIAO_PADRAO = 'default'
-    __ARQUIVO_SCHEMA = 'schema.yaml'
+    __ARQUIVO_SCHEMA = 'config/schema.yaml'
     __YAML_PARSER = 'ruamel'
 
     @staticmethod
