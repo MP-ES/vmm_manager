@@ -24,7 +24,9 @@ jobs:
         poetry install
     - name: Lint with pylint
       run: |
+        source $HOME/.poetry/env
         poetry run pylint tests/* vmm_manager/*
     - name: Test with pytest
       run: |
+        source $HOME/.poetry/env
         poetry run python -m pytest -v
