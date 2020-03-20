@@ -7,10 +7,11 @@ import uuid
 import textwrap
 from yamlable import yaml_info, YamlAble
 import yaml
-from app.comando import Comando
-from app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
-from app.util import imprimir_acao_corrente, formatar_msg_erro, imprimir_erro, imprimir_ok
-from app.scvmm import SCJob
+from vmm_manager.app.comando import Comando
+from vmm_manager.app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.app.util import imprimir_acao_corrente, formatar_msg_erro
+from vmm_manager.app.util import imprimir_erro, imprimir_ok
+from vmm_manager.app.scvmm import SCJob
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')

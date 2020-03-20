@@ -4,10 +4,10 @@ Módulo relacionado ao gerenciamento do inventário
 import os
 import json
 import yamale
-from app.comando import Comando
-from app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
-from app.scvmm import VMStatusEnum
-from app.plano_execucao import PlanoExecucao, Acao
+from vmm_manager.app.comando import Comando
+from vmm_manager.app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.app.scvmm import VMStatusEnum
+from vmm_manager.app.plano_execucao import PlanoExecucao, Acao
 
 
 class ParserLocal:
