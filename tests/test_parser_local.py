@@ -3,7 +3,7 @@ Testes do ParserLocal
 """
 from unittest import mock
 from random import randrange, randint
-from app.inventario import ParserLocal
+from vmm_manager.app.inventario import ParserLocal
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 
@@ -21,7 +21,8 @@ class TestParserLocal(Base):
         assert status is False
         assert msg == 'Arquivo de inventário vazio.'
 
-    @mock.patch('app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml', return_value=None)
+    @mock.patch('vmm_manager.app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_vms_sem_imagem(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
@@ -42,7 +43,8 @@ class TestParserLocal(Base):
         assert msg == 'Imagem da VM {} não definida.'.format(
             inventario[0][0]['vms'][0]['nome'])
 
-    @mock.patch('app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml', return_value=None)
+    @mock.patch('vmm_manager.app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_nome_vm_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         nome_vm = dados_teste.get_nome_vm()
@@ -70,7 +72,8 @@ class TestParserLocal(Base):
         assert msg == 'VM {} referenciada mais de uma vez no inventário.'.format(
             inventario[0][0]['vms'][0]['nome'])
 
-    @mock.patch('app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml', return_value=None)
+    @mock.patch('vmm_manager.app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_min_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
@@ -97,7 +100,8 @@ class TestParserLocal(Base):
         assert status is True
         assert inventario_resposta == self.get_obj_inventario(inventario)
 
-    @mock.patch('app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml', return_value=None)
+    @mock.patch('vmm_manager.app.inventario.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_min_sem_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(

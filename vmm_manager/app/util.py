@@ -8,7 +8,7 @@ import platform
 import json
 from datetime import datetime
 from pytz import timezone
-from app.comando import Comando
+from vmm_manager.app.comando import Comando
 
 # Campos customizado no VMM
 CAMPO_AGRUPAMENTO = ('VMM_MANAGER_AGRUPAMENTO',

@@ -15,7 +15,7 @@ class Comando:
             self.args = kwargs
             j2_env = Environment(
                 loader=FileSystemLoader(os.path.join(
-                    os.path.dirname(__file__), '../templates')),
+                    os.path.dirname(__file__), '../../ps_templates')),
                 trim_blocks=True)
             self.template = j2_env.get_template(self.comando + '.j2')
         except exceptions.TemplateNotFound as ex:

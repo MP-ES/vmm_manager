@@ -10,14 +10,15 @@ import argparse
 from distutils.util import strtobool
 import configargparse
 from ruamel.yaml import YAML, scanner
-from app.servidor_acesso import ServidorAcesso
-from app.comando import Comando
-from app.inventario import ParserLocal, ParserRemoto
-from app.plano_execucao import PlanoExecucao
-from app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
-from app.util import finalizar_com_erro, imprimir_acao_corrente
-from app.util import validar_retorno_operacao_com_lock, validar_retorno_operacao_sem_lock
-from app.util import adquirir_lock, liberar_lock
+from .app.servidor_acesso import ServidorAcesso
+from .app.comando import Comando
+from .app.inventario import ParserLocal, ParserRemoto
+from .app.plano_execucao import PlanoExecucao
+from .app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from .app.util import finalizar_com_erro, imprimir_acao_corrente
+from .app.util import validar_retorno_operacao_com_lock
+from .app.util import validar_retorno_operacao_sem_lock
+from .app.util import adquirir_lock, liberar_lock
 
 
 def confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None):
@@ -309,7 +310,3 @@ def main():
             servidor_acesso, args.agrupamento, args.nuvem, args.pular_confirmacao)
     elif args.comando == 'opts':
         listar_opcoes(servidor_acesso)
-
-
-if __name__ == '__main__':
-    main()

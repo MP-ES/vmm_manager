@@ -1,7 +1,7 @@
 """
 Classe com funções básicas de teste
 """
-from app.inventario import Inventario, VM, ParserLocal
+from vmm_manager.app.inventario import Inventario, VM, ParserLocal
 
 
 class Base():
