@@ -6,7 +6,7 @@ import re
 import socket
 import tempfile
 import paramiko
-from vmm_manager.app.util import formatar_msg_erro
+from vmm_manager.util.msgs import formatar_msg_erro
 
 
 def escapar_echo_cmd(conteudo):

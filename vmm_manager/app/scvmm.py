@@ -8,7 +8,7 @@ from enum import Enum
 from time import sleep
 import tqdm
 from vmm_manager.app.comando import Comando
-from vmm_manager.app.util import formatar_msg_aviso
+from vmm_manager.util.msgs import formatar_msg_aviso
 
 
 class VMStatusEnum(Enum):

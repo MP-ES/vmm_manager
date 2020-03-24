@@ -5,7 +5,7 @@ import os
 import json
 import yamale
 from vmm_manager.app.comando import Comando
-from vmm_manager.app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
 from vmm_manager.app.scvmm import VMStatusEnum
 from vmm_manager.app.plano_execucao import PlanoExecucao, Acao
 

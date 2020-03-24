@@ -2,7 +2,6 @@
 Script que gerencia um inventário de máquinas no SCVMM, com base
 em um arquivo YAML.
 """
-import sys
 import re
 import string
 import os
@@ -10,26 +9,15 @@ import argparse
 from distutils.util import strtobool
 import configargparse
 from ruamel.yaml import YAML, scanner
-from .app.servidor_acesso import ServidorAcesso
-from .app.comando import Comando
-from .app.inventario import ParserLocal, ParserRemoto
-from .app.plano_execucao import PlanoExecucao
-from .app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
-from .app.util import finalizar_com_erro, imprimir_acao_corrente
-from .app.util import validar_retorno_operacao_com_lock
-from .app.util import validar_retorno_operacao_sem_lock
-from .app.util import adquirir_lock, liberar_lock
-
-
-def confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None):
-    resposta = None
-    while resposta not in ['s', 'n']:
-        resposta = input('Deseja executar? (s/n): ')
-        if resposta == 'n':
-            if servidor_acesso and agrupamento and nuvem:
-                liberar_lock(servidor_acesso, agrupamento, nuvem)
-            print('Ação cancelada pelo usuário.')
-            sys.exit(0)
+from vmm_manager.app.servidor_acesso import ServidorAcesso
+from vmm_manager.app.comando import Comando
+from vmm_manager.app.inventario import ParserLocal, ParserRemoto
+from vmm_manager.app.plano_execucao import PlanoExecucao
+from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.msgs import finalizar_com_erro, imprimir_acao_corrente
+from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
+from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
+from vmm_manager.util.operacao import adquirir_lock, liberar_lock, confirmar_acao_usuario_com_lock
 
 
 def parametro_arquivo_yaml(nome_arquivo):
@@ -249,7 +237,7 @@ def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
         if not pular_confirmacao:
             print('\nAs seguintes operações serão executadas:')
             plano_execucao.imprimir_acoes()
-            confirmar_acao_usuario(
+            confirmar_acao_usuario_com_lock(
                 servidor_acesso, plano_execucao.agrupamento, plano_execucao.nuvem)
 
         plano_execucao.executar(servidor_acesso)
@@ -276,7 +264,8 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem, pular_conf
                     maquina_virtual.id_vmm,
                     maquina_virtual.nome,
                     maquina_virtual.status))
-            confirmar_acao_usuario(servidor_acesso, agrupamento, nuvem)
+            confirmar_acao_usuario_com_lock(
+                servidor_acesso, agrupamento, nuvem)
 
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
         plano_execucao.executar(servidor_acesso)

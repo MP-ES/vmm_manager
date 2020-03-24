@@ -8,9 +8,9 @@ import textwrap
 from yamlable import yaml_info, YamlAble
 import yaml
 from vmm_manager.app.comando import Comando
-from vmm_manager.app.util import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
-from vmm_manager.app.util import imprimir_acao_corrente, formatar_msg_erro
-from vmm_manager.app.util import imprimir_erro, imprimir_ok
+from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.msgs import imprimir_acao_corrente, formatar_msg_erro
+from vmm_manager.util.msgs import imprimir_erro, imprimir_ok
 from vmm_manager.app.scvmm import SCJob
 
 
