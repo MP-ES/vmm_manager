@@ -1,48 +1,34 @@
 """
-Módulo com definições e funções úteis
+Módulo com funções úteis de operação
 """
 
 import sys
 import os
 import platform
 import json
-from datetime import datetime
-from pytz import timezone
-from vmm_manager.app.comando import Comando
-
-# Campos customizado no VMM
-CAMPO_AGRUPAMENTO = ('VMM_MANAGER_AGRUPAMENTO',
-                     'Agrupamento da máquina (script vmm_manager).')
-
-CAMPO_ID = ('VMM_MANAGER_ID',
-            'Nome da VM informada no inventário (script vmm_manager).')
-
-CAMPO_IMAGEM = ('VMM_MANAGER_IMAGEM',
-                'Imagem utilizada para criar a VM (script vmm_manager).')
-
-CAMPO_REGIAO = ('VMM_MANAGER_REGIAO',
-                'Região na qual a VM foi criada (script vmm_manager).')
+from vmm_manager.util.msgs import imprimir_ok, imprimir_erro
+from vmm_manager.util.msgs import formatar_msg_erro, finalizar_com_erro
+from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
+from vmm_manager.infra.comando import Comando
 
 
-def formatar_msg_aviso(msg):
-    return '\033[93m{}\033[0m'.format(msg)
+def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None):
+    resposta = None
+    while resposta not in ['s', 'n']:
+        resposta = input('Deseja executar? (s/n): ')
+        if resposta == 'n':
+            if servidor_acesso and agrupamento and nuvem:
+                liberar_lock(servidor_acesso, agrupamento, nuvem)
+            print('Ação cancelada pelo usuário.')
+            sys.exit(0)
 
 
-def formatar_msg_erro(msg):
-    return '\033[91m{}\033[0m'.format(msg)
+def confirmar_acao_usuario_sem_lock():
+    __confirmar_acao_usuario()
 
 
-def finalizar_com_erro(msg_erro):
-    print(formatar_msg_erro('\nErro ao executar operação:\n{}'.format(msg_erro)))
-    sys.exit(1)
-
-
-def imprimir_ok():
-    print('[OK]')
-
-
-def imprimir_erro():
-    print('[ERRO]')
+def confirmar_acao_usuario_com_lock(servidor_acesso, agrupamento, nuvem):
+    __confirmar_acao_usuario(servidor_acesso, agrupamento, nuvem)
 
 
 def validar_retorno_operacao_sem_lock(status, msg):
@@ -60,15 +46,6 @@ def validar_retorno_operacao_com_lock(status, msg, servidor_acesso, agrupamento,
         imprimir_erro()
         liberar_lock(servidor_acesso, agrupamento, nuvem)
         finalizar_com_erro(msg)
-
-
-def imprimir_acao_corrente(acao):
-    print('{:<60}'.format(acao + '...'), end='', flush=True)
-
-
-def get_str_data_formatada(formato):
-    fuso = timezone('America/Sao_Paulo')
-    return datetime.now().astimezone(fuso).strftime(formato)
 
 
 def adquirir_lock(servidor_acesso, agrupamento, nuvem):

@@ -1,27 +1,13 @@
 """
-Módulo com representação de objetos do
-system center virtual machine manager
+Representação de um Job do system center virtual machine manager
 """
 
 import json
-from enum import Enum
 from time import sleep
 import tqdm
-from vmm_manager.app.comando import Comando
-from vmm_manager.app.util import formatar_msg_aviso
-
-
-class VMStatusEnum(Enum):
-    EM_EXECUCAO = 0
-    DESLIGADA = 1
-
-
-class SCJobStatusEnum(Enum):
-    EM_EXECUCAO = 1
-    FALHA = 3
-    CANCELADO = 4
-    SUCESSO = 5
-    SUCESSO_COM_AVISO = 6
+from vmm_manager.infra.comando import Comando
+from vmm_manager.util.msgs import formatar_msg_aviso
+from vmm_manager.scvmm.enums import SCJobStatusEnum
 
 
 class SCJob():

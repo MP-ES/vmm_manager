@@ -6,7 +6,7 @@ Script python que gerencia um inventário de máquinas no SCVMM, com base em um 
 
 ## Pré-requisitos
 
-É necessário instalar o OpenSSH na máquina Windows que será utilizada para gerenciar o inventário (**VMM_SERVIDOR_ACESSO**). Também é necessário executar o comando `set-executionpolicy unrestricted` no PowerShell, com poderes administrativos.
+É necessário instalar o OpenSSH na máquina Windows que será utilizada para gerenciar o inventário (**VMM_SERVIDOR_ACESSO**). Também é necessário executar o comando `set-executionpolicy unrestricted` no PowerShell do servidor de acesso, com poderes administrativos.
 
 ### Instalação e configuração do python-poetry
 

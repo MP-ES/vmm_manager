@@ -2,8 +2,10 @@
 Testes de comparação de inventários e geração de ações
 """
 from random import randrange, randint
-from vmm_manager.app.inventario import Inventario, VM
-from vmm_manager.app.plano_execucao import PlanoExecucao, Acao
+from vmm_manager.entidade.inventario import Inventario
+from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.acao import Acao
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 
