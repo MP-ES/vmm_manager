@@ -9,10 +9,11 @@ import argparse
 from distutils.util import strtobool
 import configargparse
 from ruamel.yaml import YAML, scanner
-from vmm_manager.app.servidor_acesso import ServidorAcesso
-from vmm_manager.app.comando import Comando
-from vmm_manager.app.inventario import ParserLocal, ParserRemoto
-from vmm_manager.app.plano_execucao import PlanoExecucao
+from vmm_manager.infra.servidor_acesso import ServidorAcesso
+from vmm_manager.infra.comando import Comando
+from vmm_manager.parser.parser_local import ParserLocal
+from vmm_manager.parser.parser_remoto import ParserRemoto
+from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
 from vmm_manager.util.msgs import finalizar_com_erro, imprimir_acao_corrente
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock

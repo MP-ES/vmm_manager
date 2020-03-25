@@ -9,7 +9,7 @@ import json
 from vmm_manager.util.msgs import imprimir_ok, imprimir_erro
 from vmm_manager.util.msgs import formatar_msg_erro, finalizar_com_erro
 from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
-from vmm_manager.app.comando import Comando
+from vmm_manager.infra.comando import Comando
 
 
 def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None):
