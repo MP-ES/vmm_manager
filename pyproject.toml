@@ -4,6 +4,15 @@ version = "0.1.0"
 description = "Management of resources on System Center Virtual Machine Manager (SCVMM) in a declarative way."
 authors = ["Estevão Costa <ecosta@mpes.mp.br>"]
 
+license = "MIT"
+readme = "README.md"
+
+homepage = "https://github.com/MP-ES/vmm_manager"
+repository = "https://github.com/MP-ES/vmm_manager"
+documentation = "https://github.com/MP-ES/vmm_manager"
+
+keywords = ["IaC", "scvmm", "vmm_manager"]
+
 [tool.poetry.dependencies]
 python = "^3.7"
 paramiko = ">=2"
