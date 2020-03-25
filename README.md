@@ -22,9 +22,17 @@ echo 'source $HOME/.poetry/env' >>~/.bashrc
 poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
 ```
 
+### Variáveis de ambiente
+
+Defina as variáveis de ambiente de acordo com as instruções do arquivo **.env.default**. No ambiente de DEV, você pode criar um arquivo **.env** e executar o comando `export $(cat .env | xargs)` para defini-las antes da execução do script.
+
 ## Como usar
 
 ```shell
+# Carregando envs (opcional)
+export $(cat .env | xargs)
+
+# Executando script
 poetry run python -m vmm_manager -h
 ```
 
