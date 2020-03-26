@@ -10,13 +10,14 @@ from vmm_manager.entidade.vm import VM
 
 class ParserLocal:
     REGIAO_PADRAO = 'default'
-    __ARQUIVO_SCHEMA = 'config/schema.yaml'
+    __ARQUIVO_SCHEMA = '../includes/schema.yaml'
     __YAML_PARSER = 'ruamel'
 
     @staticmethod
     def __get_schema_yaml():
         return yamale.make_schema(
-            ParserLocal.__ARQUIVO_SCHEMA,
+            os.path.join(
+                os.path.dirname(__file__), ParserLocal.__ARQUIVO_SCHEMA),
             parser=ParserLocal.__YAML_PARSER)
 
     def __init__(self, arquivo_inventario):

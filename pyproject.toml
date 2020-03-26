@@ -13,26 +13,36 @@ documentation = "https://github.com/MP-ES/vmm_manager"
 
 keywords = ["IaC", "scvmm", "vmm_manager"]
 
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: System Administrators",
+    "Topic :: System :: Installation/Setup",
+    "Topic :: System :: Systems Administration",
+]
+
 [tool.poetry.dependencies]
 python = "^3.7"
-paramiko = ">=2"
-configargparse = ">=0.14"
-jinja2 = ">=2"
-ruamel-yaml = ">=0.16"
-yamale = ">=2"
-yamlable = ">=1.0"
-tqdm = ">=4.42"
-pytz = ">=2019"
+paramiko = "^2.7"
+configargparse = "^1.1"
+jinja2 = "^2.11"
+ruamel-yaml = "^0.16"
+yamale = "^2.0"
+yamlable = "^1.0"
+tqdm = "^4.43"
+pytz = "^2019"
 
 [tool.poetry.dev-dependencies]
-pylint = ">=2"
-pylint-quotes = ">=0.2"
-autopep8 = ">=1"
-rope = ">=0.14"
-pytest = ">=5.2"
-pytest-mock = ">=1.11"
-Faker = ">=2.0"
+pylint = "^2.4"
+pylint-quotes = "^0.2"
+autopep8 = "^1.5"
+rope = "^0.16"
+pytest = "^5.4"
+pytest-mock = "^2.0"
+Faker = "^4.0"
+
+[tool.poetry.scripts]
+vmm_manager = "vmm_manager.vmm_manager:main"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry^0.12"]
 build-backend = "poetry.masonry.api"
