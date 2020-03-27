@@ -19,7 +19,7 @@ Nessa máquina, também é necessário executar o comando PowerShell `set-execut
 pip install -U vmm-manager
 ```
 
-## Execução
+## Uso
 
 Para consultar as funções e os parâmetros disponíveis, utilize o comando:
 
