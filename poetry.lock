@@ -403,7 +403,7 @@ dev = ["pytest"]
 [[package]]
 category = "main"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
-name = "ruamel-yaml"
+name = "ruamel.yaml"
 optional = false
 python-versions = "*"
 version = "0.16.10"
@@ -514,7 +514,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "bd90e54c55cd6b2c47294726e97a63b6554d13603ec8cc092e23352c5ef4ad8d"
+content-hash = "c4753fffcdea4cdb6add5181f213392144d254d555dc869ed5e7404ecee76ad5"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -788,7 +788,7 @@ rope = [
     {file = "rope-0.16.0-py3-none-any.whl", hash = "sha256:52423a7eebb5306a6d63bdc91a7c657db51ac9babfb8341c9a1440831ecf3203"},
     {file = "rope-0.16.0.tar.gz", hash = "sha256:d2830142c2e046f5fc26a022fe680675b6f48f81c7fc1f03a950706e746e9dfe"},
 ]
-ruamel-yaml = [
+"ruamel.yaml" = [
     {file = "ruamel.yaml-0.16.10-py2.py3-none-any.whl", hash = "sha256:0962fd7999e064c4865f96fb1e23079075f4a2a14849bcdc5cdba53a24f9759b"},
     {file = "ruamel.yaml-0.16.10.tar.gz", hash = "sha256:099c644a778bf72ffa00524f78dd0b6476bca94a1da344130f4bf3381ce5b954"},
 ]

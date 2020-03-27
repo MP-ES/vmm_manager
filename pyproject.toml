@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vmm_manager"
-version = "0.1.0"
+version = "0.1.0b2"
 description = "Management of resources on System Center Virtual Machine Manager (SCVMM) in a declarative way."
 authors = ["Estevão Costa <ecosta@mpes.mp.br>"]
 
@@ -15,6 +15,7 @@ keywords = ["IaC", "scvmm", "vmm_manager"]
 
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Operating System :: POSIX :: Linux",
     "Intended Audience :: System Administrators",
     "Topic :: System :: Installation/Setup",
     "Topic :: System :: Systems Administration",
@@ -25,7 +26,7 @@ python = "^3.7"
 paramiko = "^2.7"
 configargparse = "^1.1"
 jinja2 = "^2.11"
-ruamel-yaml = "^0.16"
+"ruamel.yaml" = "^0.16"
 yamale = "^2.0"
 yamlable = "^1.0"
 tqdm = "^4.43"
