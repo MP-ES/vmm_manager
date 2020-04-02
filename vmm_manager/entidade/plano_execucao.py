@@ -98,6 +98,7 @@ class PlanoExecucao(YamlAble):
             self.__coletar_resultado_jobs()
 
             # Ações pós execução dos comandos do plano
+            print()
             self.__executar_cmds_finalizacao(servidor_acesso)
             self.__limpar_guids(servidor_acesso)
             self.__processa_resultado_execucao()
@@ -105,7 +106,6 @@ class PlanoExecucao(YamlAble):
 
     def __executar_cmds_finalizacao(self, servidor_acesso):
         if self.__cmds_finalizacao:
-            print()
             for cmd in self.__cmds_finalizacao:
                 imprimir_acao_corrente('Executando {}'.format(cmd.descricao))
 
@@ -119,8 +119,6 @@ class PlanoExecucao(YamlAble):
 
     def __limpar_guids(self, servidor_acesso):
         if self.__guids_a_limpar:
-            if not self.__cmds_finalizacao:
-                print()
             imprimir_acao_corrente('Limpando objetos temporários')
 
             cmd = Comando('limpar_objs_criacao_vm',

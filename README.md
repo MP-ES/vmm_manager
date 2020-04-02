@@ -1,12 +1,56 @@
-# O que é este código
+# vmm-manager
 
-Script python que gerencia um inventário de máquinas no SCVMM, com base em um arquivo de configuração YAML.
+Script python que gerencia recursos no System Center Virtual Machine Manager (SCVMM), de forma declarativa, com base em um arquivo de configuração YAML.
 
 ![Tests](https://github.com/MP-ES/vmm_manager/workflows/Tests/badge.svg)
+[![License](https://img.shields.io/github/license/MP-ES/vmm_manager.svg)](LICENSE)
 
 ## Pré-requisitos
 
-É necessário instalar o OpenSSH na máquina Windows que será utilizada para gerenciar o inventário (**VMM_SERVIDOR_ACESSO**). Também é necessário executar o comando `set-executionpolicy unrestricted` no PowerShell do servidor de acesso, com poderes administrativos.
+É necessário ter uma máquina Windows, que servirá como ponto de acesso ao SCVMM, com as seguintes ferramentas:
+
+- OpenSSH
+- Módulo PowerShell do SCVMM (**virtualmachinemanager**), geralmente instalado junto com o Console do Virtual Machine Manager (VMM)
+  
+Nessa máquina, também é necessário executar o comando PowerShell `set-executionpolicy unrestricted`, com poderes administrativos.
+
+## Instalação
+
+```shell
+pip install -U vmm-manager
+```
+
+## Uso
+
+Para consultar as funções e os parâmetros disponíveis, utilize o comando:
+
+```shell
+vmm_manager -h
+```
+
+### Exemplo de arquivo de inventário
+
+```yaml
+agrupamento: vmm_manager_test
+nuvem: "developer"
+imagem_padrao: "vm_linux"
+qtde_cpu_padrao: 1
+qtde_ram_mb_padrao: 512
+redes_padrao:
+  - nome: "vlan1"
+vms:
+  - nome: VMM_TEST1
+    descricao: "Test VM"
+    redes:
+      - nome: "vlan1"
+      - nome: "vlan2"
+    regiao: A
+  - nome: VMM_TEST2
+    regiao: B
+  - nome: VMM_TEST3
+```
+
+## Desenvolvimento
 
 ### Instalação e configuração do python-poetry
 
@@ -22,22 +66,30 @@ echo 'source $HOME/.poetry/env' >>~/.bashrc
 poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
 ```
 
-## Como usar
+### Variáveis de ambiente
+
+Defina as variáveis de ambiente de acordo com as instruções do arquivo **.env.default**. Você pode criar um arquivo **.env** e executar o comando `export $(cat .env | xargs)` para defini-las antes da execução do script.
+
+### Como executar
 
 ```shell
-poetry run python -m vmm_manager -h
-```
+# Carregando envs (opcional)
+export $(cat .env | xargs)
 
-## Comandos para DEV
-
-```shell
 # Instalando dependências
 poetry install
 
-# Habilitando shell
+# Executando script
+poetry run python -m vmm_manager -h
+```
+
+### Comandos úteis para DEV
+
+```shell
+# Habilitar shell
 poetry shell
 
-# Instalando uma dependência específica
+# Incluir uma dependência
 poetry add <pacote> [--dev]
 
 # Executar lint
@@ -50,3 +102,4 @@ python -m pytest -v
 ## Referências
 
 - [Virtual Machine Manager](https://docs.microsoft.com/en-us/powershell/module/virtualmachinemanager/?view=systemcenter-ps-2019)
+- [Python-Poetry](https://python-poetry.org/)

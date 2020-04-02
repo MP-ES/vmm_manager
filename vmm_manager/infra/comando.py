@@ -8,6 +8,9 @@ from jinja2 import Environment, FileSystemLoader, exceptions
 
 
 class Comando:
+    __TEMPLATES_DIR = '../includes/ps_templates'
+    __TEMPLATES_EXTENSAO = '.j2'
+
     def __init__(self, comando, descricao=None, **kwargs):
         try:
             self.comando = comando
@@ -15,9 +18,10 @@ class Comando:
             self.args = kwargs
             j2_env = Environment(
                 loader=FileSystemLoader(os.path.join(
-                    os.path.dirname(__file__), '../../ps_templates')),
+                    os.path.dirname(__file__), Comando.__TEMPLATES_DIR)),
                 trim_blocks=True)
-            self.template = j2_env.get_template(self.comando + '.j2')
+            self.template = j2_env.get_template(
+                self.comando + Comando.__TEMPLATES_EXTENSAO)
         except exceptions.TemplateNotFound as ex:
             print("Template '{}' não encontrado para o comando '{}'.".format(
                 ex, self.comando))

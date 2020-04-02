@@ -44,18 +44,25 @@ def parametro_booleano(valor):
 
 def get_parser():
     parser = configargparse.ArgumentParser(
-        description='Gerenciador de inventário SCVMM', default_config_files=['vmm_manager.ini'])
+        description='''
+        Script python que gerencia recursos no System Center Virtual Machine Manager (SCVMM), \
+            de forma declarativa, com base em um arquivo de configuração YAML.
+        ''', default_config_files=['vmm_manager.ini'])
     parser.add('-a', '--servidor-acesso',
-               help='Servidor que executará os scripts PowerShell. Ex: localhost',
+               help='''
+               Endereço (FQDN ou IP) do servidor Windows, com o módulo PSH do SCVMM instalado, \
+                   que executará os scripts PowerShell. \
+                   Ex: windows_host.domain.com
+               ''',
                env_var='VMM_SERVIDOR_ACESSO', required=True, type=str)
     parser.add('-u', '--usuario',
-               help='Usuário com permissões no servidor de acesso e no VMM',
+               help='Usuário com permissões no servidor de acesso e no SCVMM',
                env_var='VMM_USUARIO', required=True, type=str)
     parser.add('-p', '--senha',
                help='Senha do usuário',
                env_var='VMM_SENHA', required=True, type=str)
     parser.add('-s', '--servidor',
-               help='Servidor VMM. Ex: localhost',
+               help='Servidor SCVMM. Ex: scvmm_server.domain.com',
                env_var='VMM_SERVIDOR', required=True, type=str)
 
     subprasers = parser.add_subparsers(dest='comando')
@@ -68,7 +75,7 @@ def get_parser():
                       required=True, type=parametro_arquivo_yaml)
 
     apply = subprasers.add_parser(
-        'apply', help='Aplica as alterações necessárias no VMM')
+        'apply', help='Aplica as alterações necessárias no SCVMM')
     apply.add_argument('--plano-execucao',
                        help='Arquivo YAML com o plano de execução',
                        dest='arquivo_plano_execucao', env_var='VMM_PLANO_EXECUCAO',
@@ -94,7 +101,7 @@ def get_parser():
                          required=False, type=parametro_booleano)
 
     subprasers.add_parser(
-        'opts', help='Lista as opções disponíveis no VMM para cada parâmetro da VM')
+        'opts', help='Lista as opções disponíveis no SCVMM para cada parâmetro da VM')
 
     return parser
 
