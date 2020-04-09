@@ -77,7 +77,7 @@ Defina as variáveis de ambiente de acordo com as instruções do arquivo **.env
 export $(cat .env | xargs)
 
 # Instalando dependências
-poetry install
+poetry install --no-root
 
 # Executando script
 poetry run python -m vmm_manager -h
