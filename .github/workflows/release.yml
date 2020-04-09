@@ -27,20 +27,20 @@ jobs:
           release_name: ${{ steps.tag.outputs.tag }}
           draft: false
           prerelease: false
-      # - name: Install Poetry
-      #   run: |
-      #     python get-poetry.py --preview -y
-      # - name: Install dependencies
-      #   run: |
-      #     source $HOME/.poetry/env
-      #     poetry install --no-dev
-      # - name: Build project for distribution
-      #   run: |
-      #     source $HOME/.poetry/env
-      #     poetry run poetry build
-      # - name: Publish to PyPI
-      #   env:
-      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-      #   run: |
-      #     source $HOME/.poetry/env
-      #     poetry run poetry publish
+      - name: Install Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+      - name: Install dependencies
+        run: |
+          source $HOME/.poetry/env
+          poetry install --no-dev
+      - name: Build project for distribution
+        run: |
+          source $HOME/.poetry/env
+          poetry run poetry build
+      - name: Publish to PyPI
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          source $HOME/.poetry/env
+          poetry run poetry publish
