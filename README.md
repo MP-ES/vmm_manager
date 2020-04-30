@@ -105,4 +105,4 @@ python -m pytest -v
 ## Referências
 
 - [Virtual Machine Manager](https://docs.microsoft.com/en-us/powershell/module/virtualmachinemanager/?view=systemcenter-ps-2019)
-- [Python-Poetry](https://python-poetry.org/)
+- [Poetry](https://python-poetry.org/)
