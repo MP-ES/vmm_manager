@@ -45,6 +45,70 @@ class TestParserLocal(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
+    def test_parser_inventario_ansible_sem_grupo(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'vms': [{
+                 'nome': dados_teste.get_nome_vm(),
+                 'ansible': [
+                     {
+                         'grupo': '',
+                         'vars': [
+                             {
+                                 'nome': dados_teste.get_random_word(),
+                                 'valor': dados_teste.get_random_word()
+                             }
+                         ]
+                     }
+                 ]
+             }]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert "vms.0.ansible.0.grupo: '' is not a caracteres alfabéticos." in msg
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_ansible_var_invalida(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'vms': [{
+                 'nome': dados_teste.get_nome_vm(),
+                 'ansible': [
+                     {
+                         'grupo': dados_teste.get_random_word(),
+                         'vars': [
+                             {
+                                 'nome': ''
+                             }
+                         ]
+                     }
+                 ]
+             }]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert "vms.0.ansible.0.vars.0.nome: '' is not a caracteres alfabéticos" in msg
+        assert 'vms.0.ansible.0.vars.0.valor: Required field missing' in msg
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_nome_vm_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         nome_vm = dados_teste.get_nome_vm()
@@ -87,6 +151,41 @@ class TestParserLocal(Base):
              } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
              'vms': [{
                  'nome': dados_teste.get_nome_vm()
+             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, inventario_resposta = parser_local.get_inventario(
+            servidor_acesso)
+
+        assert status is True
+        assert inventario_resposta == self.get_obj_inventario(inventario)
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_com_ansible(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'imagem_padrao': dados_teste.get_random_word(),
+             'qtde_cpu_padrao': randint(1, 64),
+             'qtde_ram_mb_padrao': randint(512, 524288),
+             'redes_padrao': [{
+                 'nome': dados_teste.get_random_word()
+             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             'vms': [{
+                 'nome': dados_teste.get_nome_vm(),
+                 'ansible': [{
+                     'grupo': dados_teste.get_random_word(),
+                     'vars': [{
+                         'nome': dados_teste.get_random_word(),
+                         'valor': dados_teste.get_random_word()
+                     } for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
+                 } for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
              },
             'inventario.yaml')]

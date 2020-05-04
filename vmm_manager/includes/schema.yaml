@@ -14,6 +14,15 @@ vm:
   qtde_cpu: int(min=1, max=64, required=False)
   qtde_ram_mb: int(min=512, max=524288, required=False)
   redes: list(include('rede'), required=False)
+  ansible: list(include('ansible'), required=False)
 
 rede:
   nome: str(min=3)
+
+ansible:
+  grupo: regex('^[a-z]{1}[a-z_]{2,39}$', name='caracteres alfabéticos', ignore_case=True, required=True)
+  vars: list(include('vars'), required=False)
+
+vars:
+  nome: regex('^[a-z]{1}[a-z_]{2,39}$', name='caracteres alfabéticos', ignore_case=True, required=True)
+  valor: str(min=1, required=True)
