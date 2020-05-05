@@ -201,6 +201,7 @@ def imprimir_json_inventario(servidor_acesso, nome_vm, ocultar_progresso):
     print(servidor_acesso)
     print(nome_vm)
     print(ocultar_progresso)
+    raise NotImplementedError
 
 
 def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progresso):
