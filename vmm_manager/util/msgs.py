@@ -19,16 +19,19 @@ def finalizar_com_erro(msg_erro):
     sys.exit(1)
 
 
-def imprimir_ok():
-    print('[OK]')
+def imprimir_ok(ocultar_progresso):
+    if not ocultar_progresso:
+        print('[OK]')
 
 
-def imprimir_erro():
-    print('[ERRO]')
+def imprimir_erro(ocultar_progresso):
+    if not ocultar_progresso:
+        print('[ERRO]')
 
 
-def imprimir_acao_corrente(acao):
-    print('{:<60}'.format(acao + '...'), end='', flush=True)
+def imprimir_acao_corrente(acao, ocultar_progresso):
+    if not ocultar_progresso:
+        print('{:<60}'.format(acao + '...'), end='', flush=True)
 
 
 def get_str_data_formatada(formato):

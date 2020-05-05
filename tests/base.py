@@ -9,6 +9,7 @@ from vmm_manager.parser.parser_local import ParserLocal
 class Base():
     MAX_VMS_POR_TESTE = 20
     MAX_REDES_POR_VM = 5
+    MAX_ANSIBLE_ITERACAO = 10
 
     # pylint: disable=R0201
     def get_obj_inventario(self, array_yaml):

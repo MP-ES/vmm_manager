@@ -12,13 +12,15 @@ from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
 from vmm_manager.infra.comando import Comando
 
 
-def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None):
+def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None,
+                             ocultar_progresso=False):
     resposta = None
     while resposta not in ['s', 'n']:
         resposta = input('Deseja executar? (s/n): ')
         if resposta == 'n':
             if servidor_acesso and agrupamento and nuvem:
-                liberar_lock(servidor_acesso, agrupamento, nuvem)
+                liberar_lock(servidor_acesso, agrupamento,
+                             nuvem, ocultar_progresso)
             print('Ação cancelada pelo usuário.')
             sys.exit(0)
 
@@ -31,25 +33,26 @@ def confirmar_acao_usuario_com_lock(servidor_acesso, agrupamento, nuvem):
     __confirmar_acao_usuario(servidor_acesso, agrupamento, nuvem)
 
 
-def validar_retorno_operacao_sem_lock(status, msg):
+def validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso):
     if status:
-        imprimir_ok()
+        imprimir_ok(ocultar_progresso)
     else:
-        imprimir_erro()
+        imprimir_erro(ocultar_progresso)
         finalizar_com_erro(msg)
 
 
-def validar_retorno_operacao_com_lock(status, msg, servidor_acesso, agrupamento, nuvem):
+def validar_retorno_operacao_com_lock(status, msg, servidor_acesso,
+                                      agrupamento, nuvem, ocultar_progresso):
     if status:
-        imprimir_ok()
+        imprimir_ok(ocultar_progresso)
     else:
-        imprimir_erro()
-        liberar_lock(servidor_acesso, agrupamento, nuvem)
+        imprimir_erro(ocultar_progresso)
+        liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
         finalizar_com_erro(msg)
 
 
-def adquirir_lock(servidor_acesso, agrupamento, nuvem):
-    imprimir_acao_corrente('Adquirindo lock')
+def adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+    imprimir_acao_corrente('Adquirindo lock', ocultar_progresso)
 
     cmd = Comando('adquirir_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
@@ -77,11 +80,11 @@ def adquirir_lock(servidor_acesso, agrupamento, nuvem):
                                                       'Agrupamento'),
                                                   dados_lock.get('Nuvem')
                                                   )
-    validar_retorno_operacao_sem_lock(status, retorno_cmd)
+    validar_retorno_operacao_sem_lock(status, retorno_cmd, ocultar_progresso)
 
 
-def liberar_lock(servidor_acesso, agrupamento, nuvem):
-    imprimir_acao_corrente('Liberando lock')
+def liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+    imprimir_acao_corrente('Liberando lock', ocultar_progresso)
 
     cmd = Comando('liberar_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
@@ -90,8 +93,8 @@ def liberar_lock(servidor_acesso, agrupamento, nuvem):
 
     status, _ = cmd.executar(servidor_acesso)
     if status:
-        imprimir_ok()
+        imprimir_ok(ocultar_progresso)
     else:
-        imprimir_erro()
+        imprimir_erro(ocultar_progresso)
         print(formatar_msg_erro(
             'Erro ao liberar o lock: você terá que excluir o arquivo manualmente.'))

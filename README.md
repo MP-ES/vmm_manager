@@ -50,7 +50,15 @@ vms:
     regiao: A
   - nome: VMM_TEST2
     regiao: B
+    ansible:
+      - grupo: 'web_server'
   - nome: VMM_TEST3
+    ansible:
+      - grupo: 'database'
+        vars:
+          - nome: 'data_dir'
+            valor: '/mnt/data'
+      - grupo: 'load_balancer'
 ```
 
 ## Desenvolvimento

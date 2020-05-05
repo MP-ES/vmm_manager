@@ -63,7 +63,7 @@ class PlanoExecucao(YamlAble):
 
         return True, conteudo
 
-    def executar(self, servidor_acesso):
+    def executar(self, servidor_acesso, ocultar_progresso):
         if not self.is_vazio():
             print('\nOperações executadas:')
             for acao in self.acoes:
@@ -88,9 +88,9 @@ class PlanoExecucao(YamlAble):
                         print('[Iniciado {}]'.format(retorno))
                     else:
                         # Comando já finalizado
-                        imprimir_ok()
+                        imprimir_ok(ocultar_progresso)
                 else:
-                    imprimir_erro()
+                    imprimir_erro(ocultar_progresso)
                     self.__logar_erros_acao(acao, retorno)
 
             # Monitorando jobs
@@ -99,27 +99,30 @@ class PlanoExecucao(YamlAble):
 
             # Ações pós execução dos comandos do plano
             print()
-            self.__executar_cmds_finalizacao(servidor_acesso)
-            self.__limpar_guids(servidor_acesso)
+            self.__executar_cmds_finalizacao(
+                servidor_acesso, ocultar_progresso)
+            self.__limpar_guids(servidor_acesso, ocultar_progresso)
             self.__processa_resultado_execucao()
             PlanoExecucao.excluir_arquivo()
 
-    def __executar_cmds_finalizacao(self, servidor_acesso):
+    def __executar_cmds_finalizacao(self, servidor_acesso, ocultar_progresso):
         if self.__cmds_finalizacao:
             for cmd in self.__cmds_finalizacao:
-                imprimir_acao_corrente('Executando {}'.format(cmd.descricao))
+                imprimir_acao_corrente('Executando {}'.format(
+                    cmd.descricao), ocultar_progresso)
 
                 status, resultado = cmd.executar(servidor_acesso)
 
                 if status:
-                    imprimir_ok()
+                    imprimir_ok(ocultar_progresso)
                 else:
-                    imprimir_erro()
+                    imprimir_erro(ocultar_progresso)
                     self.__logar_erros_comando(cmd.descricao, resultado)
 
-    def __limpar_guids(self, servidor_acesso):
+    def __limpar_guids(self, servidor_acesso, ocultar_progresso):
         if self.__guids_a_limpar:
-            imprimir_acao_corrente('Limpando objetos temporários')
+            imprimir_acao_corrente(
+                'Limpando objetos temporários', ocultar_progresso)
 
             cmd = Comando('limpar_objs_criacao_vm',
                           servidor_vmm=servidor_acesso.servidor_vmm,
@@ -127,9 +130,9 @@ class PlanoExecucao(YamlAble):
             status, retorno = cmd.executar(servidor_acesso)
 
             if status:
-                imprimir_ok()
+                imprimir_ok(ocultar_progresso)
             else:
-                imprimir_erro()
+                imprimir_erro(ocultar_progresso)
                 self.__logar_erros_comando(
                     'limpar objetos temporários', retorno)
 
