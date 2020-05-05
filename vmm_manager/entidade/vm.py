@@ -22,6 +22,9 @@ class VM:
         self.status = status
         self.no_regiao = no_regiao
 
+    def get_qtde_rede_principal(self):
+        return sum([1 for rede in self.redes if rede.principal])
+
     def __hash__(self):
         return hash(self.nome)
 

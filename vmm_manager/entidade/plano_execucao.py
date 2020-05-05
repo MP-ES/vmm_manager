@@ -146,8 +146,8 @@ class PlanoExecucao(YamlAble):
         if self.__msgs_erros:
             print(formatar_msg_erro('\nErro ao executar algumas operações. Mais detalhes em {}.'
                                     .format(PlanoExecucao.ARQUIVO_LOG_ERROS)))
-
-        print('\nSincronização executada com sucesso.')
+        else:
+            print('\nSincronização executada com sucesso.')
 
     def __coletar_resultado_jobs(self):
         if self.__jobs_em_execucao:

@@ -4,6 +4,7 @@ Testes de comparação de inventários e geração de ações
 from random import randrange, randint
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.entidade.acao import Acao
 from tests.base import Base
@@ -26,7 +27,7 @@ class TestComparacaoInventarios(Base):
                      imagem=inventario.vms[nome_vm].imagem,
                      qtde_cpu=inventario.vms[nome_vm].qtde_cpu,
                      qtde_ram_mb=inventario.vms[nome_vm].qtde_ram_mb,
-                     redes=[rede['nome']
+                     redes=[rede.nome
                             for rede in inventario.vms[nome_vm].redes]
                      ))
 
@@ -53,15 +54,19 @@ class TestComparacaoInventarios(Base):
 
         for _ in range(randrange(1, TestComparacaoInventarios.MAX_VMS_POR_TESTE)):
             nome_vm = dados_teste.get_nome_vm()
+
+            redes_vm = []
+            for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM)):
+                redes_vm.append(
+                    VMRede(dados_teste.get_random_word(), num_iter == 0))
+
             inventario.vms[nome_vm] = VM(nome_vm,
                                          dados_teste.get_random_word(),
                                          dados_teste.get_random_word(),
                                          dados_teste.get_random_word(),
                                          randint(1, 64),
                                          randint(512, 524288),
-                                         [{
-                                             'nome': dados_teste.get_random_word()
-                                         } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+                                         redes_vm,
                                          dados_teste.get_random_word())
 
         return inventario
