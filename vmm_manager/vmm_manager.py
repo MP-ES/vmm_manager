@@ -197,7 +197,17 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
     print('\n' + opcoes)
 
 
-def imprimir_json_inventario(servidor_acesso, nome_vm, ocultar_progresso):
+def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
+                             nome_vm, ocultar_progresso):
+    # configurar_vmm(servidor_acesso, ocultar_progresso)
+    # inventario_local = obter_inventario_local(
+    #     servidor_acesso, arquivo_inventario, ocultar_progresso)
+
+    # adquirir_lock(servidor_acesso, inventario_local.agrupamento,
+    #               inventario_local.nuvem, ocultar_progresso)
+    # liberar_lock(servidor_acesso, inventario_local.agrupamento,
+    #              inventario_local.nuvem, ocultar_progresso)
+
     print(servidor_acesso)
     print(nome_vm)
     print(ocultar_progresso)
@@ -351,4 +361,5 @@ def main():
         listar_opcoes(servidor_acesso, args.ocultar_progresso)
     elif args.comando == 'show':
         imprimir_json_inventario(
-            servidor_acesso, args.nome_vm, args.ocultar_progresso)
+            servidor_acesso, args.arquivo_inventario,
+            args.nome_vm, args.ocultar_progresso)

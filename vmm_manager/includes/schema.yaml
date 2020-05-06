@@ -18,6 +18,7 @@ vm:
 
 rede:
   nome: str(min=3)
+  principal: bool(required=False)
 
 ansible:
   grupo: regex('^[a-z]{1}[a-z_]{2,39}$', name='caracteres alfabéticos', ignore_case=True, required=True)

@@ -5,11 +5,13 @@ qtde_cpu_padrao: 1
 qtde_ram_mb_padrao: 512
 redes_padrao:
   - nome: "vlan1"
+    principal: true
 vms:
   - nome: VMM_TEST1
     descricao: "Test VM"
     redes:
       - nome: "vlan1"
+        principal: true
       - nome: "vlan2"
     regiao: A
   - nome: VMM_TEST2

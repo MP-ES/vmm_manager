@@ -6,6 +6,7 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import VMStatusEnum
 
 
@@ -34,6 +35,12 @@ class ParserRemoto:
         vms_servidor = json.loads(
             self.__get_vms_servidor(servidor_acesso) or '{}')
         for maquina_virtual in vms_servidor:
+            vms_rede = []
+            for rede in maquina_virtual.get('Redes'):
+                vm_rede = VMRede(rede.get('Nome'))
+                vm_rede.ips = rede.get('IPS', '').split(' ')
+                vms_rede.append(vm_rede)
+
             self.__inventario.vms[maquina_virtual.get('Nome')] = VM(
                 maquina_virtual.get('Nome'),
                 maquina_virtual.get('Descricao'),
@@ -41,7 +48,7 @@ class ParserRemoto:
                 maquina_virtual.get('Regiao'),
                 maquina_virtual.get('QtdeCpu'),
                 maquina_virtual.get('QtdeRam'),
-                maquina_virtual.get('Redes'),
+                vms_rede,
                 maquina_virtual.get('ID'),
                 VMStatusEnum(maquina_virtual.get('Status')),
                 maquina_virtual.get('NoRegiao'),

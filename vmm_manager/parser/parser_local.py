@@ -6,6 +6,7 @@ import yamale
 from vmm_manager.infra.comando import Comando
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.vm_rede import VMRede
 
 
 class ParserLocal:
@@ -34,6 +35,7 @@ class ParserLocal:
         imagens = set()
         redes = set()
         regioes = set()
+
         for maquina_virtual in self.__inventario.vms.values():
             if maquina_virtual.imagem is None:
                 raise ValueError(
@@ -51,10 +53,11 @@ class ParserLocal:
                 raise ValueError(
                     'Quantidade de memória da VM {} não definida.'.format(maquina_virtual.nome))
 
-            if maquina_virtual.redes is None:
+            if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
-                    'Redes da VM {} não definida.'.format(maquina_virtual.nome))
-            redes.update([rede['nome'] for rede in maquina_virtual.redes])
+                    'VM {} deve ter exatamente uma rede principal.'.format(maquina_virtual.nome))
+
+            redes.update([rede.nome for rede in maquina_virtual.redes])
 
         cmd = Comando('validar_inventario', imagens=imagens,
                       nuvem=self.__inventario.nuvem,
@@ -77,6 +80,11 @@ class ParserLocal:
                     'VM {} referenciada mais de uma vez no inventário.'.format(nome_vm))
             nomes_vm.append(nome_vm)
 
+            vm_redes = []
+            for rede_vm in maquina_virtual.get('redes', dados_inventario.get('redes_padrao', [])):
+                vm_redes.append(
+                    VMRede(rede_vm.get('nome'), rede_vm.get('principal', False)))
+
             self.__inventario.vms[nome_vm] = VM(
                 nome_vm,
                 maquina_virtual.get('descricao'),
@@ -87,8 +95,7 @@ class ParserLocal:
                     'qtde_cpu', dados_inventario.get('qtde_cpu_padrao', None)),
                 maquina_virtual.get(
                     'qtde_ram_mb', dados_inventario.get('qtde_ram_mb_padrao', None)),
-                maquina_virtual.get(
-                    'redes', dados_inventario.get('redes_padrao', None))
+                vm_redes
             )
 
     def __carregar_yaml(self):

@@ -45,6 +45,59 @@ class TestParserLocal(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
+    def test_parser_inventario_vm_sem_rede(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'imagem_padrao': dados_teste.get_random_word(),
+             'qtde_cpu_padrao': randint(1, 64),
+             'qtde_ram_mb_padrao': randint(512, 524288),
+             'vms': [{
+                 'nome': dados_teste.get_nome_vm()
+             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
+            inventario[0][0]['vms'][0]['nome'])
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_vm_sem_rede_principal(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'imagem_padrao': dados_teste.get_random_word(),
+             'qtde_cpu_padrao': randint(1, 64),
+             'qtde_ram_mb_padrao': randint(512, 524288),
+             'redes_padrao': [{
+                 'nome': dados_teste.get_random_word()
+             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             'vms': [{
+                 'nome': dados_teste.get_nome_vm()
+             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
+            inventario[0][0]['vms'][0]['nome'])
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_ansible_sem_grupo(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
@@ -147,8 +200,9 @@ class TestParserLocal(Base):
              'qtde_cpu_padrao': randint(1, 64),
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
-                 'nome': dados_teste.get_random_word()
-             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+                 'nome': dados_teste.get_random_word(),
+                 'principal': num_iter == 0,
+             } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
              'vms': [{
                  'nome': dados_teste.get_nome_vm()
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
@@ -175,8 +229,9 @@ class TestParserLocal(Base):
              'qtde_cpu_padrao': randint(1, 64),
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
-                 'nome': dados_teste.get_random_word()
-             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+                 'nome': dados_teste.get_random_word(),
+                 'principal': num_iter == 0,
+             } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
              'vms': [{
                  'nome': dados_teste.get_nome_vm(),
                  'ansible': [{
@@ -213,8 +268,9 @@ class TestParserLocal(Base):
                  'qtde_cpu': randint(1, 64),
                  'qtde_ram_mb': randint(512, 524288),
                  'redes': [{
-                     'nome': dados_teste.get_random_word()
-                 } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+                     'nome': dados_teste.get_random_word(),
+                     'principal': num_iter == 0
+                 } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
              },
             'inventario.yaml')]
