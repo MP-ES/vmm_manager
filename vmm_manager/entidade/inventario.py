@@ -4,9 +4,13 @@ Representação de um inventário
 
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.entidade.acao import Acao
+from vmm_manager.util.config import CAMPO_AGRUPAMENTO
+from vmm_manager.infra.comando import Comando
 
 
 class Inventario:
+    REGIAO_PADRAO = 'default'
+
     def __init__(self, agrupamento, nuvem):
         self.agrupamento = agrupamento
         self.nuvem = nuvem
@@ -40,6 +44,49 @@ class Inventario:
 
     def is_vazio(self):
         return not self.vms
+
+    def lista_nome_vms_str(self):
+        return ','.join(['"{}"'.format(nome_vm) for nome_vm in self.vms])
+
+    def validar_no_servidor(self, servidor_acesso):
+        imagens = set()
+        redes = set()
+        regioes = set()
+
+        for maquina_virtual in self.vms.values():
+            if maquina_virtual.imagem is None:
+                raise ValueError(
+                    'Imagem da VM {} não definida.'.format(maquina_virtual.nome))
+            imagens.add(maquina_virtual.imagem)
+
+            if maquina_virtual.regiao != Inventario.REGIAO_PADRAO:
+                regioes.add(maquina_virtual.regiao)
+
+            if maquina_virtual.qtde_cpu is None:
+                raise ValueError(
+                    'Quantidade de CPUs da VM {} não definida.'.format(maquina_virtual.nome))
+
+            if maquina_virtual.qtde_ram_mb is None:
+                raise ValueError(
+                    'Quantidade de memória da VM {} não definida.'.format(maquina_virtual.nome))
+
+            if maquina_virtual.get_qtde_rede_principal() != 1:
+                raise ValueError(
+                    'VM {} deve ter exatamente uma rede principal.'.format(maquina_virtual.nome))
+
+            redes.update([rede.nome for rede in maquina_virtual.redes])
+
+        cmd = Comando('validar_inventario', imagens=imagens,
+                      nuvem=self.nuvem,
+                      redes=redes,
+                      servidor_vmm=servidor_acesso.servidor_vmm,
+                      qtde_minima_regioes=len(regioes),
+                      agrupamento=self.agrupamento,
+                      lista_nome_vms_str=self.lista_nome_vms_str(),
+                      campo_agrupamento=CAMPO_AGRUPAMENTO[0])
+        _, msg = cmd.executar(servidor_acesso)
+        if msg:
+            raise ValueError(msg)
 
     def __add_acoes_criar_vms(self, inventario_remoto, plano_execucao):
         vms_inserir = [

@@ -2,6 +2,7 @@
 Representação de um plano de execução
 """
 import os
+import json
 import uuid
 import textwrap
 from yamlable import yaml_info, YamlAble
@@ -81,17 +82,20 @@ class PlanoExecucao(YamlAble):
                     self.agrupamento, self.nuvem, servidor_acesso, guid)
 
                 # Tratando resultado
-                if status:
-                    if retorno:
+                resultado = json.loads(retorno)
+                if status and resultado.get('Status') == 'OK':
+                    guid = resultado.get('Guid')
+                    if guid:
                         # Job em execução
-                        self.__jobs_em_execucao[retorno] = SCJob(retorno, acao)
-                        print('[Iniciado {}]'.format(retorno))
+                        self.__jobs_em_execucao[guid] = SCJob(
+                            guid, acao)
+                        print('[Iniciado {}]'.format(guid))
                     else:
                         # Comando já finalizado
                         imprimir_ok(ocultar_progresso)
                 else:
                     imprimir_erro(ocultar_progresso)
-                    self.__logar_erros_acao(acao, retorno)
+                    self.__logar_erros_acao(acao, resultado.get('Msgs'))
 
             # Monitorando jobs
             SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)

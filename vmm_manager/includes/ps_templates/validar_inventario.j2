@@ -22,3 +22,13 @@ if (!$rede ) {
   Write-Host "Rede '{{ rede }}' não encontrada."
 }
 {% endfor %} 
+
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$nomes_vm_desejados = @({{ lista_nome_vms_str }})
+foreach($vm in $vms_nuvem) {
+  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+  if ($agrupamento.Value -ne "{{ agrupamento }}" -and $nomes_vm_desejados -Contains $vm.Name) {
+    Write-Output "O nome '$vm' já está sendo usado por uma VM na nuvem '$nuvem'. Por favor, escolha outro nome."
+  }
+}

@@ -40,7 +40,7 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            'Ação "{}" não possui comando de pós execução.'.format(self.nome_comando))
+            'Ação "{}" não possui comando de pós-execução.'.format(self.nome_comando))
 
     def get_str_impressao_inline(self):
         return '{} - [{}]'.format(self.nome_comando,
