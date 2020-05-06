@@ -66,8 +66,7 @@ class TestComparacaoInventarios(Base):
                                          dados_teste.get_random_word(),
                                          randint(1, 64),
                                          randint(512, 524288),
-                                         redes_vm,
-                                         dados_teste.get_random_word())
+                                         redes_vm)
 
         return inventario
 

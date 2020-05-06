@@ -17,6 +17,7 @@ foreach($vm in $vms_nuvem) {
     foreach($interface in $vm.VirtualNetworkAdapters) {
       $rede = [PSCustomObject]@{
         Nome = $interface.VMNetwork.Name
+        IPS = $interface.IPv4Addresses
       }
       $redes += $rede
     }
