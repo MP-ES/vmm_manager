@@ -2,7 +2,6 @@
 Representação de um plano de execução
 """
 import os
-import json
 import uuid
 import textwrap
 from yamlable import yaml_info, YamlAble
