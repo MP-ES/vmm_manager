@@ -46,7 +46,6 @@ class PlanoExecucao(YamlAble):
         self.acoes = []
         self.__jobs_em_execucao = {}
         self.__guids_a_limpar = []
-        self.__cmds_finalizacao = []
         self.__msgs_erros = ''
 
     def is_vazio(self):
@@ -75,16 +74,13 @@ class PlanoExecucao(YamlAble):
                 # Caso específico de criação de vms
                 if acao.is_criacao_vm():
                     self.__guids_a_limpar.append(guid)
-                    self.__cmds_finalizacao.append(
-                        acao.get_cmd_pos_execucao(self.agrupamento, servidor_acesso))
 
-                status, retorno = acao.executar(
-                    self.agrupamento, self.nuvem, servidor_acesso, guid)
+                acao.executar(self.agrupamento, self.nuvem,
+                              servidor_acesso, guid)
 
                 # Tratando resultado
-                resultado = json.loads(retorno)
-                if status and resultado.get('Status') == 'OK':
-                    guid = resultado.get('Guid')
+                if acao.was_executada_com_sucesso():
+                    guid = acao.get_resultado_execucao().get('Guid')
                     if guid:
                         # Job em execução
                         self.__jobs_em_execucao[guid] = SCJob(
@@ -95,7 +91,8 @@ class PlanoExecucao(YamlAble):
                         imprimir_ok(ocultar_progresso)
                 else:
                     imprimir_erro(ocultar_progresso)
-                    self.__logar_erros_acao(acao, resultado.get('Msgs'))
+                    self.__logar_erros_acao(
+                        acao, acao.get_resultado_execucao().get('Msgs'))
 
             # Monitorando jobs
             SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
@@ -110,8 +107,11 @@ class PlanoExecucao(YamlAble):
             PlanoExecucao.excluir_arquivo()
 
     def __executar_cmds_finalizacao(self, servidor_acesso, ocultar_progresso):
-        if self.__cmds_finalizacao:
-            for cmd in self.__cmds_finalizacao:
+        for acao in self.acoes:
+            if acao.was_executada_com_sucesso() and acao.has_cmd_pos_execucao():
+                cmd = acao.get_cmd_pos_execucao(
+                    self.agrupamento, servidor_acesso)
+
                 imprimir_acao_corrente('Executando {}'.format(
                     cmd.descricao), ocultar_progresso)
 

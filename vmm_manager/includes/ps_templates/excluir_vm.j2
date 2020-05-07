@@ -1,6 +1,13 @@
 $vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vmm }}"
+
 if ($vm.Status -eq 'Running' ){
     Stop-SCVirtualMachine -Force -VM $vm | Out-Null
 }
+
 Remove-SCVirtualMachine -VM $vm -JobVariable "job" -RunAsynchronously | Out-Null
-Write-Host -NoNewline $job.ID
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+    Guid = $job.ID
+}
+ConvertTo-Json -Depth 3 $Resultado

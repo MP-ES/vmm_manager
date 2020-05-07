@@ -8,16 +8,44 @@ $MemoryMB = "{{ qtde_ram_mb }}"
 $CloudName = "{{ nuvem }}"
 
 # Validações
-$MsgsErro = 'Teste\r\nTeste2'
+$MsgsErro = ''
 
+$nuvem = Get-SCCloud -VMMServer $VMMServer -Name $CloudName
+if (!$nuvem ) {
+  $MsgsErro += "Nuvem (Cloud) $CloudName não encontrada.`n"
+}
+
+$imagem = Get-SCVMTemplate -VMMServer $VMMServer | Where {$_.Name -eq $TemplateName }
+if (!$imagem ) {
+  $MsgsErro += "Imagem (Template) $TemplateName não encontrada.`n"
+}
+
+{% for rede in redes %}
+$rede = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ rede }}"
+if (!$rede ) {
+  $MsgsErro += "Rede {{ rede }} não encontrada.`n"
+}
+{% endfor %}
+
+if ($nuvem){
+  $custom_agrupamento = Get-SCCustomProperty -VMMServer $VMMServer -Name "{{ campo_agrupamento }}"
+  $vms_nuvem = Get-SCVirtualMachine -VMMServer $VMMServer -Cloud $nuvem
+  foreach($vm in $vms_nuvem) {
+    $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+    if ($agrupamento.Value -ne "{{ agrupamento }}" -and $vm.Name -eq $VMName) {
+      $MsgsErro += "O nome '$vm' já está sendo usado por uma VM na nuvem '$nuvem'.`n"
+    }
+  }
+}
+
+
+# Tratando erro
 if ($MsgsErro){
   $Resultado = [PSCustomObject]@{
     Status = 'ERRO'
     Msgs = $MsgsErro
   }
-
 }else{
-
   # Variáveis de controle
   $JobGroupID = "{{ guid }}"
   $TemporaryName = "$JobGroupID"
@@ -28,16 +56,16 @@ if ($MsgsErro){
   $MemoryMBMin = [math]::min( 512 , $MemoryMB )
 
 
-  New-SCVirtualScsiAdapter -VMMServer $VMMServer  -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
+  New-SCVirtualScsiAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
   New-SCVirtualDVDDrive -VMMServer $VMMServer -JobGroup $JobGroupID -Bus 0 -LUN 1
 
   {% for rede in redes %}
   $VMNetwork{{ loop.index }} = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ rede }}"
-  New-SCVirtualNetworkAdapter -VMMServer $VMMServer -JobGroup $JobGroupID  -VMNetwork $VMNetwork{{ loop.index }} -MACAddress "00:00:00:00:00:00" -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -DevicePropertiesAdapterNameMode Disabled 
+  New-SCVirtualNetworkAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -VMNetwork $VMNetwork{{ loop.index }} -MACAddress "00:00:00:00:00:00" -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -DevicePropertiesAdapterNameMode Disabled 
   {% endfor %}
 
   $HardwareProfile = New-SCHardwareProfile -VMMServer $VMMServer -JobGroup $JobGroupID -Name $TemporaryName -CPUType $CPUType -CapabilityProfile $CapabilityProfile -Description "Perfil temporário do vmm_manager" -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $true -DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20 -MemoryWeight 5000 -CPUExpectedUtilizationPercent 20 -DiskIops 0 -CPUMaximumPercent 100 -CPUReserve 0 -NumaIsolationRequired $false -NetworkUtilizationMbps 0 -CPURelativeWeight 100 -HighlyAvailable $true -HAVMPriority 2000 -DRProtectionRequired $false -SecureBootEnabled $false -CPULimitFunctionality $false -CPULimitForMigration $false -CheckpointType Production -Generation 2
-  $Template = New-SCVMTemplate -JobGroup $JobGroupID -Name $TemporaryName  -ComputerName $VMName -Template $Template -HardwareProfile $HardwareProfile -OperatingSystem $OperatingSystem -UpdateManagementProfile $null -LocalAdministratorCredential $null
+  $Template = New-SCVMTemplate -JobGroup $JobGroupID -Name $TemporaryName -ComputerName $VMName -Template $Template -HardwareProfile $HardwareProfile -OperatingSystem $OperatingSystem -UpdateManagementProfile $null -LocalAdministratorCredential $null
 
   $virtualMachineConfiguration = New-SCVMConfiguration -VMTemplate $Template -Name $VMName
   $cloud = Get-SCCloud -Name $CloudName
@@ -47,7 +75,6 @@ if ($MsgsErro){
     Status = 'OK'
     Guid = $VMMJob.ID.Guid
   }
-
 }
 
 ConvertTo-Json -Depth 3 $Resultado
