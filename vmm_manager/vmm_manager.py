@@ -44,8 +44,8 @@ def parametro_booleano(valor):
 
 
 def parametro_alfanumerico_limitado(valor):
-    regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$')
-    if not regex_alfa_num.match(valor):
+    regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$', re.IGNORECASE)
+    if valor and not regex_alfa_num.match(valor):
         raise argparse.ArgumentTypeError(
             "Parâmetro inválido: '{}'".format(valor))
     return valor
@@ -122,18 +122,20 @@ def get_parser():
                       dest='arquivo_inventario', env_var='VMM_INVENTARIO',
                       required=True, type=parametro_arquivo_yaml)
     show.add_argument('--vm',
-                      help='Nome da máquina virtual',
+                      help='Nome da máquina virtual', default='',
                       dest='nome_vm', required=False,
                       type=parametro_alfanumerico_limitado)
 
     return parser
 
 
-def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem,
+                            ocultar_progresso, filtro_nome_vm=None):
     imprimir_acao_corrente('Obtendo inventário remoto', ocultar_progresso)
 
     parser_remoto = ParserRemoto(agrupamento, nuvem)
-    status, inventario_remoto = parser_remoto.get_inventario(servidor_acesso)
+    status, inventario_remoto = parser_remoto.get_inventario(
+        servidor_acesso, filtro_nome_vm)
     validar_retorno_operacao_com_lock(status, inventario_remoto,
                                       servidor_acesso, agrupamento,
                                       nuvem, ocultar_progresso)
@@ -141,11 +143,13 @@ def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progres
     return inventario_remoto
 
 
-def obter_inventario_local(servidor_acesso, arquivo_inventario, ocultar_progresso):
+def obter_inventario_local(servidor_acesso, arquivo_inventario,
+                           ocultar_progresso, filtro_nome_vm=None):
     imprimir_acao_corrente('Obtendo inventário local', ocultar_progresso)
 
     parser_local = ParserLocal(arquivo_inventario)
-    status, inventario_local = parser_local.get_inventario(servidor_acesso)
+    status, inventario_local = parser_local.get_inventario(
+        servidor_acesso, filtro_nome_vm)
     validar_retorno_operacao_sem_lock(
         status, inventario_local, ocultar_progresso)
 
@@ -201,19 +205,22 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
 
 def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
                              nome_vm, ocultar_progresso):
-    # configurar_vmm(servidor_acesso, ocultar_progresso)
-    # inventario_local = obter_inventario_local(
-    #     servidor_acesso, arquivo_inventario, ocultar_progresso)
+    configurar_vmm(servidor_acesso, ocultar_progresso)
+    inventario_local = obter_inventario_local(
+        servidor_acesso, arquivo_inventario, ocultar_progresso, filtro_nome_vm=nome_vm)
 
-    # adquirir_lock(servidor_acesso, inventario_local.agrupamento,
-    #               inventario_local.nuvem, ocultar_progresso)
-    # liberar_lock(servidor_acesso, inventario_local.agrupamento,
-    #              inventario_local.nuvem, ocultar_progresso)
+    adquirir_lock(servidor_acesso, inventario_local.agrupamento,
+                  inventario_local.nuvem, ocultar_progresso)
 
-    print(servidor_acesso)
-    print(nome_vm)
-    print(ocultar_progresso)
-    raise NotImplementedError
+    inventario_remoto = obter_inventario_remoto(
+        servidor_acesso, inventario_local.agrupamento,
+        inventario_local.nuvem, ocultar_progresso, filtro_nome_vm=nome_vm)
+
+    liberar_lock(servidor_acesso, inventario_local.agrupamento,
+                 inventario_local.nuvem, ocultar_progresso)
+
+    print(inventario_remoto)
+    raise NotImplementedError()
 
 
 def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progresso):
@@ -364,4 +371,4 @@ def main():
     elif args.comando == 'show':
         imprimir_json_inventario(
             servidor_acesso, args.arquivo_inventario,
-            args.nome_vm, args.ocultar_progresso)
+            args.nome_vm.upper(), args.ocultar_progresso)

@@ -29,17 +29,21 @@ class ParserLocal:
         if os.stat(self.__arquivo_inventario).st_size == 0:
             raise ValueError('Arquivo de inventário vazio.')
 
-    def __montar_inventario(self, dados_inventario):
+    def __montar_inventario(self, dados_inventario, filtro_nome_vm=None):
         nomes_vm = []
         self.__inventario = Inventario(
             dados_inventario['agrupamento'], dados_inventario['nuvem'])
 
         for maquina_virtual in dados_inventario['vms']:
-            nome_vm = maquina_virtual.get('nome')
+            nome_vm = maquina_virtual.get('nome').upper()
             if nome_vm in nomes_vm:
                 raise ValueError(
                     'VM {} referenciada mais de uma vez no inventário.'.format(nome_vm))
             nomes_vm.append(nome_vm)
+
+            # filtrando vms: melhoria no desempenho
+            if filtro_nome_vm and nome_vm != filtro_nome_vm:
+                continue
 
             vm_redes = []
             for rede_vm in maquina_virtual.get('redes', dados_inventario.get('redes_padrao', [])):
@@ -63,14 +67,15 @@ class ParserLocal:
         return yamale.make_data(self.__arquivo_inventario,
                                 parser=ParserLocal.__YAML_PARSER)
 
-    def get_inventario(self, servidor_acesso):
+    def get_inventario(self, servidor_acesso, filtro_nome_vm=None):
         if not self.__inventario:
             try:
                 self.__validar_arquivo_yaml()
                 dados_yaml = self.__carregar_yaml()
                 dados_inventario = yamale.validate(ParserLocal.__get_schema_yaml(),
                                                    dados_yaml, strict=True)
-                self.__montar_inventario(dados_inventario[0][0])
+                self.__montar_inventario(
+                    dados_inventario[0][0], filtro_nome_vm)
                 self.__inventario.validar_no_servidor(servidor_acesso)
             except (SyntaxError, ValueError) as ex:
                 return False, str(ex)

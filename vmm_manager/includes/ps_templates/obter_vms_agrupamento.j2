@@ -4,7 +4,7 @@ $custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ 
 $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
 $custom_rede_principal = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_rede_principal }}"
 $nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem {{ '-Name {}'.format(filtro_nome_vm) if filtro_nome_vm else '' }}
 $vms_agrupamento = @()
 
 foreach($vm in $vms_nuvem) {
