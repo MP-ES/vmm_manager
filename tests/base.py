@@ -4,7 +4,6 @@ Classe com funções básicas de teste
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
-from vmm_manager.parser.parser_local import ParserLocal
 
 
 class Base():
@@ -27,7 +26,7 @@ class Base():
                 maquina_virtual.get('descricao'),
                 maquina_virtual.get(
                     'imagem', array_yaml[0][0].get('imagem_padrao', None)),
-                maquina_virtual.get('regiao', ParserLocal.REGIAO_PADRAO),
+                maquina_virtual.get('regiao', Inventario.REGIAO_PADRAO),
                 maquina_virtual.get(
                     'qtde_cpu', array_yaml[0][0].get('qtde_cpu_padrao', None)),
                 maquina_virtual.get(

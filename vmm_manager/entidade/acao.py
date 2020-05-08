@@ -1,6 +1,7 @@
 """
 Representação de uma ação (um item do plano de execução)
 """
+import json
 from yamlable import yaml_info, YamlAble
 from vmm_manager.infra.comando import Comando
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
@@ -12,18 +13,42 @@ class Acao(YamlAble):
         self.nome_comando = nome_comando
         self.args = kwargs
 
+        self.__status_execucao = None
+        self.__retorno_execucao = None
+
     def executar(self, agrupamento, nuvem, servidor_acesso, guid):
         cmd = Comando(self.nome_comando,
                       agrupamento=agrupamento,
+                      campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                       nuvem=nuvem,
                       guid=guid,
                       servidor_vmm=servidor_acesso.servidor_vmm)
         cmd.args.update(self.args)
 
-        return cmd.executar(servidor_acesso)
+        status, retorno = cmd.executar(servidor_acesso)
+
+        self.__status_execucao = status
+        self.__retorno_execucao = json.loads(
+            retorno) if self.__status_execucao else retorno
+
+        return self.__status_execucao, self.__retorno_execucao
 
     def is_criacao_vm(self):
         return self.nome_comando == 'criar_vm'
+
+    def has_cmd_pos_execucao(self):
+        return self.is_criacao_vm()
+
+    def was_executada_com_sucesso(self):
+        return (self.__status_execucao and
+                self.__retorno_execucao.get('Status') == 'OK')
+
+    def get_resultado_execucao(self):
+        if self.__status_execucao is None:
+            raise AttributeError('Ação não executada.')
+        if self.__status_execucao:
+            return self.__retorno_execucao
+        return {'Msgs': self.__retorno_execucao}
 
     def get_cmd_pos_execucao(self, agrupamento, servidor_acesso):
         if self.is_criacao_vm():
@@ -40,7 +65,7 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            'Ação "{}" não possui comando de pós execução.'.format(self.nome_comando))
+            'Ação "{}" não possui comando de pós-execução.'.format(self.nome_comando))
 
     def get_str_impressao_inline(self):
         return '{} - [{}]'.format(self.nome_comando,

@@ -325,7 +325,7 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
                 servidor_acesso, agrupamento, nuvem)
 
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
-        plano_execucao.executar(servidor_acesso)
+        plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
         liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
         plano_execucao.imprimir_resultado_execucao()
