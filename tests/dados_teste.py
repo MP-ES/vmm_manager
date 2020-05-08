@@ -10,9 +10,9 @@ class DadosTeste():
         self.__nomes_vm = []
 
     def get_nome_vm(self):
-        nome_vm = self.get_random_word()
+        nome_vm = self.get_random_word().upper()
         while nome_vm in self.__nomes_vm:
-            nome_vm = self.get_random_word()
+            nome_vm = self.get_random_word().upper()
 
         self.__nomes_vm.append(nome_vm)
         return nome_vm
