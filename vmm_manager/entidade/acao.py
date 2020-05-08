@@ -4,7 +4,8 @@ Representação de uma ação (um item do plano de execução)
 import json
 from yamlable import yaml_info, YamlAble
 from vmm_manager.infra.comando import Comando
-from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID,
+                                     CAMPO_IMAGEM, CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
@@ -59,6 +60,7 @@ class Acao(YamlAble):
                           campo_id=CAMPO_ID[0],
                           campo_imagem=CAMPO_IMAGEM[0],
                           campo_regiao=CAMPO_REGIAO[0],
+                          campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
                           agrupamento=agrupamento,
                           servidor_vmm=servidor_acesso.servidor_vmm)
             cmd.args.update(self.args)

@@ -25,6 +25,9 @@ class VM:
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
 
+    def get_rede_principal(self):
+        return next((rede.nome for rede in self.redes if rede.principal), None)
+
     def __hash__(self):
         return hash(self.nome)
 

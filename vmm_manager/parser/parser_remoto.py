@@ -3,7 +3,8 @@ Módulo que realiza o parser de um inventário remoto (no SCVMM)
 """
 import json
 from vmm_manager.infra.comando import Comando
-from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
+                                     CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
@@ -23,6 +24,7 @@ class ParserRemoto:
                       campo_id=CAMPO_ID[0],
                       campo_imagem=CAMPO_IMAGEM[0],
                       campo_regiao=CAMPO_REGIAO[0],
+                      campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
                       agrupamento=self.agrupamento, nuvem=self.nuvem)
         status, vms = cmd.executar(servidor_acesso)
         if not status:
@@ -37,7 +39,7 @@ class ParserRemoto:
         for maquina_virtual in vms_servidor:
             vms_rede = []
             for rede in maquina_virtual.get('Redes'):
-                vm_rede = VMRede(rede.get('Nome'))
+                vm_rede = VMRede(rede.get('Nome'), rede.get('Principal'))
                 vm_rede.ips = rede.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 

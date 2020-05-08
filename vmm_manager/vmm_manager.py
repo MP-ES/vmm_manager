@@ -14,7 +14,8 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.util.config import CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM, CAMPO_REGIAO
+from vmm_manager.util.config import(CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
+                                    CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
 from vmm_manager.util.msgs import finalizar_com_erro, imprimir_acao_corrente
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
 from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
@@ -179,7 +180,8 @@ def configurar_vmm(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Configurando VMM', ocultar_progresso)
     cmd = Comando('configurar_vmm', servidor_vmm=servidor_acesso.servidor_vmm,
                   campos_customizados=[CAMPO_AGRUPAMENTO, CAMPO_ID,
-                                       CAMPO_IMAGEM, CAMPO_REGIAO])
+                                       CAMPO_IMAGEM, CAMPO_REGIAO,
+                                       CAMPO_REDE_PRINCIPAL])
     status, msg = cmd.executar(servidor_acesso)
 
     validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso)

@@ -102,7 +102,8 @@ class Inventario:
                      regiao=self.vms[nome_vm].regiao,
                      qtde_cpu=self.vms[nome_vm].qtde_cpu,
                      qtde_ram_mb=self.vms[nome_vm].qtde_ram_mb,
-                     redes=[rede.nome for rede in self.vms[nome_vm].redes]
+                     redes=[rede.nome for rede in self.vms[nome_vm].redes],
+                     rede_principal=self.vms[nome_vm].get_rede_principal()
                      )
             )
 

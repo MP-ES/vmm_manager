@@ -28,7 +28,9 @@ class TestComparacaoInventarios(Base):
                      qtde_cpu=inventario.vms[nome_vm].qtde_cpu,
                      qtde_ram_mb=inventario.vms[nome_vm].qtde_ram_mb,
                      redes=[rede.nome
-                            for rede in inventario.vms[nome_vm].redes]
+                            for rede in inventario.vms[nome_vm].redes],
+                     rede_principal=inventario.vms[nome_vm].get_rede_principal(
+                     )
                      ))
 
         return plano_execucao

@@ -2,6 +2,7 @@ $custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name
 $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
 $custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_imagem }}"
 $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
+$custom_rede_principal = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_rede_principal }}"
 $nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
 $vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
 $vms_agrupamento = @()
@@ -12,12 +13,14 @@ foreach($vm in $vms_nuvem) {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id
     $imagem = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem
     $regiao = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao
+    $rede_principal = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal
 
     $redes = @()
     foreach($interface in $vm.VirtualNetworkAdapters) {
       $rede = [PSCustomObject]@{
         Nome = $interface.VMNetwork.Name
         IPS = $interface.IPv4Addresses
+        Principal = $interface.VMNetwork.Name -eq $rede_principal.Value
       }
       $redes += $rede
     }
