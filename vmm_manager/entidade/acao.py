@@ -56,13 +56,13 @@ class Acao(YamlAble):
             cmd = Comando('criar_vm_pos',
                           descricao='tagueamento da VM {}'.format(
                               self.args['nome']),
+                          servidor_vmm=servidor_acesso.servidor_vmm,
                           campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                           campo_id=CAMPO_ID[0],
                           campo_imagem=CAMPO_IMAGEM[0],
                           campo_regiao=CAMPO_REGIAO[0],
                           campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
-                          agrupamento=agrupamento,
-                          servidor_vmm=servidor_acesso.servidor_vmm)
+                          agrupamento=agrupamento)
             cmd.args.update(self.args)
             return cmd
 

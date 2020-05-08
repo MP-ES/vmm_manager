@@ -25,7 +25,8 @@ class ParserRemoto:
                       campo_imagem=CAMPO_IMAGEM[0],
                       campo_regiao=CAMPO_REGIAO[0],
                       campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
-                      agrupamento=self.agrupamento, nuvem=self.nuvem)
+                      agrupamento=self.agrupamento,
+                      nuvem=self.nuvem)
         status, vms = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(
