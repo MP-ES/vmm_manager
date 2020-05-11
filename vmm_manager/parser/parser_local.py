@@ -62,6 +62,8 @@ class ParserLocal:
                     'qtde_ram_mb', dados_inventario.get('qtde_ram_mb_padrao', None)),
                 vm_redes
             )
+            self.__inventario.vms[nome_vm].set_dados_ansible(
+                maquina_virtual.get('ansible'))
 
     def __carregar_yaml(self):
         return yamale.make_data(self.__arquivo_inventario,

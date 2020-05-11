@@ -20,6 +20,7 @@ from vmm_manager.util.msgs import finalizar_com_erro, imprimir_acao_corrente
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
 from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
 from vmm_manager.util.operacao import adquirir_lock, liberar_lock, confirmar_acao_usuario_com_lock
+from vmm_manager.entidade.inventario import Inventario
 
 
 def parametro_arquivo_yaml(nome_arquivo):
@@ -219,8 +220,12 @@ def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
     liberar_lock(servidor_acesso, inventario_local.agrupamento,
                  inventario_local.nuvem, ocultar_progresso)
 
-    print(inventario_remoto)
-    raise NotImplementedError()
+    imprimir_acao_corrente('Gerando JSON', ocultar_progresso)
+    status, json_inventario = Inventario.get_json(
+        inventario_local, inventario_remoto)
+    validar_retorno_operacao_sem_lock(
+        status, json_inventario, ocultar_progresso)
+    print(json_inventario)
 
 
 def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progresso):
