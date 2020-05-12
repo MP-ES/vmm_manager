@@ -55,7 +55,7 @@ class TestComparacaoInventarios(Base):
             dados_teste.get_random_word(), dados_teste.get_random_word())
 
         for _ in range(randrange(1, TestComparacaoInventarios.MAX_VMS_POR_TESTE)):
-            nome_vm = dados_teste.get_nome_vm()
+            nome_vm = dados_teste.get_nome_unico()
 
             redes_vm = []
             for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM)):

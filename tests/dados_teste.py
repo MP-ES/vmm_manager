@@ -7,14 +7,14 @@ from faker import Faker
 class DadosTeste():
     def __init__(self):
         self.__faker = Faker()
-        self.__nomes_vm = []
+        self.__nomes_unicos = []
 
-    def get_nome_vm(self):
+    def get_nome_unico(self):
         nome_vm = self.get_random_word().upper()
-        while nome_vm in self.__nomes_vm:
+        while nome_vm in self.__nomes_unicos:
             nome_vm = self.get_random_word().upper()
 
-        self.__nomes_vm.append(nome_vm)
+        self.__nomes_unicos.append(nome_vm)
         return nome_vm
 
     def get_random_word(self):

@@ -24,6 +24,9 @@ class Inventario:
                 # máquina órfã: não exibir
                 continue
 
+            inventario_remoto.vms[nome_vm].dados_ansible = \
+                inventario_local.vms[nome_vm].dados_ansible
+
         return True, json.dumps(inventario_remoto,
                                 default=json_handle_inventario,
                                 sort_keys=True, indent=4)
