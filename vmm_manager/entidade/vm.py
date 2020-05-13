@@ -34,8 +34,11 @@ class VM:
                         "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
                             grupo, self.nome))
 
-                dados_ansible = VMAnsible(grupo)
-                self.dados_ansible[grupo] = dados_ansible
+                ansible_grupo = VMAnsible(grupo)
+                ansible_grupo.extrair_dados_vars_dict(
+                    item.get('vars'), self.nome)
+
+                self.dados_ansible[grupo] = ansible_grupo
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -67,6 +70,7 @@ class VM:
                 id_vmm: {}
                 status: {}
                 no_regiao: {}
+                ansible: {}
                 '''.format(self.nome,
                            self.descricao,
                            self.imagem,
@@ -76,7 +80,8 @@ class VM:
                            self.redes,
                            self.id_vmm,
                            self.status,
-                           self.no_regiao)
+                           self.no_regiao,
+                           self.dados_ansible)
 
     def to_dict(self):
         return {

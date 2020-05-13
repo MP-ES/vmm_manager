@@ -4,6 +4,7 @@ Classe com funções básicas de teste
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
+from vmm_manager.entidade.vm_ansible import VMAnsible, VMAnsibleVars
 
 
 class Base():
@@ -15,6 +16,7 @@ class Base():
     def get_obj_inventario(self, array_yaml):
         inventario = Inventario(
             array_yaml[0][0]['agrupamento'], array_yaml[0][0]['nuvem'])
+
         for maquina_virtual in array_yaml[0][0]['vms']:
             vm_redes = []
             for rede_vm in maquina_virtual.get('redes', array_yaml[0][0].get('redes_padrao', [])):
@@ -34,3 +36,24 @@ class Base():
                 vm_redes
             )
         return inventario
+
+    def get_dados_ansible_vm(self, array_yaml, nome_vm):
+        lista_dados_ansible = {}
+
+        for maquina_virtual in array_yaml[0][0]['vms']:
+            if maquina_virtual.get('nome') != nome_vm:
+                continue
+
+            if maquina_virtual.get('ansible'):
+                for item in maquina_virtual.get('ansible'):
+                    grupo = item.get('grupo')
+                    dados_ansible = VMAnsible(grupo)
+
+                    if item.get('vars'):
+                        for variavel in item.get('vars'):
+                            dados_ansible.variaveis.append(VMAnsibleVars(
+                                variavel.get('nome'), variavel.get('valor')))
+
+                    lista_dados_ansible[grupo] = dados_ansible
+
+        return lista_dados_ansible
