@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vmm_manager"
-version = "0.1.0b0"
+version = "0.1.0b1"
 description = "Management of resources on System Center Virtual Machine Manager (SCVMM) in a declarative way."
 authors = ["Estevão Costa <ecosta@mpes.mp.br>"]
 
@@ -24,26 +24,26 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 paramiko = "^2.7"
-configargparse = "^1.1"
+configargparse = "^1.2"
 jinja2 = "^2.11"
 "ruamel.yaml" = "^0.16"
 yamale = "^2.0"
 yamlable = "^1.0"
-tqdm = "^4.43"
-pytz = "^2019"
+tqdm = "^4.46"
+pytz = "^2020"
 
 [tool.poetry.dev-dependencies]
-pylint = "^2.4"
+pylint = "^2.5"
 pylint-quotes = "^0.2"
 autopep8 = "^1.5"
-rope = "^0.16"
+rope = "^0.17"
 pytest = "^5.4"
-pytest-mock = "^2.0"
-Faker = "^4.0"
+pytest-mock = "^3.1"
+Faker = "^4.1"
 
 [tool.poetry.scripts]
 vmm_manager = "vmm_manager.vmm_manager:main"
 
 [build-system]
-requires = ["poetry^0.12"]
+requires = ["poetry^1.0"]
 build-backend = "poetry.masonry.api"
