@@ -26,3 +26,10 @@ class VMRede:
                 '''.format(self.nome,
                            self.principal,
                            self.ips)
+
+    def to_dict(self):
+        return {
+            'nome': self.nome,
+            'principal': self.principal,
+            'ips': self.ips,
+        }

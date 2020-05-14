@@ -1,15 +1,35 @@
 """
 Representação de um inventário
 """
-
+import json
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.entidade.acao import Acao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
 
 
+def json_handle_inventario(obj):
+    if isinstance(obj, Inventario):
+        return obj.to_dict()
+    raise ValueError('Objeto precisa ser uma instância de inventário.')
+
+
 class Inventario:
     REGIAO_PADRAO = 'default'
+
+    @staticmethod
+    def get_json(inventario_local, inventario_remoto):
+        for nome_vm in inventario_remoto.vms:
+            if nome_vm not in inventario_local.vms:
+                # máquina órfã: não exibir
+                continue
+
+            inventario_remoto.vms[nome_vm].dados_ansible = \
+                inventario_local.vms[nome_vm].dados_ansible
+
+        return True, json.dumps(inventario_remoto,
+                                default=json_handle_inventario,
+                                sort_keys=True, indent=4)
 
     def __init__(self, agrupamento, nuvem):
         self.agrupamento = agrupamento
@@ -102,7 +122,8 @@ class Inventario:
                      regiao=self.vms[nome_vm].regiao,
                      qtde_cpu=self.vms[nome_vm].qtde_cpu,
                      qtde_ram_mb=self.vms[nome_vm].qtde_ram_mb,
-                     redes=[rede.nome for rede in self.vms[nome_vm].redes]
+                     redes=[rede.nome for rede in self.vms[nome_vm].redes],
+                     rede_principal=self.vms[nome_vm].get_rede_principal()
                      )
             )
 
@@ -131,3 +152,10 @@ class Inventario:
             '''.format(self.agrupamento,
                        self.nuvem,
                        self.vms)
+
+    def to_dict(self):
+        return {
+            'agrupamento': self.agrupamento,
+            'nuvem': self.nuvem,
+            'vms': [self.vms[vm_name].to_dict() for vm_name in self.vms]
+        }

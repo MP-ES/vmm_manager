@@ -14,3 +14,6 @@ CAMPO_IMAGEM = ('VMM_MANAGER_IMAGEM',
 
 CAMPO_REGIAO = ('VMM_MANAGER_REGIAO',
                 'Região na qual a VM foi criada (script vmm_manager).')
+
+CAMPO_REDE_PRINCIPAL = ('VMM_MANAGER_REDE_PRINCIPAL',
+                        'Nome da rede principal da VM (script vmm_manager).')

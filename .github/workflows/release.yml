@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           source $HOME/.poetry/env
-          poetry install --no-dev
+          poetry install --no-dev --no-root
       - name: Build project for distribution
         run: |
           source $HOME/.poetry/env
