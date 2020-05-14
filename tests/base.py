@@ -49,10 +49,9 @@ class Base():
                     grupo = item.get('grupo')
                     dados_ansible = VMAnsible(grupo)
 
-                    if item.get('vars'):
-                        for variavel in item.get('vars'):
-                            dados_ansible.variaveis.append(VMAnsibleVars(
-                                variavel.get('nome'), variavel.get('valor')))
+                    for variavel in item.get('vars', {}):
+                        dados_ansible.variaveis.append(VMAnsibleVars(
+                            variavel.get('nome'), variavel.get('valor')))
 
                     lista_dados_ansible[grupo] = dados_ansible
 

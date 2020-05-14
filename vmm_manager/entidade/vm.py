@@ -25,20 +25,19 @@ class VM:
         self.dados_ansible = {}
 
     def extrair_dados_ansible_dict(self, dict_ansible):
-        if dict_ansible:
-            for item in dict_ansible:
-                grupo = item.get('grupo')
+        for item in dict_ansible or {}:
+            grupo = item.get('grupo')
 
-                if grupo in self.dados_ansible:
-                    raise ValueError(
-                        "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
-                            grupo, self.nome))
+            if grupo in self.dados_ansible:
+                raise ValueError(
+                    "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
+                        grupo, self.nome))
 
-                ansible_grupo = VMAnsible(grupo)
-                ansible_grupo.extrair_dados_vars_dict(
-                    item.get('vars'), self.nome)
+            ansible_grupo = VMAnsible(grupo)
+            ansible_grupo.extrair_dados_vars_dict(
+                item.get('vars'), self.nome)
 
-                self.dados_ansible[grupo] = ansible_grupo
+            self.dados_ansible[grupo] = ansible_grupo
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])

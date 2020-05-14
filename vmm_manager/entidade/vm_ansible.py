@@ -10,22 +10,21 @@ class VMAnsible:
 
     def extrair_dados_vars_dict(self, dict_vars, nome_vm):
         lista_nomes_var = []
-        if dict_vars:
-            for item in dict_vars:
-                nome_var = item.get('nome')
+        for item in dict_vars or {}:
+            nome_var = item.get('nome')
 
-                if nome_var in lista_nomes_var:
-                    raise ValueError(
-                        ("Variável '{}' do grupo ansible '{}' "
-                         .format(nome_var, self.grupo) +
-                         "referenciada mais de uma vez na VM '{}'."
-                         .format(nome_vm)))
+            if nome_var in lista_nomes_var:
+                raise ValueError(
+                    ("Variável '{}' do grupo ansible '{}' "
+                     .format(nome_var, self.grupo) +
+                     "referenciada mais de uma vez na VM '{}'."
+                     .format(nome_vm)))
 
-                lista_nomes_var.append(nome_var)
-                ansible_var = VMAnsibleVars(
-                    nome_var, item.get('valor'))
+            lista_nomes_var.append(nome_var)
+            ansible_var = VMAnsibleVars(
+                nome_var, item.get('valor'))
 
-                self.variaveis.append(ansible_var)
+            self.variaveis.append(ansible_var)
 
     def __hash__(self):
         return hash(self.grupo)
