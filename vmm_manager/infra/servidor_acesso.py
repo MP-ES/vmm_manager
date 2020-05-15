@@ -6,7 +6,6 @@ import re
 import socket
 import tempfile
 import paramiko
-from vmm_manager.util.msgs import formatar_msg_erro
 
 
 def escapar_echo_cmd(conteudo):
@@ -30,11 +29,24 @@ class ServidorAcesso:
         self.servidor_vmm = servidor_vmm
         self.usuario = usuario
         self.senha = senha
+
         self.conexao = None
+        self.__msg_erro_conexao = None
 
     def __del__(self):
         if self.conexao:
             self.conexao.close()
+
+    def get_msg_erro_conexao(self):
+        if self.__msg_erro_conexao:
+            return 'Não foi possível se conectar ao servidor de acesso. {}'.format(
+                self.__msg_erro_conexao)
+        return None
+
+    def __is_conexao_ok(self):
+        if self.conexao is None:
+            self.__conectar()
+        return not self.__msg_erro_conexao
 
     def __conectar(self):
         try:
@@ -44,20 +56,16 @@ class ServidorAcesso:
             self.conexao.connect(hostname=self.servidor,
                                  username=self.usuario,
                                  password=self.senha)
-            return True
         except paramiko.AuthenticationException:
-            print(formatar_msg_erro('\nUsuário ou senha inválidos.'))
-            return False
+            self.__msg_erro_conexao = 'Usuário ou senha inválidos.'
         except paramiko.SSHException as ex:
-            print(formatar_msg_erro(
-                '\nErro ao estabelecer conexão SSH: {}'.format(ex)))
-            return False
+            self.__msg_erro_conexao = 'Erro ao estabelecer conexão SSH: {}'.format(
+                ex)
         except (socket.error, socket.timeout) as ex:
-            print(formatar_msg_erro('\nErro de socket: {}'.format(ex)))
-            return False
+            self.__msg_erro_conexao = 'Erro de socket: {}'.format(ex)
 
     def __executar_comando(self, cmd):
-        if self.__conectar():
+        if self.__is_conexao_ok():
             try:
                 _, stdout, stderr = self.conexao.exec_command(cmd)
                 stderr_msg = stderr.read().decode(ServidorAcesso.__ENCODE_CMD)
@@ -70,16 +78,17 @@ class ServidorAcesso:
             except socket.error as ex:
                 return False, "Erro de socket ao executar '{}': {}".format(cmd, ex)
         else:
-            return False, 'Conexão não estabelecida.'
+            return False, self.get_msg_erro_conexao()
 
     def __enviar_arquivo(self, nome_arquivo):
         self.__executar_comando('if not exist "{}" mkdir "{}"'.format(
             ServidorAcesso.__PASTA_TEMPORARIA, ServidorAcesso.__PASTA_TEMPORARIA))
 
-        return self.conexao.open_sftp().put(nome_arquivo,
-                                            ServidorAcesso.__get_caminho_arquivo(
-                                                nome_arquivo),
-                                            confirm=True)
+        if self.__is_conexao_ok():
+            self.conexao.open_sftp().put(nome_arquivo,
+                                         ServidorAcesso.__get_caminho_arquivo(
+                                             nome_arquivo),
+                                         confirm=True)
 
     def __excluir_arquivo(self, nome):
         self.__executar_comando('del {}'.format(
@@ -90,21 +99,26 @@ class ServidorAcesso:
 
     def executar_script(self, nome, conteudo):
         try:
-            arquivo_script = tempfile.NamedTemporaryFile(
-                prefix=nome, suffix='.ps1', delete=True)
-            arquivo_script.file.write(conteudo.encode(
-                ServidorAcesso.__ENCODE_WINDOWS))
-            arquivo_script.flush()
+            arquivo_script = None
 
-            self.__enviar_arquivo(arquivo_script.name)
+            if self.__is_conexao_ok():
+                arquivo_script = tempfile.NamedTemporaryFile(
+                    prefix=nome, suffix='.ps1', delete=True)
+                arquivo_script.file.write(conteudo.encode(
+                    ServidorAcesso.__ENCODE_WINDOWS))
+                arquivo_script.flush()
 
-            resultado = self.__executar_comando('powershell.exe -file {}'.format(
-                ServidorAcesso.__get_caminho_arquivo(arquivo_script.name)))
+                self.__enviar_arquivo(arquivo_script.name)
+                resultado = self.__executar_comando('powershell.exe -file {}'.format(
+                    ServidorAcesso.__get_caminho_arquivo(arquivo_script.name)))
+                self.__excluir_arquivo(arquivo_script.name)
 
-            self.__excluir_arquivo(arquivo_script.name)
-            return resultado
+                return resultado
+
+            return False, self.get_msg_erro_conexao()
         # pylint: disable=broad-except
         except Exception as ex:
             return False, 'Erro ao executar script: {}'.format(ex)
         finally:
-            arquivo_script.close()
+            if arquivo_script:
+                arquivo_script.close()
