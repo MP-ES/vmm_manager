@@ -19,6 +19,7 @@ class ServidorAcesso:
     __PASTA_TEMPORARIA = 'vmm_temp'
     __ENCODE_CMD = 'cp850'
     __ENCODE_WINDOWS = 'iso-8859-1'
+    __TIMEOUT_CONEXAO = 60
 
     @staticmethod
     def __get_caminho_arquivo(nome):
@@ -55,7 +56,8 @@ class ServidorAcesso:
             self.conexao.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.conexao.connect(hostname=self.servidor,
                                  username=self.usuario,
-                                 password=self.senha)
+                                 password=self.senha,
+                                 banner_timeout=ServidorAcesso.__TIMEOUT_CONEXAO)
         except paramiko.AuthenticationException:
             self.__msg_erro_conexao = 'Usuário ou senha inválidos.'
         except paramiko.SSHException as ex:
