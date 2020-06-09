@@ -16,6 +16,7 @@ class Acao(YamlAble):
 
         self.__status_execucao = None
         self.__retorno_execucao = None
+        self.__status_execucao_job = None
 
     def executar(self, agrupamento, nuvem, servidor_acesso, guid):
         cmd = Comando(self.nome_comando,
@@ -34,6 +35,9 @@ class Acao(YamlAble):
 
         return self.__status_execucao, self.__retorno_execucao
 
+    def informar_status_execucao_job(self, status):
+        self.__status_execucao_job = status
+
     def is_criacao_vm(self):
         return self.nome_comando == 'criar_vm'
 
@@ -42,7 +46,9 @@ class Acao(YamlAble):
 
     def was_executada_com_sucesso(self):
         return (self.__status_execucao and
-                self.__retorno_execucao.get('Status') == 'OK')
+                self.__retorno_execucao.get('Status') == 'OK'
+                and (self.__status_execucao_job is None or
+                     self.__status_execucao_job))
 
     def get_resultado_execucao(self):
         if self.__status_execucao is None:

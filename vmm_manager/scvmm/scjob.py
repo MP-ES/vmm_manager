@@ -79,8 +79,15 @@ class SCJob():
         self.progresso = 0
         self.ultimo_progresso = 0
 
+        self.__processar_finalizacao_job()
+
     def is_finalizado_com_erro(self):
         return self.is_finalizado and not self.__is_sucesso
+
+    def __processar_finalizacao_job(self):
+        if self.is_finalizado:
+            self.acao.informar_status_execucao_job(
+                not self.is_finalizado_com_erro())
 
     def atualizar(self, job_vmm):
         self.nome = job_vmm.get('Name')
@@ -99,6 +106,8 @@ class SCJob():
                 'ErrorInfo').get('RecommendedAction')
             self.resumo_erro = job_vmm.get(
                 'ErrorInfo').get('CSMMessageString')
+
+        self.__processar_finalizacao_job()
 
     def __str__(self):
         return '''
