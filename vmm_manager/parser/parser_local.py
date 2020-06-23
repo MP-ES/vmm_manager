@@ -74,10 +74,12 @@ class ParserLocal:
             try:
                 self.__validar_arquivo_yaml()
                 dados_yaml = self.__carregar_yaml()
-                dados_inventario = yamale.validate(ParserLocal.__get_schema_yaml(),
-                                                   dados_yaml, strict=True)
+                parser = ParserLocal.__get_schema_yaml()
+
+                yamale.validate(parser, dados_yaml, strict=True)
+
                 self.__montar_inventario(
-                    dados_inventario[0][0], filtro_nome_vm)
+                    dados_yaml[0][0], filtro_nome_vm)
                 self.__inventario.validar_no_servidor(servidor_acesso)
             except (SyntaxError, ValueError) as ex:
                 return False, str(ex)
