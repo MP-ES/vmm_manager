@@ -68,19 +68,11 @@ class Inventario:
     def lista_nome_vms_str(self):
         return ','.join(['"{}"'.format(nome_vm) for nome_vm in self.vms])
 
-    def validar_no_servidor(self, servidor_acesso):
-        imagens = set()
-        redes = set()
-        regioes = set()
-
+    def __validar_regras_locais(self):
         for maquina_virtual in self.vms.values():
             if maquina_virtual.imagem is None:
                 raise ValueError(
                     'Imagem da VM {} não definida.'.format(maquina_virtual.nome))
-            imagens.add(maquina_virtual.imagem)
-
-            if maquina_virtual.regiao != Inventario.REGIAO_PADRAO:
-                regioes.add(maquina_virtual.regiao)
 
             if maquina_virtual.qtde_cpu is None:
                 raise ValueError(
@@ -93,6 +85,19 @@ class Inventario:
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
                     'VM {} deve ter exatamente uma rede principal.'.format(maquina_virtual.nome))
+
+    def validar(self, servidor_acesso):
+        self.__validar_regras_locais()
+
+        imagens = set()
+        redes = set()
+        regioes = set()
+
+        for maquina_virtual in self.vms.values():
+            imagens.add(maquina_virtual.imagem)
+
+            if maquina_virtual.regiao != Inventario.REGIAO_PADRAO:
+                regioes.add(maquina_virtual.regiao)
 
             redes.update([rede.nome for rede in maquina_virtual.redes])
 

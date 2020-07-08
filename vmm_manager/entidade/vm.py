@@ -1,8 +1,9 @@
 """
 Representação de uma máquina virtual
 """
-from vmm_manager.scvmm.enums import VMStatusEnum
+from vmm_manager.scvmm.enums import VMStatusEnum, SCDiskBusType, SCDiskSizeType
 from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.entidade.vm_disco import VMDisco
 
 
 class VM:
@@ -22,7 +23,9 @@ class VM:
         self.id_vmm = id_vmm
         self.status = status
         self.no_regiao = no_regiao
+
         self.dados_ansible = {}
+        self.discos_adicionais = {}
 
     def extrair_dados_ansible_dict(self, dict_ansible):
         for item in dict_ansible or {}:
@@ -38,6 +41,24 @@ class VM:
                 item.get('vars'), self.nome)
 
             self.dados_ansible[grupo] = ansible_grupo
+
+    def extrair_discos_adicionais_dict(self, dict_discos_adicionais):
+        for item in dict_discos_adicionais or {}:
+            nome_arquivo = item.get('nome_arquivo')
+
+            if nome_arquivo in self.discos_adicionais:
+                raise ValueError(
+                    "Disco '{}' referenciado mais de uma vez para a VM '{}'.".format(
+                        nome_arquivo, self.nome))
+
+            disco_adicional = VMDisco(
+                SCDiskBusType(item.get('tipo')),
+                item.get('nome_arquivo'),
+                item.get('tamanho_mb'),
+                SCDiskSizeType(item.get('tamanho_tipo')),
+                item.get('caminho_arquivo'))
+
+            self.discos_adicionais[nome_arquivo] = disco_adicional
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -70,6 +91,7 @@ class VM:
                 status: {}
                 no_regiao: {}
                 ansible: {}
+                discos_adicionais: {}
                 '''.format(self.nome,
                            self.descricao,
                            self.imagem,
@@ -80,7 +102,8 @@ class VM:
                            self.id_vmm,
                            self.status,
                            self.no_regiao,
-                           self.dados_ansible)
+                           self.dados_ansible,
+                           self.discos_adicionais)
 
     def to_dict(self):
         return {
@@ -95,5 +118,7 @@ class VM:
             'status': self.status.value,
             'no_regiao': self.no_regiao,
             'ansible': [self.dados_ansible[dados_ansible].to_dict()
-                        for dados_ansible in self.dados_ansible]
+                        for dados_ansible in self.dados_ansible],
+            'discos_adicionais': [self.discos_adicionais[disco_adicional].to_dict()
+                                  for disco_adicional in self.discos_adicionais]
         }

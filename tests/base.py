@@ -4,12 +4,15 @@ Classe com funções básicas de teste
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
+from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.entidade.vm_ansible import VMAnsible, VMAnsibleVars
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class Base():
     MAX_VMS_POR_TESTE = 20
     MAX_REDES_POR_VM = 5
+    MAX_DISCOS_POR_VM = 10
     MAX_ANSIBLE_ITERACAO = 10
 
     # pylint: disable=R0201
@@ -44,15 +47,34 @@ class Base():
             if maquina_virtual.get('nome') != nome_vm:
                 continue
 
-            if maquina_virtual.get('ansible'):
-                for item in maquina_virtual.get('ansible'):
-                    grupo = item.get('grupo')
-                    dados_ansible = VMAnsible(grupo)
+            for item in maquina_virtual.get('ansible', {}):
+                grupo = item.get('grupo')
+                dados_ansible = VMAnsible(grupo)
 
-                    for variavel in item.get('vars', {}):
-                        dados_ansible.variaveis.append(VMAnsibleVars(
-                            variavel.get('nome'), variavel.get('valor')))
+                for variavel in item.get('vars', {}):
+                    dados_ansible.variaveis.append(VMAnsibleVars(
+                        variavel.get('nome'), variavel.get('valor')))
 
-                    lista_dados_ansible[grupo] = dados_ansible
+                lista_dados_ansible[grupo] = dados_ansible
 
         return lista_dados_ansible
+
+    def get_discos_adicionais_vm(self, array_yaml, nome_vm):
+        lista_discos_adicionais = {}
+
+        for maquina_virtual in array_yaml[0][0]['vms']:
+            if maquina_virtual.get('nome') != nome_vm:
+                continue
+
+            for item in maquina_virtual.get('discos_adicionais', {}):
+                nome_arquivo = item.get('nome_arquivo')
+                disco_adicional = VMDisco(SCDiskBusType(item.get('tipo')),
+                                          nome_arquivo,
+                                          item.get('tamanho_mb'),
+                                          SCDiskSizeType(
+                                              item.get('tamanho_tipo')),
+                                          item.get('caminho_arquivo'))
+
+                lista_discos_adicionais[nome_arquivo] = disco_adicional
+
+        return lista_discos_adicionais

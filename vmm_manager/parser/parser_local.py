@@ -46,9 +46,18 @@ class ParserLocal:
                 continue
 
             vm_redes = []
+            nomes_redes = []
             for rede_vm in maquina_virtual.get('redes', dados_inventario.get('redes_padrao', [])):
+                nome_rede = rede_vm.get('nome')
+
+                if nome_rede in nomes_redes:
+                    raise ValueError(
+                        "Rede '{}' referenciada mais de uma vez para a VM '{}'."
+                        .format(nome_rede, nome_vm))
+
+                nomes_redes.append(nome_rede)
                 vm_redes.append(
-                    VMRede(rede_vm.get('nome'), rede_vm.get('principal', False)))
+                    VMRede(nome_rede, rede_vm.get('principal', False)))
 
             self.__inventario.vms[nome_vm] = VM(
                 nome_vm,
@@ -64,6 +73,8 @@ class ParserLocal:
             )
             self.__inventario.vms[nome_vm].extrair_dados_ansible_dict(
                 maquina_virtual.get('ansible'))
+            self.__inventario.vms[nome_vm].extrair_discos_adicionais_dict(
+                maquina_virtual.get('discos_adicionais'))
 
     def __carregar_yaml(self):
         return yamale.make_data(self.__arquivo_inventario,
@@ -80,7 +91,7 @@ class ParserLocal:
 
                 self.__montar_inventario(
                     dados_yaml[0][0], filtro_nome_vm)
-                self.__inventario.validar_no_servidor(servidor_acesso)
+                self.__inventario.validar(servidor_acesso)
             except (SyntaxError, ValueError) as ex:
                 return False, str(ex)
 
