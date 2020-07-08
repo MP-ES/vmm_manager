@@ -50,17 +50,23 @@ vms:
         principal: true
       - nome: "vlan2"
     regiao: A
+    discos_adicionais:
+      - tipo: SCSI
+        nome_arquivo: "disk_var_dir"
+        caminho_arquivo: "C:\\Storage\\disk1"
+        tamanho_mb: 1024
+        tamanho_tipo: Dynamic
   - nome: VMM_TEST2
     regiao: B
     ansible:
-      - grupo: 'web_server'
+      - grupo: "web_server"
   - nome: VMM_TEST3
     ansible:
-      - grupo: 'database'
+      - grupo: "database"
         vars:
-          - nome: 'data_dir'
-            valor: '/mnt/data'
-      - grupo: 'load_balancer'
+          - nome: "data_dir"
+            valor: "/mnt/data"
+      - grupo: "load_balancer"
 ```
 
 ## Desenvolvimento
