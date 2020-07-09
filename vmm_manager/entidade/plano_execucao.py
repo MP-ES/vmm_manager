@@ -25,9 +25,7 @@ class PlanoExecucao(YamlAble):
                 plano_execucao = yaml.safe_load(arquivo)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
-            return False, "Erro ao carregar plano de execução '{}'.\n{}".format(
-                arquivo_plano_execucao,
-                erro)
+            return False, f"Erro ao carregar plano de execução '{arquivo_plano_execucao}'.\n{erro}"
 
     @staticmethod
     def excluir_arquivo():
@@ -56,9 +54,7 @@ class PlanoExecucao(YamlAble):
             with open(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO, 'w') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
-            return False, 'Erro ao gerar arquivo {}.\n{}'.format(
-                PlanoExecucao.ARQUIVO_PLANO_EXECUCAO,
-                erro)
+            return False, f'Erro ao gerar arquivo {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
 
         return True, conteudo
 
@@ -84,7 +80,7 @@ class PlanoExecucao(YamlAble):
                         # Job em execução
                         self.__jobs_em_execucao[guid] = SCJob(
                             guid, acao)
-                        print('[Iniciado {}]'.format(guid))
+                        print(f'[Iniciado {guid}]')
                     else:
                         # Comando já finalizado
                         imprimir_ok(ocultar_progresso)
@@ -111,8 +107,8 @@ class PlanoExecucao(YamlAble):
                 cmd = acao.get_cmd_pos_execucao(
                     self.agrupamento, servidor_acesso)
 
-                imprimir_acao_corrente('Executando {}'.format(
-                    cmd.descricao), ocultar_progresso)
+                imprimir_acao_corrente(
+                    f'Executando {cmd.descricao}', ocultar_progresso)
 
                 status, resultado = cmd.executar(servidor_acesso)
 
@@ -147,8 +143,9 @@ class PlanoExecucao(YamlAble):
 
     def imprimir_resultado_execucao(self):
         if self.__msgs_erros:
-            print(formatar_msg_erro('\nErro ao executar algumas operações. Mais detalhes em {}.'
-                                    .format(PlanoExecucao.ARQUIVO_LOG_ERROS)))
+            print(formatar_msg_erro(
+                '\nErro ao executar algumas operações. '
+                f'Mais detalhes em {PlanoExecucao.ARQUIVO_LOG_ERROS}.'))
         else:
             print('\nSincronização executada com sucesso.')
 
@@ -157,24 +154,24 @@ class PlanoExecucao(YamlAble):
             for job in self.__jobs_em_execucao.values():
                 if job.is_finalizado_com_erro():
                     print(formatar_msg_erro(
-                        'Processo {} finalizado com erro.'.format(job.id_vmm)))
+                        f'Processo {job.id_vmm} finalizado com erro.'))
                     self.__logar_erros_acao(job.acao, job.resumo_erro)
 
     def __logar_erros_comando(self, comando, erro):
-        self.__msgs_erros += 'Erro no comando "{}":\n{}\n\n'.format(
-            comando, erro)
+        self.__msgs_erros += f'Erro no comando "{comando}":\n{erro}\n\n'
 
     def __logar_erros_acao(self, acao, erro):
-        self.__msgs_erros += 'Comando:\n{}\n\nErro capturado:\n{}\n\n'.format(
-            acao.get_str_impressao_inline(), erro)
+        self.__msgs_erros += f'Comando:\n{ acao.get_str_impressao_inline()}' \
+            f'\n\nErro capturado:\n{erro}\n\n'
 
     def __gerar_arquivo_erros(self):
         try:
             with open(PlanoExecucao.ARQUIVO_LOG_ERROS, 'w') as arquivo_erros:
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
-            print('Não foi possível gerar arquivo de erros ({}): {}'.format(
-                PlanoExecucao.ARQUIVO_LOG_ERROS, erro))
+            print(
+                f'Não foi possível gerar arquivo de erros ({PlanoExecucao.ARQUIVO_LOG_ERROS}): '
+                f'{erro}')
 
     def imprimir_acoes(self):
         for acao in self.acoes:
@@ -186,20 +183,18 @@ class PlanoExecucao(YamlAble):
                                                      and self.acoes == other.acoes)
 
     def __str__(self):
-        return '''
-            agrupamento: {}
-            nuvem: {}
-            acoes: {}
-            '''.format(self.agrupamento,
-                       self.nuvem,
-                       ','.join(str(acao) for acao in self.acoes))
+        return f'''
+            agrupamento: {self.agrupamento}
+            nuvem: {self.nuvem}
+            acoes: {','.join(str(acao) for acao in self.acoes)}
+            '''
 
     def __to_yaml_dict__(self):
         return {'agrupamento': self.agrupamento,
                 'nuvem': self.nuvem,
                 'acoes': self.acoes}
 
-    @classmethod
+    @ classmethod
     def __from_yaml_dict__(cls, dct, yaml_tag):
         plano_execucao = PlanoExecucao(dct['agrupamento'], dct['nuvem'])
         for acao_str in dct['acoes']:

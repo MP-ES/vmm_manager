@@ -2,7 +2,8 @@
 Testes do ParserLocal (casos que precisam dar erro)
 """
 from unittest import mock
-from random import randrange, randint
+from random import randrange, randint, choice
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.parser.parser_local import ParserLocal
 from tests.base import Base
 from tests.dados_teste import DadosTeste
@@ -40,8 +41,7 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'Imagem da VM {} não definida.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['nome']} não definida."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -65,8 +65,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' deve ter exatamente uma rede principal.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -93,8 +93,38 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' deve ter exatamente uma rede principal.'
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_vm_rede_duplicada(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        nome_rede = dados_teste.get_nome_unico()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'imagem_padrao': dados_teste.get_random_word(),
+             'qtde_cpu_padrao': randint(1, 64),
+             'qtde_ram_mb_padrao': randint(512, 524288),
+             'redes_padrao': [{
+                 'nome': nome_rede,
+                 'principal': num_iter == 0,
+             } for num_iter in range(randrange(2, Base.MAX_REDES_POR_VM))],
+             'vms': [{
+                 'nome': dados_teste.get_nome_unico()
+             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert msg == f"Rede '{nome_rede}' referenciada mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -162,8 +192,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
-            nome_grupo, inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Grupo ansible '{nome_grupo}' referenciado mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -201,10 +231,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == ("Variável '{}' do grupo ansible '{}' "
-                       .format(nome_var, nome_grupo) +
-                       "referenciada mais de uma vez na VM '{}'."
-                       .format(inventario[0][0]['vms'][0]['nome']))
+        assert msg == f"Variável '{nome_var}' do grupo ansible '{nome_grupo}' " \
+            f"referenciada mais de uma vez na VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -240,6 +268,43 @@ class TestParserLocalValidacao(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
+    def test_parser_inventario_disco_adicional_duplicado(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        arquivo = dados_teste.get_nome_unico()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'vms': [{
+                 'nome': dados_teste.get_nome_unico(),
+                 'discos_adicionais': [
+                     {
+                         'arquivo': arquivo,
+                         'tipo': choice([enum.value for enum in SCDiskBusType]),
+                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
+                     },
+                     {
+                         'arquivo': arquivo,
+                         'tipo': choice([enum.value for enum in SCDiskBusType]),
+                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
+                     }
+                 ]
+             }]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert msg == f"Disco '{arquivo}' referenciado mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
     def test_parser_inventario_nome_vm_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         nome_vm = dados_teste.get_nome_unico()
@@ -264,5 +329,5 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} referenciada mais de uma vez no inventário.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' referenciada mais de uma vez no inventário.'

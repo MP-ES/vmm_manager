@@ -7,15 +7,15 @@ from pytz import timezone
 
 
 def formatar_msg_aviso(msg):
-    return '\033[93m{}\033[0m'.format(msg)
+    return f'\033[93m{msg}\033[0m'
 
 
 def formatar_msg_erro(msg):
-    return '\033[91m{}\033[0m'.format(msg)
+    return f'\033[91m{msg}\033[0m'
 
 
 def finalizar_com_erro(msg_erro):
-    print(formatar_msg_erro('\nErro ao executar operação:\n{}'.format(msg_erro)))
+    print(formatar_msg_erro(f'\nErro ao executar operação:\n{msg_erro}'))
     sys.exit(1)
 
 

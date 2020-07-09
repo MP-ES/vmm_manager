@@ -31,7 +31,7 @@ class ParserRemoto:
         status, vms = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(
-                "Erro ao recuperar VM's do agrupamento: {}".format(vms))
+                f"Erro ao recuperar VM's do agrupamento: {vms}")
         return vms
 
     def __montar_inventario(self, servidor_acesso, filtro_nome_vm=None):

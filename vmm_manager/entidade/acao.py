@@ -60,8 +60,7 @@ class Acao(YamlAble):
     def get_cmd_pos_execucao(self, agrupamento, servidor_acesso):
         if self.is_criacao_vm():
             cmd = Comando('criar_vm_pos',
-                          descricao='tagueamento da VM {}'.format(
-                              self.args['nome']),
+                          descricao=f"tagueamento da VM { self.args['nome']}",
                           servidor_vmm=servidor_acesso.servidor_vmm,
                           campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                           campo_id=CAMPO_ID[0],
@@ -73,7 +72,7 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            'Ação "{}" não possui comando de pós-execução.'.format(self.nome_comando))
+            f'Ação "{self.nome_comando}" não possui comando de pós-execução.')
 
     def get_str_impressao_inline(self):
         return '{} - [{}]'.format(self.nome_comando,
@@ -86,11 +85,10 @@ class Acao(YamlAble):
                                             and self.args == other.args)
 
     def __str__(self):
-        return '''
-            nome_comando: {}
-            args: {}
-            '''.format(self.nome_comando,
-                       self.args)
+        return f'''
+            nome_comando: {self.nome_comando}
+            args: {self.args}
+            '''
 
     def __to_yaml_dict__(self):
         return {'nome_comando': self.nome_comando,

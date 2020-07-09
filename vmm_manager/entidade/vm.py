@@ -1,8 +1,9 @@
 """
 Representação de uma máquina virtual
 """
-from vmm_manager.scvmm.enums import VMStatusEnum
+from vmm_manager.scvmm.enums import VMStatusEnum, SCDiskBusType, SCDiskSizeType
 from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.entidade.vm_disco import VMDisco
 
 
 class VM:
@@ -22,7 +23,9 @@ class VM:
         self.id_vmm = id_vmm
         self.status = status
         self.no_regiao = no_regiao
+
         self.dados_ansible = {}
+        self.discos_adicionais = {}
 
     def extrair_dados_ansible_dict(self, dict_ansible):
         for item in dict_ansible or {}:
@@ -30,14 +33,32 @@ class VM:
 
             if grupo in self.dados_ansible:
                 raise ValueError(
-                    "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
-                        grupo, self.nome))
+                    f"Grupo ansible '{grupo}' "
+                    f"referenciado mais de uma vez para a VM '{self.nome}'.")
 
             ansible_grupo = VMAnsible(grupo)
             ansible_grupo.extrair_dados_vars_dict(
                 item.get('vars'), self.nome)
 
             self.dados_ansible[grupo] = ansible_grupo
+
+    def extrair_discos_adicionais_dict(self, dict_discos_adicionais):
+        for item in dict_discos_adicionais or {}:
+            arquivo = item.get('arquivo')
+
+            if arquivo in self.discos_adicionais:
+                raise ValueError(
+                    f"Disco '{arquivo}' referenciado mais de uma vez "
+                    f"para a VM '{self.nome}'.")
+
+            disco_adicional = VMDisco(
+                SCDiskBusType(item.get('tipo')),
+                item.get('arquivo'),
+                item.get('tamanho_mb'),
+                SCDiskSizeType(item.get('tamanho_tipo')),
+                item.get('caminho'))
+
+            self.discos_adicionais[arquivo] = disco_adicional
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -58,29 +79,20 @@ class VM:
                                           and self.status == other.status)
 
     def __repr__(self):
-        return '''
-                nome: {}
-                descricao: {}
-                imagem: {}
-                regiao: {}
-                qtde_cpu: {}
-                qtde_ram_mb: {}
-                redes: {}
-                id_vmm: {}
-                status: {}
-                no_regiao: {}
-                ansible: {}
-                '''.format(self.nome,
-                           self.descricao,
-                           self.imagem,
-                           self.regiao,
-                           self.qtde_cpu,
-                           self.qtde_ram_mb,
-                           self.redes,
-                           self.id_vmm,
-                           self.status,
-                           self.no_regiao,
-                           self.dados_ansible)
+        return f'''
+                nome: {self.nome}
+                descricao: {self.descricao}
+                imagem: {self.imagem}
+                regiao: {self.regiao}
+                qtde_cpu: {self.qtde_cpu}
+                qtde_ram_mb: {self.qtde_ram_mb}
+                redes: {self.redes}
+                id_vmm: {self.id_vmm}
+                status: {self.status}
+                no_regiao: {self.no_regiao}
+                ansible: {self.dados_ansible}
+                discos_adicionais: {self.discos_adicionais}
+                '''
 
     def to_dict(self):
         return {
@@ -95,5 +107,7 @@ class VM:
             'status': self.status.value,
             'no_regiao': self.no_regiao,
             'ansible': [self.dados_ansible[dados_ansible].to_dict()
-                        for dados_ansible in self.dados_ansible]
+                        for dados_ansible in self.dados_ansible],
+            'discos_adicionais': [self.discos_adicionais[disco_adicional].to_dict()
+                                  for disco_adicional in self.discos_adicionais]
         }

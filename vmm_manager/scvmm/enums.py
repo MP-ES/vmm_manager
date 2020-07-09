@@ -15,3 +15,13 @@ class SCJobStatusEnum(Enum):
     CANCELADO = 4
     SUCESSO = 5
     SUCESSO_COM_AVISO = 6
+
+
+class SCDiskBusType(Enum):
+    SCSI = 'SCSI'
+    IDE = 'IDE'
+
+
+class SCDiskSizeType(Enum):
+    FIXED = 'Fixed'
+    DYNAMIC = 'Dynamic'

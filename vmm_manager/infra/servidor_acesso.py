@@ -23,7 +23,7 @@ class ServidorAcesso:
 
     @staticmethod
     def __get_caminho_arquivo(nome):
-        return '{}/{}'.format(ServidorAcesso.__PASTA_TEMPORARIA, os.path.basename(nome))
+        return f'{ServidorAcesso.__PASTA_TEMPORARIA}/{os.path.basename(nome)}'
 
     def __init__(self, servidor, usuario, senha, servidor_vmm):
         self.servidor = servidor
@@ -40,8 +40,7 @@ class ServidorAcesso:
 
     def get_msg_erro_conexao(self):
         if self.__msg_erro_conexao:
-            return 'Não foi possível se conectar ao servidor de acesso. {}'.format(
-                self.__msg_erro_conexao)
+            return f'Não foi possível se conectar ao servidor de acesso. {self.__msg_erro_conexao}'
         return None
 
     def __is_conexao_ok(self):
@@ -61,10 +60,9 @@ class ServidorAcesso:
         except paramiko.AuthenticationException:
             self.__msg_erro_conexao = 'Usuário ou senha inválidos.'
         except paramiko.SSHException as ex:
-            self.__msg_erro_conexao = 'Erro ao estabelecer conexão SSH: {}'.format(
-                ex)
+            self.__msg_erro_conexao = f'Erro ao estabelecer conexão SSH: {ex}'
         except (socket.error, socket.timeout) as ex:
-            self.__msg_erro_conexao = 'Erro de socket: {}'.format(ex)
+            self.__msg_erro_conexao = f'Erro de socket: {ex}'
 
     def __executar_comando(self, cmd):
         if self.__is_conexao_ok():
@@ -76,15 +74,16 @@ class ServidorAcesso:
 
                 return True, stdout.read().decode(ServidorAcesso.__ENCODE_CMD)
             except paramiko.SSHException as ex:
-                return False, "Erro ao executar comando '{}': {}".format(cmd, ex)
+                return False, f"Erro ao executar comando '{cmd}': {ex}"
             except socket.error as ex:
-                return False, "Erro de socket ao executar '{}': {}".format(cmd, ex)
+                return False, f"Erro de socket ao executar '{cmd}': {ex}"
         else:
             return False, self.get_msg_erro_conexao()
 
     def __enviar_arquivo(self, nome_arquivo):
-        self.__executar_comando('if not exist "{}" mkdir "{}"'.format(
-            ServidorAcesso.__PASTA_TEMPORARIA, ServidorAcesso.__PASTA_TEMPORARIA))
+        self.__executar_comando(
+            f'if not exist "{ServidorAcesso.__PASTA_TEMPORARIA}" '
+            f'mkdir "{ServidorAcesso.__PASTA_TEMPORARIA}"')
 
         if self.__is_conexao_ok():
             self.conexao.open_sftp().put(nome_arquivo,
@@ -97,7 +96,7 @@ class ServidorAcesso:
             ServidorAcesso.__get_caminho_arquivo(nome).replace('/', '\\')))
 
     def get_caminho_lockfile(self, agrupamento, nuvem):
-        return self.__get_caminho_arquivo('{}-{}.lock'.format(agrupamento, nuvem))
+        return self.__get_caminho_arquivo(f'{agrupamento}-{nuvem}.lock')
 
     def executar_script(self, nome, conteudo):
         try:
@@ -111,8 +110,10 @@ class ServidorAcesso:
                 arquivo_script.flush()
 
                 self.__enviar_arquivo(arquivo_script.name)
-                resultado = self.__executar_comando('powershell.exe -file {}'.format(
-                    ServidorAcesso.__get_caminho_arquivo(arquivo_script.name)))
+                caminho_arquivo = ServidorAcesso.__get_caminho_arquivo(
+                    arquivo_script.name)
+                resultado = self.__executar_comando(
+                    f'powershell.exe -file {caminho_arquivo}')
                 self.__excluir_arquivo(arquivo_script.name)
 
                 return resultado
@@ -120,7 +121,7 @@ class ServidorAcesso:
             return False, self.get_msg_erro_conexao()
         # pylint: disable=broad-except
         except Exception as ex:
-            return False, 'Erro ao executar script: {}'.format(ex)
+            return False, f'Erro ao executar script: {ex}'
         finally:
             if arquivo_script:
                 arquivo_script.close()

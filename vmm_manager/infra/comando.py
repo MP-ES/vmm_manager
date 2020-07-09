@@ -23,8 +23,8 @@ class Comando:
             self.template = j2_env.get_template(
                 self.comando + Comando.__TEMPLATES_EXTENSAO)
         except exceptions.TemplateNotFound as ex:
-            print("Template '{}' não encontrado para o comando '{}'.".format(
-                ex, self.comando))
+            print(
+                f"Template '{ex}' não encontrado para o comando '{self.comando}'.")
             sys.exit(1)
 
     def imprimir(self):

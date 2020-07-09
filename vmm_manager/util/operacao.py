@@ -69,17 +69,12 @@ def adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
         dados_lock = json.loads(retorno_cmd)
         if not dados_lock.get('Sucesso'):
             status = False
-            retorno_cmd = ('O processo {}, '
-                           'iniciado em {} '
-                           'no servidor {}, '
-                           'já está manipulando o agrupamento {} '
-                           'na nuvem {}.').format(dados_lock.get('PIDProcesso'),
-                                                  dados_lock.get('DataLock'),
-                                                  dados_lock.get('HostLock'),
-                                                  dados_lock.get(
-                                                      'Agrupamento'),
-                                                  dados_lock.get('Nuvem')
-                                                  )
+            retorno_cmd = f"O processo {dados_lock.get('PIDProcesso')}, " \
+                f"iniciado em { dados_lock.get('DataLock')} " \
+                f"no servidor {dados_lock.get('HostLock')}, " \
+                f"já está manipulando o agrupamento {dados_lock.get('Agrupamento')} " \
+                f"na nuvem {dados_lock.get('Nuvem')}."
+
     validar_retorno_operacao_sem_lock(status, retorno_cmd, ocultar_progresso)
 
 

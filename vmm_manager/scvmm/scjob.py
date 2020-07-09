@@ -110,26 +110,16 @@ class SCJob():
         self.__processar_finalizacao_job()
 
     def __str__(self):
-        return '''
-            id_vmm: {}
-            acao: {}
-            nome: {}
-            status: {}
-            is_finalizado: {}
-            progresso: {}
-            is_sucesso: {}
-            codigo_erro: {}
-            msg_erro: {}
-            acao_recomendada: {}
-            resumo_erro: {}
-            '''.format(self.id_vmm,
-                       self.acao,
-                       self.nome,
-                       self.status,
-                       self.is_finalizado,
-                       self.progresso,
-                       self.__is_sucesso,
-                       self.__codigo_erro,
-                       self.__msg_erro,
-                       self.__acao_recomendada,
-                       self.resumo_erro)
+        return f'''
+            id_vmm: {self.id_vmm}
+            acao: {self.acao}
+            nome: {self.nome}
+            status: {self.status}
+            is_finalizado: {self.is_finalizado}
+            progresso: {self.progresso}
+            is_sucesso: {self.__is_sucesso}
+            codigo_erro: {self.__codigo_erro}
+            msg_erro: {self.__msg_erro}
+            acao_recomendada: {self.__acao_recomendada}
+            resumo_erro: {self.resumo_erro}
+            '''
