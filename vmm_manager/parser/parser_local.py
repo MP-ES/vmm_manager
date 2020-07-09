@@ -38,7 +38,7 @@ class ParserLocal:
             nome_vm = maquina_virtual.get('nome').upper()
             if nome_vm in nomes_vm:
                 raise ValueError(
-                    'VM {} referenciada mais de uma vez no inventário.'.format(nome_vm))
+                    f'VM {nome_vm} referenciada mais de uma vez no inventário.')
             nomes_vm.append(nome_vm)
 
             # filtrando vms: melhoria no desempenho
@@ -52,8 +52,7 @@ class ParserLocal:
 
                 if nome_rede in nomes_redes:
                     raise ValueError(
-                        "Rede '{}' referenciada mais de uma vez para a VM '{}'."
-                        .format(nome_rede, nome_vm))
+                        f"Rede '{nome_rede}' referenciada mais de uma vez para a VM '{nome_vm}'.")
 
                 nomes_redes.append(nome_rede)
                 vm_redes.append(

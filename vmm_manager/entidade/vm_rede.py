@@ -19,13 +19,11 @@ class VMRede:
                                               and self.principal == other.principal)
 
     def __repr__(self):
-        return '''
-                nome: {}
-                principal: {}
-                ips: {}
-                '''.format(self.nome,
-                           self.principal,
-                           self.ips)
+        return f'''
+                nome: {self.nome}
+                principal: {self.principal}
+                ips: {self.ips}
+                '''
 
     def to_dict(self):
         return {

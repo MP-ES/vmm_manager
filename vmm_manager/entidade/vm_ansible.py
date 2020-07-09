@@ -15,10 +15,8 @@ class VMAnsible:
 
             if nome_var in lista_nomes_var:
                 raise ValueError(
-                    ("Variável '{}' do grupo ansible '{}' "
-                     .format(nome_var, self.grupo) +
-                     "referenciada mais de uma vez na VM '{}'."
-                     .format(nome_vm)))
+                    (f"Variável '{nome_var}' do grupo ansible '{self.grupo}' "
+                     f"referenciada mais de uma vez na VM '{nome_vm}'."))
 
             lista_nomes_var.append(nome_var)
             ansible_var = VMAnsibleVars(
@@ -34,11 +32,10 @@ class VMAnsible:
                                                  and self.variaveis == other.variaveis)
 
     def __repr__(self):
-        return '''
-                grupo: {}
-                vars: {}
-                '''.format(self.grupo,
-                           self.variaveis)
+        return f'''
+                grupo: {self.grupo}
+                vars: {self.variaveis}
+                '''
 
     def to_dict(self):
         return {
@@ -57,11 +54,10 @@ class VMAnsibleVars:
                                                      and self.valor == other.valor)
 
     def __repr__(self):
-        return '''
-                nome: {}
-                valor: {}
-                '''.format(self.nome,
-                           self.valor)
+        return f'''
+                nome: {self.nome}
+                valor: {self.valor}
+                '''
 
     def to_dict(self):
         return {

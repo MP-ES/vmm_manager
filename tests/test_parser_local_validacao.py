@@ -41,8 +41,7 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'Imagem da VM {} não definida.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['nome']} não definida."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -66,8 +65,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' deve ter exatamente uma rede principal.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -94,8 +93,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} deve ter exatamente uma rede principal.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' deve ter exatamente uma rede principal.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -124,9 +123,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == "Rede '{}' referenciada mais de uma vez para a VM '{}'.".format(
-            nome_rede,
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Rede '{nome_rede}' referenciada mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -194,8 +192,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
-            nome_grupo, inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Grupo ansible '{nome_grupo}' referenciado mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -233,10 +231,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == ("Variável '{}' do grupo ansible '{}' "
-                       .format(nome_var, nome_grupo) +
-                       "referenciada mais de uma vez na VM '{}'."
-                       .format(inventario[0][0]['vms'][0]['nome']))
+        assert msg == f"Variável '{nome_var}' do grupo ansible '{nome_grupo}' " \
+            f"referenciada mais de uma vez na VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -304,8 +300,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == "Disco '{}' referenciado mais de uma vez para a VM '{}'.".format(
-            nome_arquivo, inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"Disco '{nome_arquivo}' referenciado mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -333,5 +329,5 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'VM {} referenciada mais de uma vez no inventário.'.format(
-            inventario[0][0]['vms'][0]['nome'])
+        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+            ' referenciada mais de uma vez no inventário.'

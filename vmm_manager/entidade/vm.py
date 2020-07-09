@@ -33,8 +33,8 @@ class VM:
 
             if grupo in self.dados_ansible:
                 raise ValueError(
-                    "Grupo ansible '{}' referenciado mais de uma vez para a VM '{}'.".format(
-                        grupo, self.nome))
+                    f"Grupo ansible '{grupo}' "
+                    f"referenciado mais de uma vez para a VM '{self.nome}'.")
 
             ansible_grupo = VMAnsible(grupo)
             ansible_grupo.extrair_dados_vars_dict(
@@ -48,8 +48,8 @@ class VM:
 
             if nome_arquivo in self.discos_adicionais:
                 raise ValueError(
-                    "Disco '{}' referenciado mais de uma vez para a VM '{}'.".format(
-                        nome_arquivo, self.nome))
+                    f"Disco '{nome_arquivo}' referenciado mais de uma vez "
+                    f"para a VM '{self.nome}'.")
 
             disco_adicional = VMDisco(
                 SCDiskBusType(item.get('tipo')),
@@ -79,31 +79,20 @@ class VM:
                                           and self.status == other.status)
 
     def __repr__(self):
-        return '''
-                nome: {}
-                descricao: {}
-                imagem: {}
-                regiao: {}
-                qtde_cpu: {}
-                qtde_ram_mb: {}
-                redes: {}
-                id_vmm: {}
-                status: {}
-                no_regiao: {}
-                ansible: {}
-                discos_adicionais: {}
-                '''.format(self.nome,
-                           self.descricao,
-                           self.imagem,
-                           self.regiao,
-                           self.qtde_cpu,
-                           self.qtde_ram_mb,
-                           self.redes,
-                           self.id_vmm,
-                           self.status,
-                           self.no_regiao,
-                           self.dados_ansible,
-                           self.discos_adicionais)
+        return f'''
+                nome: {self.nome}
+                descricao: {self.descricao}
+                imagem: {self.imagem}
+                regiao: {self.regiao}
+                qtde_cpu: {self.qtde_cpu}
+                qtde_ram_mb: {self.qtde_ram_mb}
+                redes: {self.redes}
+                id_vmm: {self.id_vmm}
+                status: {self.status}
+                no_regiao: {self.no_regiao}
+                ansible: {self.dados_ansible}
+                discos_adicionais: {self.discos_adicionais}
+                '''
 
     def to_dict(self):
         return {

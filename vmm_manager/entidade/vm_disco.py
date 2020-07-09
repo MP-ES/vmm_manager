@@ -22,17 +22,13 @@ class VMDisco:
                                                and self.caminho_arquivo == other.caminho_arquivo)
 
     def __repr__(self):
-        return '''
-                tipo: {}
-                nome_arquivo: {}
-                tamanho_mb: {}
-                tamanho_tipo: {}
-                caminho_arquivo: {}
-                '''.format(self.tipo,
-                           self.nome_arquivo,
-                           self.tamanho_mb,
-                           self.tamanho_tipo,
-                           self.caminho_arquivo)
+        return f'''
+                tipo: {self.tipo}
+                nome_arquivo: {self.nome_arquivo}
+                tamanho_mb: { self.tamanho_mb}
+                tamanho_tipo: { self.tamanho_tipo}
+                caminho_arquivo: {self.caminho_arquivo}
+                '''
 
     def to_dict(self):
         return {

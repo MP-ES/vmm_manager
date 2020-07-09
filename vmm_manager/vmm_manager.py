@@ -33,7 +33,7 @@ def parametro_arquivo_yaml(nome_arquivo):
         raise argparse.ArgumentTypeError(exc)
     except scanner.ScannerError as exc:
         raise argparse.ArgumentTypeError(
-            'YAML inválido: {}'.format(exc))
+            f'YAML inválido: {exc}')
 
 
 def parametro_booleano(valor):
@@ -41,14 +41,14 @@ def parametro_booleano(valor):
         return strtobool(valor)
     except ValueError:
         raise argparse.ArgumentTypeError(
-            "'{}' não é um valor booleano".format(valor))
+            f"'{valor}' não é um valor booleano")
 
 
 def parametro_alfanumerico_limitado(valor):
     regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$', re.IGNORECASE)
     if valor and not regex_alfa_num.match(valor):
         raise argparse.ArgumentTypeError(
-            "Parâmetro inválido: '{}'".format(valor))
+            f"Parâmetro inválido: '{valor}'")
     return valor
 
 
@@ -200,7 +200,7 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
     validar_retorno_operacao_sem_lock(status, opcoes, ocultar_progresso)
     regioes = re.search(r'regioes: ([0-9]{1,})', opcoes).group(1)
     str_regioes = '\n'.join(string.ascii_uppercase[0:int(regioes)])
-    opcoes = opcoes.replace('regioes: {}'.format(regioes), str_regioes)
+    opcoes = opcoes.replace(f'regioes: {regioes}', str_regioes)
     print('\n' + opcoes)
 
 
@@ -242,8 +242,9 @@ def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progress
         servidor_acesso, inventario_local, ocultar_progresso)
 
     if not plano_execucao.is_vazio():
-        imprimir_acao_corrente('Gerando arquivo {}'.format(
-            PlanoExecucao.ARQUIVO_PLANO_EXECUCAO), ocultar_progresso)
+        imprimir_acao_corrente(
+            f'Gerando arquivo {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}',
+            ocultar_progresso)
         status, conteudo_arquivo = plano_execucao.gerar_arquivo()
         validar_retorno_operacao_sem_lock(
             status, conteudo_arquivo, ocultar_progresso)
@@ -252,7 +253,7 @@ def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progress
                  inventario_local.nuvem, ocultar_progresso)
 
     if conteudo_arquivo:
-        print('\nAlterações a serem realizadas:\n{}'.format(conteudo_arquivo))
+        print(f'\nAlterações a serem realizadas:\n{conteudo_arquivo}')
     else:
         PlanoExecucao.excluir_arquivo()
         print(
@@ -331,10 +332,10 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
         if not pular_confirmacao:
             print('\nAs seguintes máquinas serão excluídas:')
             for maquina_virtual in inventario_remoto.vms.values():
-                print('ID_VMM: {}\tNome: {}\tStatus: {}'.format(
-                    maquina_virtual.id_vmm,
-                    maquina_virtual.nome,
-                    maquina_virtual.status))
+                print(
+                    f'ID_VMM: {maquina_virtual.id_vmm}\t'
+                    f'Nome: {maquina_virtual.nome}\t'
+                    f'Status: { maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
                 servidor_acesso, agrupamento, nuvem)
 
@@ -345,8 +346,8 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
         plano_execucao.imprimir_resultado_execucao()
     else:
         liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
-        print('\nNão há máquinas do agrupamento {} na nuvem {}: nada a fazer.'
-              .format(agrupamento, nuvem))
+        print(
+            f'\nNão há máquinas do agrupamento {agrupamento} na nuvem {nuvem}: nada a fazer.')
 
 
 def main():
