@@ -62,7 +62,7 @@ class TestParserLocal(Base):
                      'vars': [{
                          'nome': dados_teste.get_nome_unico(),
                          'valor': dados_teste.get_random_word()
-                         arquivo} for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
+                     } for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
                  } for _ in range(randrange(1, Base.MAX_ANSIBLE_ITERACAO))],
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
              },
