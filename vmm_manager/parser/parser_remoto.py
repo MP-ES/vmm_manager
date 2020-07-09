@@ -12,6 +12,12 @@ from vmm_manager.scvmm.enums import VMStatusEnum
 
 
 class ParserRemoto:
+    @staticmethod
+    def get_discos_adicionais(inventario):
+        from vmm_manager.entidade.vm_disco import VMDisco
+        from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+        return {'disco': VMDisco(SCDiskBusType.SCSI, 'teste', 1024, SCDiskSizeType.DYNAMIC)}
+
     def __init__(self, agrupamento, nuvem):
         self.agrupamento = agrupamento
         self.nuvem = nuvem
@@ -36,8 +42,10 @@ class ParserRemoto:
 
     def __montar_inventario(self, servidor_acesso, filtro_nome_vm=None):
         self.__inventario = Inventario(self.agrupamento, self.nuvem)
+
         vms_servidor = json.loads(
             self.__get_vms_servidor(servidor_acesso, filtro_nome_vm) or '{}')
+
         for maquina_virtual in vms_servidor:
             vms_rede = []
             for rede in maquina_virtual.get('Redes'):

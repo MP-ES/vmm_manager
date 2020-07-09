@@ -217,6 +217,11 @@ def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
         servidor_acesso, inventario_local.agrupamento,
         inventario_local.nuvem, ocultar_progresso, filtro_nome_vm=nome_vm)
 
+    # carregando discos adicionais
+    for vm_remota in inventario_remoto.vms:
+        inventario_remoto.vms[vm_remota].discos_adicionais = ParserRemoto.get_discos_adicionais(
+            inventario_remoto.vms[vm_remota])
+
     liberar_lock(servidor_acesso, inventario_local.agrupamento,
                  inventario_local.nuvem, ocultar_progresso)
 

@@ -32,9 +32,9 @@ class VMDisco:
 
     def to_dict(self):
         return {
-            'tipo': self.tipo,
+            'tipo': self.tipo.value,
             'arquivo': self.arquivo,
             'tamanho_mb': self.tamanho_mb,
-            'tamanho_tipo': self.tamanho_tipo,
+            'tamanho_tipo': self.tamanho_tipo.value,
             'caminho': self.caminho,
         }
