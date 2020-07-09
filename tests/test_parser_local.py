@@ -147,7 +147,7 @@ class TestParserLocal(Base):
                  'qtde_cpu': randint(1, 64),
                  'qtde_ram_mb': randint(512, 524288),
                  'redes': [{
-                     'nome': dados_teste.get_random_word(),
+                     'nome': dados_teste.get_nome_unico(),
                      'principal': num_iter == 0
                  } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
