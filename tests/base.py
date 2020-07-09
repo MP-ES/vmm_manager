@@ -67,14 +67,14 @@ class Base():
                 continue
 
             for item in maquina_virtual.get('discos_adicionais', {}):
-                nome_arquivo = item.get('nome_arquivo')
+                arquivo = item.get('arquivo')
                 disco_adicional = VMDisco(SCDiskBusType(item.get('tipo')),
-                                          nome_arquivo,
+                                          arquivo,
                                           item.get('tamanho_mb'),
                                           SCDiskSizeType(
                                               item.get('tamanho_tipo')),
-                                          item.get('caminho_arquivo'))
+                                          item.get('caminho'))
 
-                lista_discos_adicionais[nome_arquivo] = disco_adicional
+                lista_discos_adicionais[arquivo] = disco_adicional
 
         return lista_discos_adicionais

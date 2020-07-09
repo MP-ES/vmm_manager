@@ -270,7 +270,7 @@ class TestParserLocalValidacao(Base):
                 return_value=None)
     def test_parser_inventario_disco_adicional_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
-        nome_arquivo = dados_teste.get_nome_unico()
+        arquivo = dados_teste.get_nome_unico()
         inventario = [(
             {'agrupamento': dados_teste.get_random_word(),
              'nuvem': dados_teste.get_random_word(),
@@ -278,13 +278,13 @@ class TestParserLocalValidacao(Base):
                  'nome': dados_teste.get_nome_unico(),
                  'discos_adicionais': [
                      {
-                         'nome_arquivo': nome_arquivo,
+                         'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
                          'tamanho_mb': randint(1, 1073741824),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
-                         'nome_arquivo': nome_arquivo,
+                         'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
                          'tamanho_mb': randint(1, 1073741824),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
@@ -300,7 +300,7 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Disco '{nome_arquivo}' referenciado mais de uma vez " \
+        assert msg == f"Disco '{arquivo}' referenciado mais de uma vez " \
             f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',

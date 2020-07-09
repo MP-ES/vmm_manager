@@ -4,37 +4,37 @@ Representação de um disco adicional uma máquina virtual
 
 
 class VMDisco:
-    def __init__(self, tipo, nome_arquivo, tamanho_mb, tamanho_tipo, caminho_arquivo=None):
+    def __init__(self, tipo, arquivo, tamanho_mb, tamanho_tipo, caminho=None):
         self.tipo = tipo
-        self.nome_arquivo = nome_arquivo
+        self.arquivo = arquivo
         self.tamanho_mb = tamanho_mb
         self.tamanho_tipo = tamanho_tipo
-        self.caminho_arquivo = caminho_arquivo
+        self.caminho = caminho
 
     def __hash__(self):
-        return hash(self.nome_arquivo)
+        return hash(self.arquivo)
 
     def __eq__(self, other):
         return isinstance(other, VMDisco) and (self.tipo == other.tipo
-                                               and self.nome_arquivo == other.nome_arquivo
+                                               and self.arquivo == other.arquivo
                                                and self.tamanho_mb == other.tamanho_mb
                                                and self.tamanho_tipo == other.tamanho_tipo
-                                               and self.caminho_arquivo == other.caminho_arquivo)
+                                               and self.caminho == other.caminho)
 
     def __repr__(self):
         return f'''
                 tipo: {self.tipo}
-                nome_arquivo: {self.nome_arquivo}
+                arquivo: {self.arquivo}
                 tamanho_mb: { self.tamanho_mb}
                 tamanho_tipo: { self.tamanho_tipo}
-                caminho_arquivo: {self.caminho_arquivo}
+                caminho: {self.caminho}
                 '''
 
     def to_dict(self):
         return {
             'tipo': self.tipo,
-            'nome_arquivo': self.nome_arquivo,
+            'arquivo': self.arquivo,
             'tamanho_mb': self.tamanho_mb,
             'tamanho_tipo': self.tamanho_tipo,
-            'caminho_arquivo': self.caminho_arquivo,
+            'caminho': self.caminho,
         }

@@ -44,21 +44,21 @@ class VM:
 
     def extrair_discos_adicionais_dict(self, dict_discos_adicionais):
         for item in dict_discos_adicionais or {}:
-            nome_arquivo = item.get('nome_arquivo')
+            arquivo = item.get('arquivo')
 
-            if nome_arquivo in self.discos_adicionais:
+            if arquivo in self.discos_adicionais:
                 raise ValueError(
-                    f"Disco '{nome_arquivo}' referenciado mais de uma vez "
+                    f"Disco '{arquivo}' referenciado mais de uma vez "
                     f"para a VM '{self.nome}'.")
 
             disco_adicional = VMDisco(
                 SCDiskBusType(item.get('tipo')),
-                item.get('nome_arquivo'),
+                item.get('arquivo'),
                 item.get('tamanho_mb'),
                 SCDiskSizeType(item.get('tamanho_tipo')),
-                item.get('caminho_arquivo'))
+                item.get('caminho'))
 
-            self.discos_adicionais[nome_arquivo] = disco_adicional
+            self.discos_adicionais[arquivo] = disco_adicional
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])

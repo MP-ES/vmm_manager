@@ -23,8 +23,8 @@ rede:
 
 disco_adicional:
   tipo: enum("IDE", "SCSI", required=True)
-  nome_arquivo: str(min=3, required=True)
-  caminho_arquivo: str(min=3, required=False)
+  arquivo: str(min=3, required=True)
+  caminho: str(min=3, required=False)
   tamanho_mb: int(min=1, max=1073741824, required=True)
   tamanho_tipo: enum("Fixed", "Dynamic", required=True)  
 

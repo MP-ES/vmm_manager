@@ -16,8 +16,8 @@ vms:
     regiao: A
     discos_adicionais:
       - tipo: SCSI
-        nome_arquivo: "disk_var_dir"
-        caminho_arquivo: "C:\\Storage\\disk1"
+        arquivo: "disk_var_dir"
+        caminho: "C:\\Storage\\disk1"
         tamanho_mb: 1024
         tamanho_tipo: Dynamic
   - nome: VMM_TEST2

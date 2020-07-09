@@ -62,7 +62,7 @@ class TestParserLocal(Base):
                      'vars': [{
                          'nome': dados_teste.get_nome_unico(),
                          'valor': dados_teste.get_random_word()
-                     } for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
+                         arquivo} for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
                  } for _ in range(randrange(1, Base.MAX_ANSIBLE_ITERACAO))],
              } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
              },
@@ -104,7 +104,7 @@ class TestParserLocal(Base):
              'vms': [{
                  'nome': dados_teste.get_nome_unico(),
                  'discos_adicionais': [{
-                     'nome_arquivo': dados_teste.get_nome_unico(),
+                     'arquivo': dados_teste.get_nome_unico(),
                      'tipo': choice([enum.value for enum in SCDiskBusType]),
                      'tamanho_mb': randint(1, 1073741824),
                      'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
@@ -130,8 +130,8 @@ class TestParserLocal(Base):
                 inventario, nome_vm)
 
             assert not discos_adicionais_vm.keys() - discos_adicionais_ok.keys()
-            for nome_arquivo in discos_adicionais_vm:
-                assert discos_adicionais_vm[nome_arquivo] == discos_adicionais_ok[nome_arquivo]
+            for arquivo in discos_adicionais_vm:
+                assert discos_adicionais_vm[arquivo] == discos_adicionais_ok[arquivo]
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
