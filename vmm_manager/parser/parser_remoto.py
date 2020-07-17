@@ -9,15 +9,11 @@ from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import VMStatusEnum
+# from vmm_manager.entidade.vm_disco import VMDisco
+# from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class ParserRemoto:
-    @staticmethod
-    def get_discos_adicionais(inventario):
-        from vmm_manager.entidade.vm_disco import VMDisco
-        from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-        return {'disco': VMDisco(SCDiskBusType.SCSI, 'teste', 1024, SCDiskSizeType.DYNAMIC)}
-
     def __init__(self, agrupamento, nuvem):
         self.agrupamento = agrupamento
         self.nuvem = nuvem
@@ -40,7 +36,22 @@ class ParserRemoto:
                 f"Erro ao recuperar VM's do agrupamento: {vms}")
         return vms
 
-    def __montar_inventario(self, servidor_acesso, filtro_nome_vm=None):
+    def __get_discos_adicionais(self, servidor_acesso):
+        cmd = Comando('obter_discos_adicionais',
+                      servidor_vmm=servidor_acesso.servidor_vmm,
+                      vms=self.__inventario.vms.keys())
+        status, discos_adicionais = cmd.executar(servidor_acesso)
+        if not status:
+            raise Exception(
+                f'Erro ao recuperar discos adicionais: {discos_adicionais}')
+
+        # return {'VMM_TESTE1':
+        #  [VMDisco(SCDiskBusType.SCSI, 'teste_vmm1', 1024, SCDiskSizeType.DYNAMIC)],
+        #  'VMM_TESTE3': [VMDisco(SCDiskBusType.SCSI, 'disco1', 2048, SCDiskSizeType.DYNAMIC),
+        #                        VMDisco(SCDiskBusType.IDE, 'disco2', 1024, SCDiskSizeType.FIXED)]}
+
+    def __montar_inventario(self, servidor_acesso,
+                            filtro_nome_vm=None, filtro_dados_completos=True):
         self.__inventario = Inventario(self.agrupamento, self.nuvem)
 
         vms_servidor = json.loads(
@@ -66,10 +77,17 @@ class ParserRemoto:
                 maquina_virtual.get('NoRegiao'),
             )
 
-    def get_inventario(self, servidor_acesso, filtro_nome_vm=None):
+        # Obtendo dados adicionais
+        if filtro_dados_completos:
+            # discos
+            self.__inventario.set_discos_vms(
+                self.__get_discos_adicionais(servidor_acesso))
+
+    def get_inventario(self, servidor_acesso, filtro_nome_vm=None, filtro_dados_completos=True):
         if not self.__inventario:
             try:
-                self.__montar_inventario(servidor_acesso, filtro_nome_vm)
+                self.__montar_inventario(
+                    servidor_acesso, filtro_nome_vm, filtro_dados_completos)
             # pylint: disable=broad-except
             except Exception as ex:
                 return False, str(ex)
