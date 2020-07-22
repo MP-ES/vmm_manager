@@ -17,7 +17,7 @@ def json_handle_inventario(obj):
 class Inventario:
     REGIAO_PADRAO = 'default'
 
-    @ staticmethod
+    @staticmethod
     def get_json(inventario_local, inventario_remoto, dados_completos=True):
         for nome_vm in inventario_remoto.vms:
             if nome_vm not in inventario_local.vms:
