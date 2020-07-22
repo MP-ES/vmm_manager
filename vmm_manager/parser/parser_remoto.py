@@ -9,8 +9,8 @@ from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import VMStatusEnum
-# from vmm_manager.entidade.vm_disco import VMDisco
-# from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+from vmm_manager.entidade.vm_disco import VMDisco
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class ParserRemoto:
@@ -39,16 +39,40 @@ class ParserRemoto:
     def __get_discos_adicionais(self, servidor_acesso):
         cmd = Comando('obter_discos_adicionais',
                       servidor_vmm=servidor_acesso.servidor_vmm,
-                      vms=self.__inventario.vms.keys())
+                      campo_agrupamento=CAMPO_AGRUPAMENTO[0],
+                      campo_id=CAMPO_ID[0],
+                      agrupamento=self.agrupamento,
+                      nuvem=self.nuvem,
+                      vm_nomes=','.join([f'"{nome_vm}"' for nome_vm in self.__inventario.vms]))
         status, discos_adicionais = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(
                 f'Erro ao recuperar discos adicionais: {discos_adicionais}')
 
-        # return {'VMM_TESTE1':
-        #  [VMDisco(SCDiskBusType.SCSI, 'teste_vmm1', 1024, SCDiskSizeType.DYNAMIC)],
-        #  'VMM_TESTE3': [VMDisco(SCDiskBusType.SCSI, 'disco1', 2048, SCDiskSizeType.DYNAMIC),
-        #                        VMDisco(SCDiskBusType.IDE, 'disco2', 1024, SCDiskSizeType.FIXED)]}
+        discos_vms_remoto = json.loads(discos_adicionais)
+        discos_vms = {}
+        for maquina_virtual in discos_vms_remoto:
+            nome_vm = maquina_virtual.get('Nome')
+            discos_vms[nome_vm] = []
+
+            for disco_remoto in maquina_virtual.get('Discos'):
+                disco = VMDisco(
+                    SCDiskBusType(disco_remoto.get('Tipo')),
+                    disco_remoto.get('Arquivo'),
+                    disco_remoto.get('TamanhoMB'),
+                    SCDiskSizeType(disco_remoto.get('TamanhoTipo')),
+                    disco_remoto.get('Caminho'))
+
+                disco.set_parametros_extras_vmm(
+                    disco_remoto.get('IDDrive'),
+                    disco_remoto.get('IDDisco'),
+                    disco_remoto.get('Bus'),
+                    disco_remoto.get('Lun'),
+                )
+
+                discos_vms[nome_vm].append(disco)
+
+        return discos_vms
 
     def __montar_inventario(self, servidor_acesso,
                             filtro_nome_vm=None, filtro_dados_completos=True):

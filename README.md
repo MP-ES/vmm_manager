@@ -55,7 +55,7 @@ vms:
         arquivo: "disk_var_dir"
         caminho: "C:\\Storage\\disk1"
         tamanho_mb: 1024
-        tamanho_tipo: Dynamic
+        tamanho_tipo: DynamicallyExpanding
   - nome: VMM_TEST2
     regiao: B
     ansible:

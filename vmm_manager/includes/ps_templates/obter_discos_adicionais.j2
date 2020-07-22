@@ -1,0 +1,44 @@
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
+$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$nomes_vm_desejados = @({{ vm_nomes }})
+$vms_agrupamento = @()
+
+foreach($vm in $vms_nuvem) {
+  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+    $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id
+
+    # checando se está na lista de nomes
+    if (-not $nomes_vm_desejados -contains $nome_id.Value){Continue}
+
+    $discos = @()
+    foreach($drive in $vm.VirtualDiskDrives) {
+      # pulando disco principal
+      if ($drive.Bus -eq 0 -and $drive.Lun -eq 0 -and $drive.VolumeType -eq 3){Continue}
+
+      $disco = [PSCustomObject]@{
+      IDDrive = $drive.ID
+      IDDisco = $drive.VirtualHardDiskId
+      Tipo = $drive.BusType.ToString()
+      Arquivo = $drive.VirtualHardDisk.Name
+      TamanhoMB = ($drive.VirtualHardDisk.MaximumSize / 1048576)
+      TamanhoTipo = $drive.VirtualHardDisk.VHDType.ToString()
+      Caminho = $drive.VirtualHardDisk.Directory
+      Bus = $drive.Bus
+      Lun = $drive.Lun
+      }
+      $discos += $disco
+    }
+ 
+    $vm_agrupamento = [PSCustomObject]@{
+      ID = $vm.ID
+      Nome = if ($nome_id.Value -ne $null) { $nome_id.Value } else { $vm.ID }
+      Discos = $discos
+    }
+    $vms_agrupamento += $vm_agrupamento
+  }
+}
+
+ConvertTo-Json -Depth 3 $vms_agrupamento
