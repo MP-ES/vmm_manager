@@ -23,5 +23,5 @@ class SCDiskBusType(Enum):
 
 
 class SCDiskSizeType(Enum):
-    FIXED = 'Fixed'
-    DYNAMIC = 'Dynamic'
+    FIXED = 'FixedSize'
+    DYNAMIC = 'DynamicallyExpanding'

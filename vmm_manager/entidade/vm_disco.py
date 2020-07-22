@@ -11,6 +11,17 @@ class VMDisco:
         self.tamanho_tipo = tamanho_tipo
         self.caminho = caminho
 
+        self.__id_drive = None
+        self.__id_disco = None
+        self.__bus = None
+        self.__lun = None
+
+    def set_parametros_extras_vmm(self, id_drive, id_disco, bus, lun):
+        self.__id_drive = id_drive
+        self.__id_disco = id_disco
+        self.__bus = bus
+        self.__lun = lun
+
     def __hash__(self):
         return hash(self.arquivo)
 
@@ -28,13 +39,21 @@ class VMDisco:
                 tamanho_mb: { self.tamanho_mb}
                 tamanho_tipo: { self.tamanho_tipo}
                 caminho: {self.caminho}
+                id_drive: {self.__id_drive}
+                id_disco: {self.__id_disco}
+                bus: {self.__bus}
+                lun: {self.__lun}
                 '''
 
     def to_dict(self):
         return {
-            'tipo': self.tipo,
+            'tipo': self.tipo.value,
             'arquivo': self.arquivo,
             'tamanho_mb': self.tamanho_mb,
-            'tamanho_tipo': self.tamanho_tipo,
+            'tamanho_tipo': self.tamanho_tipo.value,
             'caminho': self.caminho,
+            'id_drive': self.__id_drive,
+            'id_disco': self.__id_disco,
+            'bus': self.__bus,
+            'lun': self.__lun
         }

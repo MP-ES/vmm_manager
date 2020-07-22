@@ -126,17 +126,21 @@ def get_parser():
                       help='Nome da máquina virtual', default='',
                       dest='nome_vm', required=False,
                       type=parametro_alfanumerico_limitado)
+    show.add_argument('--dados-completos',
+                      help='Se for True, exibe todos os dados da VM',
+                      dest='dados_completos', env_var='VMM_DADOS_COMPLETOS',
+                      required=False, type=parametro_booleano)
 
     return parser
 
 
-def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem,
-                            ocultar_progresso, filtro_nome_vm=None):
+def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progresso,
+                            filtro_nome_vm=None, filtro_dados_completos=True):
     imprimir_acao_corrente('Obtendo inventário remoto', ocultar_progresso)
 
     parser_remoto = ParserRemoto(agrupamento, nuvem)
     status, inventario_remoto = parser_remoto.get_inventario(
-        servidor_acesso, filtro_nome_vm)
+        servidor_acesso, filtro_nome_vm, filtro_dados_completos)
     validar_retorno_operacao_com_lock(status, inventario_remoto,
                                       servidor_acesso, agrupamento,
                                       nuvem, ocultar_progresso)
@@ -144,13 +148,13 @@ def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem,
     return inventario_remoto
 
 
-def obter_inventario_local(servidor_acesso, arquivo_inventario,
-                           ocultar_progresso, filtro_nome_vm=None):
+def obter_inventario_local(servidor_acesso, arquivo_inventario, ocultar_progresso,
+                           filtro_nome_vm=None, filtro_dados_completos=True):
     imprimir_acao_corrente('Obtendo inventário local', ocultar_progresso)
 
     parser_local = ParserLocal(arquivo_inventario)
     status, inventario_local = parser_local.get_inventario(
-        servidor_acesso, filtro_nome_vm)
+        servidor_acesso, filtro_nome_vm, filtro_dados_completos)
     validar_retorno_operacao_sem_lock(
         status, inventario_local, ocultar_progresso)
 
@@ -205,24 +209,26 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
 
 
 def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
-                             nome_vm, ocultar_progresso):
+                             nome_vm, dados_completos, ocultar_progresso):
     configurar_vmm(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
-        servidor_acesso, arquivo_inventario, ocultar_progresso, filtro_nome_vm=nome_vm)
+        servidor_acesso, arquivo_inventario, ocultar_progresso,
+        filtro_nome_vm=nome_vm, filtro_dados_completos=dados_completos)
 
     adquirir_lock(servidor_acesso, inventario_local.agrupamento,
                   inventario_local.nuvem, ocultar_progresso)
 
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, inventario_local.agrupamento,
-        inventario_local.nuvem, ocultar_progresso, filtro_nome_vm=nome_vm)
+        inventario_local.nuvem, ocultar_progresso,
+        filtro_nome_vm=nome_vm, filtro_dados_completos=dados_completos)
 
     liberar_lock(servidor_acesso, inventario_local.agrupamento,
                  inventario_local.nuvem, ocultar_progresso)
 
     imprimir_acao_corrente('Gerando JSON', ocultar_progresso)
     status, json_inventario = Inventario.get_json(
-        inventario_local, inventario_remoto)
+        inventario_local, inventario_remoto, dados_completos)
     validar_retorno_operacao_sem_lock(
         status, json_inventario, ocultar_progresso)
     print(json_inventario)
@@ -377,4 +383,5 @@ def main():
     elif args.comando == 'show':
         imprimir_json_inventario(
             servidor_acesso, args.arquivo_inventario,
-            args.nome_vm.upper(), args.ocultar_progresso)
+            args.nome_vm.upper(), args.dados_completos,
+            args.ocultar_progresso)

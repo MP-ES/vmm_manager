@@ -1,9 +1,8 @@
 """
 Representação de uma máquina virtual
 """
-from vmm_manager.scvmm.enums import VMStatusEnum, SCDiskBusType, SCDiskSizeType
+from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
-from vmm_manager.entidade.vm_disco import VMDisco
 
 
 class VM:
@@ -26,6 +25,7 @@ class VM:
 
         self.dados_ansible = {}
         self.discos_adicionais = {}
+        self.to_json_dados_completos = True
 
     def extrair_dados_ansible_dict(self, dict_ansible):
         for item in dict_ansible or {}:
@@ -42,23 +42,9 @@ class VM:
 
             self.dados_ansible[grupo] = ansible_grupo
 
-    def extrair_discos_adicionais_dict(self, dict_discos_adicionais):
-        for item in dict_discos_adicionais or {}:
-            arquivo = item.get('arquivo')
-
-            if arquivo in self.discos_adicionais:
-                raise ValueError(
-                    f"Disco '{arquivo}' referenciado mais de uma vez "
-                    f"para a VM '{self.nome}'.")
-
-            disco_adicional = VMDisco(
-                SCDiskBusType(item.get('tipo')),
-                item.get('arquivo'),
-                item.get('tamanho_mb'),
-                SCDiskSizeType(item.get('tamanho_tipo')),
-                item.get('caminho'))
-
-            self.discos_adicionais[arquivo] = disco_adicional
+    def add_discos_adicionais(self, discos_adicionais):
+        for disco_adicional in discos_adicionais:
+            self.discos_adicionais[disco_adicional.arquivo] = disco_adicional
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -95,7 +81,7 @@ class VM:
                 '''
 
     def to_dict(self):
-        return {
+        dict_objeto = {
             'nome': self.nome,
             'descricao': self.descricao,
             'imagem': self.imagem,
@@ -107,7 +93,11 @@ class VM:
             'status': self.status.value,
             'no_regiao': self.no_regiao,
             'ansible': [self.dados_ansible[dados_ansible].to_dict()
-                        for dados_ansible in self.dados_ansible],
-            'discos_adicionais': [self.discos_adicionais[disco_adicional].to_dict()
-                                  for disco_adicional in self.discos_adicionais]
+                        for dados_ansible in self.dados_ansible]
         }
+
+        if self.to_json_dados_completos:
+            dict_objeto['discos_adicionais'] = [self.discos_adicionais[disco_adicional].to_dict()
+                                                for disco_adicional in self.discos_adicionais]
+
+        return dict_objeto

@@ -18,7 +18,7 @@ class Inventario:
     REGIAO_PADRAO = 'default'
 
     @staticmethod
-    def get_json(inventario_local, inventario_remoto):
+    def get_json(inventario_local, inventario_remoto, dados_completos=True):
         for nome_vm in inventario_remoto.vms:
             if nome_vm not in inventario_local.vms:
                 # máquina órfã: não exibir
@@ -26,6 +26,9 @@ class Inventario:
 
             inventario_remoto.vms[nome_vm].dados_ansible = \
                 inventario_local.vms[nome_vm].dados_ansible
+
+            # definindo tipo de impressão
+            inventario_remoto.vms[nome_vm].to_json_dados_completos = dados_completos
 
         return True, json.dumps(inventario_remoto,
                                 default=json_handle_inventario,
@@ -112,6 +115,10 @@ class Inventario:
         _, msg = cmd.executar(servidor_acesso)
         if msg:
             raise ValueError(msg)
+
+    def set_discos_vms(self, discos_adicionais):
+        for nome_vm in discos_adicionais:
+            self.vms[nome_vm].add_discos_adicionais(discos_adicionais[nome_vm])
 
     def __add_acoes_criar_vms(self, inventario_remoto, plano_execucao):
         vms_inserir = [
