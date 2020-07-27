@@ -105,7 +105,8 @@ class TestParserLocal(Base):
                  'nome': dados_teste.get_nome_unico(),
                  'discos_adicionais': [{
                      'arquivo': dados_teste.get_nome_unico(),
-                     'tipo': choice([enum.value for enum in SCDiskBusType]),
+                     'tipo': choice([enum.value for enum in SCDiskBusType
+                                     if enum != SCDiskBusType.IDE]),
                      'tamanho_mb': randint(1, 1073741824),
                      'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                  } for _ in range(randrange(1, Base.MAX_DISCOS_POR_VM))],

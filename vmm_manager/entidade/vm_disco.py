@@ -1,6 +1,7 @@
 """
 Representação de um disco adicional uma máquina virtual
 """
+from vmm_manager.scvmm.enums import SCDiskBusType
 
 
 class VMDisco:
@@ -15,6 +16,13 @@ class VMDisco:
         self.__id_disco = None
         self.__bus = None
         self.__lun = None
+
+        self.__validacao_inicial()
+
+    def __validacao_inicial(self):
+        if self.tipo == SCDiskBusType.IDE:
+            raise NotImplementedError(
+                'Tipo de disco IDE ainda não é suportado.')
 
     def set_parametros_extras_vmm(self, id_drive, id_disco, bus, lun):
         self.__id_drive = id_drive
