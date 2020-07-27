@@ -61,9 +61,7 @@ class Inventario:
         for maquina_virtual in self.vms.values():
             plano_execucao.acoes.append(
                 Acao('excluir_vm',
-                     id_vmm=maquina_virtual.id_vmm,
-                     nome=maquina_virtual.nome
-                     )
+                     id_vmm=maquina_virtual.id_vmm)
             )
 
         return plano_execucao
