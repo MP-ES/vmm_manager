@@ -105,8 +105,7 @@ class TestParserLocal(Base):
                  'nome': dados_teste.get_nome_unico(),
                  'discos_adicionais': [{
                      'arquivo': dados_teste.get_nome_unico(),
-                     'tipo': choice([enum.value for enum in SCDiskBusType
-                                     if enum != SCDiskBusType.IDE]),
+                     'tipo': choice([enum.value for enum in SCDiskBusType]),
                      'tamanho_mb': randint(1, 1073741824),
                      'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                  } for _ in range(randrange(1, Base.MAX_DISCOS_POR_VM))],
@@ -134,8 +133,8 @@ class TestParserLocal(Base):
             for arquivo in discos_adicionais_vm:
                 assert discos_adicionais_vm[arquivo] == discos_adicionais_ok[arquivo]
 
-    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
-                return_value=None)
+    @ mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                 return_value=None)
     def test_parser_inventario_min_sem_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(

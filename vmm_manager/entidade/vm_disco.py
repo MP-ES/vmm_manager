@@ -17,13 +17,6 @@ class VMDisco:
         self.__bus = None
         self.__lun = None
 
-        self.__validacao_inicial()
-
-    def __validacao_inicial(self):
-        if self.tipo == SCDiskBusType.IDE:
-            raise NotImplementedError(
-                'Tipo de disco IDE ainda não é suportado.')
-
     def set_parametros_extras_vmm(self, id_drive, id_disco, bus, lun):
         self.__id_drive = id_drive
         self.__id_disco = id_disco

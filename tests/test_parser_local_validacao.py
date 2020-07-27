@@ -279,15 +279,13 @@ class TestParserLocalValidacao(Base):
                  'discos_adicionais': [
                      {
                          'arquivo': arquivo,
-                         'tipo': choice([enum.value for enum in SCDiskBusType
-                                         if enum != SCDiskBusType.IDE]),
+                         'tipo': choice([enum.value for enum in SCDiskBusType]),
                          'tamanho_mb': randint(1, 1073741824),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
                          'arquivo': arquivo,
-                         'tipo': choice([enum.value for enum in SCDiskBusType
-                                         if enum != SCDiskBusType.IDE]),
+                         'tipo': choice([enum.value for enum in SCDiskBusType]),
                          'tamanho_mb': randint(1, 1073741824),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      }
