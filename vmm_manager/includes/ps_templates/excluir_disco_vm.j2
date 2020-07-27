@@ -1,0 +1,10 @@
+$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
+$Drive = $VM | Get-SCVirtualDiskDrive | where {$_.ID -eq "{{ id_drive }}"}
+
+Remove-SCVirtualDiskDrive -VirtualDiskDrive $Drive -JobVariable "job" -RunAsynchronously | Out-Null
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+    Guid = $job.ID
+}
+ConvertTo-Json -Depth 3 $Resultado

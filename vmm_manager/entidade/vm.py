@@ -3,6 +3,7 @@ Representação de uma máquina virtual
 """
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.entidade.acao import Acao
 
 
 class VM:
@@ -45,6 +46,32 @@ class VM:
     def add_discos_adicionais(self, discos_adicionais):
         for disco_adicional in discos_adicionais:
             self.discos_adicionais[disco_adicional.arquivo] = disco_adicional
+
+    def add_acoes_diferenca_discos_adicionais(self, vm_remota, plano_execucao):
+        # discos a excluir
+        if vm_remota:
+            discos_excluir = [
+                nome_disco_remoto for nome_disco_remoto in vm_remota.discos_adicionais
+                if nome_disco_remoto not in self.discos_adicionais
+            ]
+            for nome_disco in discos_excluir:
+                plano_execucao.acoes.append(
+                    Acao('excluir_disco_vm',
+                         id_vm=vm_remota.id_vmm,
+                         id_drive=vm_remota.discos_adicionais[nome_disco].get_id_drive())
+                )
+
+        # verificando discos atuais
+        for nome_disco in self.discos_adicionais:
+            # discos a criar
+            if not vm_remota or not nome_disco in vm_remota.discos_adicionais:
+                pass
+                # plano_execucao.acoes.append(
+                #     Acao('criar_disco_vm',
+                #          arquivo=self.discos_adicionais[nome_disco].arquivo)
+                # )
+            else:
+                pass
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])

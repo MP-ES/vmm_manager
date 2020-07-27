@@ -50,6 +50,8 @@ class Inventario:
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(
             inventario_remoto, plano_execucao)
+        self.__add_acoes_diferenca_discos_adicionais(
+            inventario_remoto, plano_execucao)
 
         return True, plano_execucao
 
@@ -59,7 +61,8 @@ class Inventario:
         for maquina_virtual in self.vms.values():
             plano_execucao.acoes.append(
                 Acao('excluir_vm',
-                     id_vmm=maquina_virtual.id_vmm
+                     id_vmm=maquina_virtual.id_vmm,
+                     nome=maquina_virtual.nome
                      )
             )
 
@@ -150,6 +153,12 @@ class Inventario:
                      id_vmm=inventario_remoto.vms[nome_vm].id_vmm
                      )
             )
+
+    def __add_acoes_diferenca_discos_adicionais(self, inventario_remoto, plano_execucao):
+        for nome_vm in self.vms:
+            self.vms[nome_vm].add_acoes_diferenca_discos_adicionais(
+                inventario_remoto.vms.get(nome_vm, None),
+                plano_execucao)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento
