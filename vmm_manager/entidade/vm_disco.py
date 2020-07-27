@@ -1,7 +1,6 @@
 """
 Representação de um disco adicional uma máquina virtual
 """
-from vmm_manager.scvmm.enums import SCDiskBusType
 
 
 class VMDisco:
