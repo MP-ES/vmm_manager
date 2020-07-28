@@ -65,12 +65,18 @@ class VM:
         for nome_disco in self.discos_adicionais:
             # discos a criar
             if not vm_remota or not nome_disco in vm_remota.discos_adicionais:
-                pass
-                # plano_execucao.acoes.append(
-                #     Acao('criar_disco_vm',
-                #          arquivo=self.discos_adicionais[nome_disco].arquivo)
-                # )
+                plano_execucao.acoes.append(
+                    Acao('criar_disco_vm',
+                         id_vm=vm_remota.id_vmm,
+                         tipo=self.discos_adicionais[nome_disco].tipo.value,
+                         tamanho_mb=self.discos_adicionais[nome_disco].tamanho_mb,
+                         tamanho_tipo=self.discos_adicionais[nome_disco].get_tamanho_tipo_create(
+                         ),
+                         arquivo=self.discos_adicionais[nome_disco].arquivo,
+                         caminho=self.discos_adicionais[nome_disco].caminho)
+                )
             else:
+                # discos a alterar: TODO
                 pass
 
     def get_qtde_rede_principal(self):

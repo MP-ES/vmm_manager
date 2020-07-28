@@ -1,0 +1,20 @@
+$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
+$BusNumber = 0
+$BusType = "{{ tipo }}"
+
+# Definindo próximo LUN livre
+$RangeLun = 0..1000
+$LunsOcupados = @()
+$LunsOcupados += $VM.VirtualDiskDrives | Where  {$_.BusType -eq $BusType -and $_.Bus -eq $BusNumber} | Select -ExpandProperty Lun
+$LunsOcupados += $VM.VirtualDVDDrives | Where  {$_.BusType -eq $BusType -and $_.Bus -eq $BusNumber} | Select -ExpandProperty Lun
+$LunsOcupados = $LunsOcupados | Sort Lun
+$LunLivre = $RangeLun | Where-Object {$LunsOcupados -notcontains $_} | select -First 1
+
+# Criando disco
+New-SCVirtualDiskDrive -VMMServer "{{ servidor_vmm }}" -VM $VM -{{ tipo }} -Bus $BusNumber -LUN $LunLivre -VirtualHardDiskSizeMB {{ tamanho_mb }} -{{ tamanho_tipo }} -Filename "{{ arquivo }}" -VolumeType None {{ '-Path "' + caminho + '"' if caminho else '' }} -JobVariable "job" -RunAsynchronously | Out-Null
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+    Guid = $job.ID
+}
+ConvertTo-Json -Depth 3 $Resultado

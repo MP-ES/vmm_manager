@@ -34,6 +34,9 @@ class VMDisco:
 
         return self.__id_drive
 
+    def get_tamanho_tipo_create(self):
+        return self.tamanho_tipo.name
+
     def __hash__(self):
         return hash(self.arquivo)
 
