@@ -22,6 +22,21 @@ class VMDisco:
         self.__bus = bus
         self.__lun = lun
 
+    def get_id_disco(self):
+        if not self.__id_disco:
+            raise ValueError('Disco local não possui ID.')
+
+        return self.__id_disco
+
+    def get_id_drive(self):
+        if not self.__id_drive:
+            raise ValueError('Disco local não possui ID.')
+
+        return self.__id_drive
+
+    def get_tamanho_tipo_create(self):
+        return self.tamanho_tipo.name
+
     def __hash__(self):
         return hash(self.arquivo)
 
