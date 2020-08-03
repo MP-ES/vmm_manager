@@ -1,6 +1,7 @@
 """
 Representação de um disco adicional uma máquina virtual
 """
+from vmm_manager.entidade.acao import Acao
 
 
 class VMDisco:
@@ -36,6 +37,20 @@ class VMDisco:
 
     def get_tamanho_tipo_create(self):
         return self.tamanho_tipo.name
+
+    def get_acao_criar_disco(self, id_vm):
+        return Acao('criar_disco_vm',
+                    id_vm=id_vm,
+                    tipo=self.tipo.value,
+                    tamanho_mb=self.tamanho_mb,
+                    tamanho_tipo=self.get_tamanho_tipo_create(),
+                    arquivo=self.arquivo,
+                    caminho=self.caminho)
+
+    def get_acao_excluir_disco(self, id_vm):
+        return Acao('excluir_disco_vm',
+                    id_vm=id_vm,
+                    id_drive=self.get_id_drive())
 
     def __hash__(self):
         return hash(self.arquivo)

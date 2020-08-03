@@ -56,25 +56,15 @@ class VM:
             ]
             for nome_disco in discos_excluir:
                 plano_execucao.acoes.append(
-                    Acao('excluir_disco_vm',
-                         id_vm=vm_remota.id_vmm,
-                         id_drive=vm_remota.discos_adicionais[nome_disco].get_id_drive())
-                )
+                    vm_remota.discos_adicionais[nome_disco].get_acao_excluir_disco(
+                        vm_remota.id_vmm))
 
         # verificando discos atuais
         for nome_disco in self.discos_adicionais:
             # discos a criar
             if not vm_remota or not nome_disco in vm_remota.discos_adicionais:
                 plano_execucao.acoes.append(
-                    Acao('criar_disco_vm',
-                         id_vm=vm_remota.id_vmm,
-                         tipo=self.discos_adicionais[nome_disco].tipo.value,
-                         tamanho_mb=self.discos_adicionais[nome_disco].tamanho_mb,
-                         tamanho_tipo=self.discos_adicionais[nome_disco].get_tamanho_tipo_create(
-                         ),
-                         arquivo=self.discos_adicionais[nome_disco].arquivo,
-                         caminho=self.discos_adicionais[nome_disco].caminho)
-                )
+                    self.discos_adicionais[nome_disco].get_acao_criar_disco(vm_remota.id_vmm))
             else:
                 # discos a alterar: TODO
                 pass
@@ -84,6 +74,22 @@ class VM:
 
     def get_rede_principal(self):
         return next((rede.nome for rede in self.redes if rede.principal), None)
+
+    def get_acao_criar_vm(self):
+        return Acao('criar_vm',
+                    nome=self.nome,
+                    descricao=self.descricao,
+                    imagem=self.imagem,
+                    regiao=self.regiao,
+                    qtde_cpu=self.qtde_cpu,
+                    qtde_ram_mb=self.qtde_ram_mb,
+                    redes=[rede.nome for rede in self.redes],
+                    rede_principal=self.get_rede_principal()
+                    )
+
+    def get_acao_excluir_vm(self):
+        return Acao('excluir_vm',
+                    id_vmm=self.id_vmm)
 
     def __hash__(self):
         return hash(self.nome)

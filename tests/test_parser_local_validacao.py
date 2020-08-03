@@ -79,7 +79,7 @@ class TestParserLocalValidacao(Base):
              'qtde_cpu_padrao': randint(1, 64),
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
-                 'nome': dados_teste.get_random_word()
+                 'nome': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico()

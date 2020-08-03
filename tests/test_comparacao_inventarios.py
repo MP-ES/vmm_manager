@@ -6,7 +6,6 @@ from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.entidade.acao import Acao
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 
@@ -20,18 +19,7 @@ class TestComparacaoInventarios(Base):
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
-                Acao('criar_vm',
-                     nome=inventario.vms[nome_vm].nome,
-                     descricao=inventario.vms[nome_vm].descricao,
-                     regiao=inventario.vms[nome_vm].regiao,
-                     imagem=inventario.vms[nome_vm].imagem,
-                     qtde_cpu=inventario.vms[nome_vm].qtde_cpu,
-                     qtde_ram_mb=inventario.vms[nome_vm].qtde_ram_mb,
-                     redes=[rede.nome
-                            for rede in inventario.vms[nome_vm].redes],
-                     rede_principal=inventario.vms[nome_vm].get_rede_principal(
-                     )
-                     ))
+                inventario.vms[nome_vm].get_acao_criar_vm())
 
         return plano_execucao
 
@@ -42,9 +30,7 @@ class TestComparacaoInventarios(Base):
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
-                Acao('excluir_vm',
-                     id_vmm=inventario.vms[nome_vm].id_vmm
-                     ))
+                inventario.vms[nome_vm].get_acao_excluir_vm())
 
         return plano_execucao
 
