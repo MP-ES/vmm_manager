@@ -66,8 +66,10 @@ class VM:
                 plano_execucao.acoes.append(
                     self.discos_adicionais[nome_disco].get_acao_criar_disco(vm_remota.id_vmm))
             else:
-                # discos a alterar: TODO
-                pass
+                # discos a alterar
+                plano_execucao.acoes.extend(
+                    self.discos_adicionais[nome_disco].get_acoes_diferenca_disco(
+                        vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm))
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])

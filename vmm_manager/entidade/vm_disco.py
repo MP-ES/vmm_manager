@@ -52,6 +52,20 @@ class VMDisco:
                     id_vm=id_vm,
                     id_drive=self.get_id_drive())
 
+    def get_acoes_diferenca_disco(self, disco_remoto, id_vm):
+        acoes = []
+
+        # Alteração de tipo ou redução de disco exige a recriação
+        if ((self.tipo != disco_remoto.tipo) or
+                (self.tamanho_mb < disco_remoto.tamanho_mb)):
+            acoes.append(disco_remoto.get_acao_excluir_disco(id_vm))
+            acoes.append(self.get_acao_criar_disco(id_vm))
+        else:
+            # Definir alterações TODO
+            pass
+
+        return acoes
+
     def __hash__(self):
         return hash(self.arquivo)
 
