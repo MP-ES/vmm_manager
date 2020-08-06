@@ -18,6 +18,10 @@ class Base():
     MAX_DISCOS_POR_VM = 10
     MAX_ANSIBLE_ITERACAO = 10
     MAX_TAMANHO_DISCO = 1073741824
+    MIN_CPU = 1
+    MAX_CPU = 64
+    MIN_RAM = 512
+    MAX_RAM = 524288
 
     @staticmethod
     def get_inventario_completo():
@@ -54,8 +58,8 @@ class Base():
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
-                        randint(1, 64),
-                        randint(512, 524288),
+                        randint(Base.MIN_CPU, Base.MAX_CPU),
+                        randint(Base.MIN_RAM, Base.MAX_RAM),
                         redes_vm)
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj
