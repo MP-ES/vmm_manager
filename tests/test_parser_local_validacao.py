@@ -280,13 +280,13 @@ class TestParserLocalValidacao(Base):
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      }
                  ]

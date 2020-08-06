@@ -38,9 +38,9 @@ class VMDisco:
     def get_tamanho_tipo_create(self):
         return self.tamanho_tipo.name
 
-    def get_acao_criar_disco(self, id_vm):
+    def get_acao_criar_disco(self, nome_vm):
         return Acao('criar_disco_vm',
-                    id_vm=id_vm,
+                    nome_vm=nome_vm,
                     tipo=self.tipo.value,
                     tamanho_mb=self.tamanho_mb,
                     tamanho_tipo=self.get_tamanho_tipo_create(),
@@ -52,17 +52,47 @@ class VMDisco:
                     id_vm=id_vm,
                     id_drive=self.get_id_drive())
 
-    def get_acoes_diferenca_disco(self, disco_remoto, id_vm):
+    def get_acoes_diferenca_disco(self, disco_remoto, id_vm, nome_vm):
         acoes = []
 
         # Alteração de tipo ou redução de disco exige a recriação
         if ((self.tipo != disco_remoto.tipo) or
                 (self.tamanho_mb < disco_remoto.tamanho_mb)):
             acoes.append(disco_remoto.get_acao_excluir_disco(id_vm))
-            acoes.append(self.get_acao_criar_disco(id_vm))
+            acoes.append(self.get_acao_criar_disco(nome_vm))
         else:
-            # Definir alterações TODO
-            pass
+            # Tamanho alterado: expansão
+            if self.tamanho_mb > disco_remoto.tamanho_mb:
+                acoes.append(
+                    Acao(
+                        'expandir_disco_vm',
+                        id_vm=id_vm,
+                        id_drive=disco_remoto.get_id_drive(),
+                        tamanho_mb=self.tamanho_mb
+                    )
+                )
+
+            # Caminho alterado: mover disco
+            if self.caminho and self.caminho != disco_remoto.caminho:
+                acoes.append(
+                    Acao(
+                        'mover_disco_vm',
+                        id_vm=id_vm,
+                        id_disco=disco_remoto.get_id_disco(),
+                        caminho=self.caminho
+                    )
+                )
+
+            # Tipo de tamanho alterado: converter disco
+            if self.tamanho_tipo != disco_remoto.tamanho_tipo:
+                acoes.append(
+                    Acao(
+                        'converter_disco_vm',
+                        id_vm=id_vm,
+                        id_drive=disco_remoto.get_id_drive(),
+                        tamanho_tipo=self.tamanho_tipo
+                    )
+                )
 
         return acoes
 

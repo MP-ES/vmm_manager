@@ -64,12 +64,12 @@ class VM:
             # discos a criar
             if not vm_remota or not nome_disco in vm_remota.discos_adicionais:
                 plano_execucao.acoes.append(
-                    self.discos_adicionais[nome_disco].get_acao_criar_disco(vm_remota.id_vmm))
+                    self.discos_adicionais[nome_disco].get_acao_criar_disco(self.nome))
             else:
                 # discos a alterar
                 plano_execucao.acoes.extend(
                     self.discos_adicionais[nome_disco].get_acoes_diferenca_disco(
-                        vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm))
+                        vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -78,7 +78,7 @@ class VM:
         return next((rede.nome for rede in self.redes if rede.principal), None)
 
     def get_acao_criar_vm(self):
-        return Acao('criar_vm',
+        return Acao(Acao.ACAO_CRIAR_VM,
                     nome=self.nome,
                     descricao=self.descricao,
                     imagem=self.imagem,
@@ -90,7 +90,7 @@ class VM:
                     )
 
     def get_acao_excluir_vm(self):
-        return Acao('excluir_vm',
+        return Acao(Acao.ACAO_EXCLUIR_VM,
                     id_vmm=self.id_vmm)
 
     def __hash__(self):
