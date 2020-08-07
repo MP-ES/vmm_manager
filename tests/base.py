@@ -24,7 +24,7 @@ class Base():
     MAX_RAM = 524288
 
     @staticmethod
-    def get_inventario_completo():
+    def get_inventario_completo(num_min_discos_por_vm=1):
         dados_teste = DadosTeste()
         inventario = Inventario(
             dados_teste.get_random_word(), dados_teste.get_random_word())
@@ -38,7 +38,7 @@ class Base():
                     VMRede(dados_teste.get_random_word(), num_iter == 0))
 
             discos_vm = []
-            for num_iter in range(randrange(1, Base.MAX_DISCOS_POR_VM)):
+            for num_iter in range(randrange(num_min_discos_por_vm, Base.MAX_DISCOS_POR_VM)):
                 disco = VMDisco(
                     choice(list(SCDiskBusType)),
                     dados_teste.get_nome_unico(),
