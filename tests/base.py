@@ -13,15 +13,16 @@ from tests.dados_teste import DadosTeste
 
 
 class Base():
-    MAX_VMS_POR_TESTE = 20
-    MAX_REDES_POR_VM = 5
-    MAX_DISCOS_POR_VM = 10
-    MAX_ANSIBLE_ITERACAO = 10
-    MAX_TAMANHO_DISCO = 1073741824
-    MIN_CPU = 1
-    MAX_CPU = 64
-    MIN_RAM = 512
-    MAX_RAM = 524288
+    VMS_POR_TESTE_MAX = 20
+    REDES_POR_VM_MAX = 5
+    DISCOS_POR_VM_MAX = 10
+    ANSIBLE_ITERACAO_MAX = 10
+    TAMANHO_DISCO_MIN = 1
+    TAMANHO_DISCO_MAX = 1073741824
+    CPU_MIN = 1
+    CPU_MAX = 64
+    RAM_MIN = 512
+    RAM_MAX = 524288
 
     @staticmethod
     def get_inventario_completo(num_min_discos_por_vm=1):
@@ -29,20 +30,20 @@ class Base():
         inventario = Inventario(
             dados_teste.get_random_word(), dados_teste.get_random_word())
 
-        for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE)):
+        for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
             nome_vm = dados_teste.get_nome_unico()
 
             redes_vm = []
-            for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM)):
+            for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX)):
                 redes_vm.append(
                     VMRede(dados_teste.get_random_word(), num_iter == 0))
 
             discos_vm = []
-            for num_iter in range(randrange(num_min_discos_por_vm, Base.MAX_DISCOS_POR_VM)):
+            for num_iter in range(randrange(num_min_discos_por_vm, Base.DISCOS_POR_VM_MAX)):
                 disco = VMDisco(
                     choice(list(SCDiskBusType)),
                     dados_teste.get_nome_unico(),
-                    randint(1, Base.MAX_TAMANHO_DISCO),
+                    randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
                     choice(list(SCDiskSizeType)),
                     dados_teste.get_random_word()
                 )
@@ -58,8 +59,8 @@ class Base():
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
-                        randint(Base.MIN_CPU, Base.MAX_CPU),
-                        randint(Base.MIN_RAM, Base.MAX_RAM),
+                        randint(Base.CPU_MIN, Base.CPU_MAX),
+                        randint(Base.RAM_MIN, Base.RAM_MAX),
                         redes_vm)
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj

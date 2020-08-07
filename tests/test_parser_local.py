@@ -25,10 +25,10 @@ class TestParserLocal(Base):
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word(),
                  'principal': num_iter == 0,
-             } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -54,7 +54,7 @@ class TestParserLocal(Base):
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word(),
                  'principal': num_iter == 0,
-             } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico(),
                  'ansible': [{
@@ -62,9 +62,9 @@ class TestParserLocal(Base):
                      'vars': [{
                          'nome': dados_teste.get_nome_unico(),
                          'valor': dados_teste.get_random_word()
-                     } for _ in range(randrange(0, Base.MAX_ANSIBLE_ITERACAO))],
-                 } for _ in range(randrange(1, Base.MAX_ANSIBLE_ITERACAO))],
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+                     } for _ in range(randrange(0, Base.ANSIBLE_ITERACAO_MAX))],
+                 } for _ in range(randrange(1, Base.ANSIBLE_ITERACAO_MAX))],
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -100,7 +100,7 @@ class TestParserLocal(Base):
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word(),
                  'principal': num_iter == 0,
-             } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico(),
                  'discos_adicionais': [{
@@ -108,8 +108,8 @@ class TestParserLocal(Base):
                      'tipo': choice([enum.value for enum in SCDiskBusType]),
                      'tamanho_mb': randint(1, 1073741824),
                      'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
-                 } for _ in range(randrange(1, Base.MAX_DISCOS_POR_VM))],
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+                 } for _ in range(randrange(1, Base.DISCOS_POR_VM_MAX))],
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -144,13 +144,13 @@ class TestParserLocal(Base):
                  'nome': dados_teste.get_nome_unico(),
                  'descricao': dados_teste.get_random_word(),
                  'imagem': dados_teste.get_random_word(),
-                 'qtde_cpu': randint(Base.MIN_CPU, Base.MAX_CPU),
-                 'qtde_ram_mb': randint(Base.MIN_RAM, Base.MAX_RAM),
+                 'qtde_cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
+                 'qtde_ram_mb': randint(Base.RAM_MIN, Base.RAM_MAX),
                  'redes': [{
                      'nome': dados_teste.get_nome_unico(),
                      'principal': num_iter == 0
-                 } for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM))],
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+                 } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
