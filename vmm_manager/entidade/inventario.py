@@ -3,7 +3,6 @@ Representação de um inventário
 """
 import json
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.entidade.acao import Acao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
 
@@ -59,10 +58,7 @@ class Inventario:
         plano_execucao = PlanoExecucao(self.agrupamento, self.nuvem)
 
         for maquina_virtual in self.vms.values():
-            plano_execucao.acoes.append(
-                Acao('excluir_vm',
-                     id_vmm=maquina_virtual.id_vmm)
-            )
+            plano_execucao.acoes.append(maquina_virtual.get_acao_excluir_vm())
 
         return plano_execucao
 
@@ -127,18 +123,7 @@ class Inventario:
             if nome_vm_local not in inventario_remoto.vms
         ]
         for nome_vm in vms_inserir:
-            plano_execucao.acoes.append(
-                Acao('criar_vm',
-                     nome=self.vms[nome_vm].nome,
-                     descricao=self.vms[nome_vm].descricao,
-                     imagem=self.vms[nome_vm].imagem,
-                     regiao=self.vms[nome_vm].regiao,
-                     qtde_cpu=self.vms[nome_vm].qtde_cpu,
-                     qtde_ram_mb=self.vms[nome_vm].qtde_ram_mb,
-                     redes=[rede.nome for rede in self.vms[nome_vm].redes],
-                     rede_principal=self.vms[nome_vm].get_rede_principal()
-                     )
-            )
+            plano_execucao.acoes.append(self.vms[nome_vm].get_acao_criar_vm())
 
     def __add_acoes_execucao_excluir_vms(self, inventario_remoto, plano_execucao):
         vms_excluir = [
@@ -147,10 +132,7 @@ class Inventario:
         ]
         for nome_vm in vms_excluir:
             plano_execucao.acoes.append(
-                Acao('excluir_vm',
-                     id_vmm=inventario_remoto.vms[nome_vm].id_vmm
-                     )
-            )
+                inventario_remoto.vms[nome_vm].get_acao_excluir_vm())
 
     def __add_acoes_diferenca_discos_adicionais(self, inventario_remoto, plano_execucao):
         for nome_vm in self.vms:

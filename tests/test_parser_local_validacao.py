@@ -79,7 +79,7 @@ class TestParserLocalValidacao(Base):
              'qtde_cpu_padrao': randint(1, 64),
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
-                 'nome': dados_teste.get_random_word()
+                 'nome': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
@@ -280,13 +280,13 @@ class TestParserLocalValidacao(Base):
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, 1073741824),
+                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      }
                  ]

@@ -1,12 +1,15 @@
 """
 Classe com funções básicas de teste
 """
+import uuid
+from random import randrange, randint, choice
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.entidade.vm_ansible import VMAnsible, VMAnsibleVars
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+from tests.dados_teste import DadosTeste
 
 
 class Base():
@@ -14,6 +17,54 @@ class Base():
     MAX_REDES_POR_VM = 5
     MAX_DISCOS_POR_VM = 10
     MAX_ANSIBLE_ITERACAO = 10
+    MAX_TAMANHO_DISCO = 1073741824
+    MIN_CPU = 1
+    MAX_CPU = 64
+    MIN_RAM = 512
+    MAX_RAM = 524288
+
+    @staticmethod
+    def get_inventario_completo():
+        dados_teste = DadosTeste()
+        inventario = Inventario(
+            dados_teste.get_random_word(), dados_teste.get_random_word())
+
+        for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE)):
+            nome_vm = dados_teste.get_nome_unico()
+
+            redes_vm = []
+            for num_iter in range(randrange(1, Base.MAX_REDES_POR_VM)):
+                redes_vm.append(
+                    VMRede(dados_teste.get_random_word(), num_iter == 0))
+
+            discos_vm = []
+            for num_iter in range(randrange(1, Base.MAX_DISCOS_POR_VM)):
+                disco = VMDisco(
+                    choice(list(SCDiskBusType)),
+                    dados_teste.get_nome_unico(),
+                    randint(1, Base.MAX_TAMANHO_DISCO),
+                    choice(list(SCDiskSizeType)),
+                    dados_teste.get_random_word()
+                )
+                disco.set_parametros_extras_vmm(
+                    str(uuid.uuid4()),
+                    str(uuid.uuid4()),
+                    0,
+                    num_iter + 1,
+                )
+                discos_vm.append(disco)
+
+            vm_obj = VM(nome_vm,
+                        dados_teste.get_random_word(),
+                        dados_teste.get_random_word(),
+                        dados_teste.get_random_word(),
+                        randint(Base.MIN_CPU, Base.MAX_CPU),
+                        randint(Base.MIN_RAM, Base.MAX_RAM),
+                        redes_vm)
+            vm_obj.add_discos_adicionais(discos_vm)
+            inventario.vms[nome_vm] = vm_obj
+
+        return inventario
 
     # pylint: disable=R0201
     def get_obj_inventario(self, array_yaml):

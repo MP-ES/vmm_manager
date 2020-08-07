@@ -144,8 +144,8 @@ class TestParserLocal(Base):
                  'nome': dados_teste.get_nome_unico(),
                  'descricao': dados_teste.get_random_word(),
                  'imagem': dados_teste.get_random_word(),
-                 'qtde_cpu': randint(1, 64),
-                 'qtde_ram_mb': randint(512, 524288),
+                 'qtde_cpu': randint(Base.MIN_CPU, Base.MAX_CPU),
+                 'qtde_ram_mb': randint(Base.MIN_RAM, Base.MAX_RAM),
                  'redes': [{
                      'nome': dados_teste.get_nome_unico(),
                      'principal': num_iter == 0

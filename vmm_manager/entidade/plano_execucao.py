@@ -58,15 +58,17 @@ class PlanoExecucao(YamlAble):
 
         return True, conteudo
 
-    def executar(self, servidor_acesso, ocultar_progresso):
-        if not self.is_vazio():
-            print('\nOperações executadas:')
-            for acao in self.acoes:
+    def __executar_acoes(self, acoes, servidor_acesso, ocultar_progresso):
+        if acoes:
+            # zerando jobs em execução
+            self.__jobs_em_execucao = {}
+
+            for acao in acoes:
                 print('{:<100} => '.format(textwrap.shorten(acao.get_str_impressao_inline(), 100)),
                       end='', flush=True)
-                guid = uuid.uuid4()
 
                 # Caso específico de criação de vms
+                guid = uuid.uuid4()
                 if acao.is_criacao_vm():
                     self.__guids_a_limpar.append(guid)
 
@@ -93,16 +95,35 @@ class PlanoExecucao(YamlAble):
             SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
             self.__coletar_resultado_jobs()
 
-            # Ações pós execução dos comandos do plano
+            # Ações pós execução
             print()
             self.__executar_cmds_finalizacao(
-                servidor_acesso, ocultar_progresso)
+                acoes, servidor_acesso, ocultar_progresso)
+
+    def executar(self, servidor_acesso, ocultar_progresso):
+        if not self.is_vazio():
+            print('\nOperações executadas:')
+
+            # acoes bloqueantes primeiro
+            acoes_bloqueantes = [
+                acao for acao in self.acoes if acao.is_bloqueante()]
+            self.__executar_acoes(
+                acoes_bloqueantes, servidor_acesso, ocultar_progresso)
+
+            # demais ações, se não houve erro
+            if not self.has_erro_execucao():
+                acoes_nao_bloqueantes = [acao
+                                         for acao in self.acoes if not acao.is_bloqueante()]
+                self.__executar_acoes(
+                    acoes_nao_bloqueantes, servidor_acesso, ocultar_progresso)
+
+            # Ações de finalização
             self.__limpar_guids(servidor_acesso, ocultar_progresso)
             self.__processa_resultado_execucao()
             PlanoExecucao.excluir_arquivo()
 
-    def __executar_cmds_finalizacao(self, servidor_acesso, ocultar_progresso):
-        for acao in self.acoes:
+    def __executar_cmds_finalizacao(self, acoes, servidor_acesso, ocultar_progresso):
+        for acao in acoes:
             if acao.was_executada_com_sucesso() and acao.has_cmd_pos_execucao():
                 cmd = acao.get_cmd_pos_execucao(
                     self.agrupamento, servidor_acesso)
@@ -136,18 +157,21 @@ class PlanoExecucao(YamlAble):
                     'limpar objetos temporários', retorno)
 
     def __processa_resultado_execucao(self):
-        if self.__msgs_erros:
+        if self.has_erro_execucao():
             self.__gerar_arquivo_erros()
         else:
             PlanoExecucao.__excluir_arquivo_log_erros()
 
     def imprimir_resultado_execucao(self):
-        if self.__msgs_erros:
+        if self.has_erro_execucao():
             print(formatar_msg_erro(
                 '\nErro ao executar algumas operações. '
                 f'Mais detalhes em {PlanoExecucao.ARQUIVO_LOG_ERROS}.'))
         else:
             print('\nSincronização executada com sucesso.')
+
+    def has_erro_execucao(self):
+        return self.__msgs_erros
 
     def __coletar_resultado_jobs(self):
         if self.__jobs_em_execucao:

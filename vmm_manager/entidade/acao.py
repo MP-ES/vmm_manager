@@ -10,6 +10,9 @@ from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID,
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
 class Acao(YamlAble):
+    ACAO_CRIAR_VM = 'criar_vm'
+    ACAO_EXCLUIR_VM = 'excluir_vm'
+
     def __init__(self, nome_comando, **kwargs):
         self.nome_comando = nome_comando
         self.args = kwargs
@@ -22,6 +25,7 @@ class Acao(YamlAble):
         cmd = Comando(self.nome_comando,
                       agrupamento=agrupamento,
                       campo_agrupamento=CAMPO_AGRUPAMENTO[0],
+                      campo_id=CAMPO_ID[0],
                       nuvem=nuvem,
                       guid=guid,
                       servidor_vmm=servidor_acesso.servidor_vmm)
@@ -39,7 +43,11 @@ class Acao(YamlAble):
         self.__status_execucao_job = status
 
     def is_criacao_vm(self):
-        return self.nome_comando == 'criar_vm'
+        return self.nome_comando == Acao.ACAO_CRIAR_VM
+
+    def is_bloqueante(self):
+        return (self.is_criacao_vm()
+                or self.nome_comando == Acao.ACAO_EXCLUIR_VM)
 
     def has_cmd_pos_execucao(self):
         return self.is_criacao_vm()
