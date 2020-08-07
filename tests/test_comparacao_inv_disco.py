@@ -138,7 +138,7 @@ class TestComparacaoInvDisco(Base):
         assert plano_execucao == self.get_plano_execucao_excluir_discos(inventario_local,
                                                                         discos_removidos)
 
-    def test_recriar_disco_mudanca_tipo(self):
+    def test_disco_mudanca_tipo(self):
         inventario_local = Base.get_inventario_completo(
             num_min_discos_por_vm=2)
         inventario_remoto = copy.deepcopy(inventario_local)
@@ -153,7 +153,7 @@ class TestComparacaoInvDisco(Base):
                                                                         discos_alterados,
                                                                         self.TP_ALTERACAO_TP_BUS)
 
-    def test_recriar_disco_reduzido(self):
+    def test_disco_reduzido(self):
         inventario_local = Base.get_inventario_completo(
             num_min_discos_por_vm=2)
         inventario_remoto = copy.deepcopy(inventario_local)
