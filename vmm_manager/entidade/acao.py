@@ -12,6 +12,7 @@ from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID,
 class Acao(YamlAble):
     ACAO_CRIAR_VM = 'criar_vm'
     ACAO_EXCLUIR_VM = 'excluir_vm'
+    ACAO_EXCLUIR_DISCO_VM = 'excluir_disco_vm'
 
     def __init__(self, nome_comando, **kwargs):
         self.nome_comando = nome_comando
@@ -47,7 +48,8 @@ class Acao(YamlAble):
 
     def is_bloqueante(self):
         return (self.is_criacao_vm()
-                or self.nome_comando == Acao.ACAO_EXCLUIR_VM)
+                or self.nome_comando == Acao.ACAO_EXCLUIR_VM
+                or self.nome_comando == Acao.ACAO_EXCLUIR_DISCO_VM)
 
     def has_cmd_pos_execucao(self):
         return self.is_criacao_vm()
