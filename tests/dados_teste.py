@@ -1,10 +1,25 @@
 """
 Classe de apoio e geração de dados para os testes
 """
+from random import choice
 from faker import Faker
 
 
 class DadosTeste():
+
+    @staticmethod
+    def get_random_lista_com_excecao(lista, excecao):
+        return choice([item for item in lista if item != excecao])
+
+    @staticmethod
+    def get_random_string_com_excecao(excecao):
+        faker = Faker()
+        string_random = faker.format('word')
+        while string_random == excecao:
+            string_random = faker.format('word')
+
+        return string_random
+
     def __init__(self):
         self.__faker = Faker()
         self.__nomes_unicos = []

@@ -31,7 +31,7 @@ class TestParserLocalValidacao(Base):
              'nuvem': dados_teste.get_random_word(),
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -55,7 +55,7 @@ class TestParserLocalValidacao(Base):
              'qtde_ram_mb_padrao': randint(512, 524288),
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -80,10 +80,10 @@ class TestParserLocalValidacao(Base):
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -110,10 +110,10 @@ class TestParserLocalValidacao(Base):
              'redes_padrao': [{
                  'nome': nome_rede,
                  'principal': num_iter == 0,
-             } for num_iter in range(randrange(2, Base.MAX_REDES_POR_VM))],
+             } for num_iter in range(randrange(2, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
-             } for _ in range(randrange(1, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
@@ -280,13 +280,13 @@ class TestParserLocalValidacao(Base):
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
+                         'tamanho_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
                          'arquivo': arquivo,
                          'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(1, Base.MAX_TAMANHO_DISCO),
+                         'tamanho_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
                          'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
                      }
                  ]
@@ -316,10 +316,10 @@ class TestParserLocalValidacao(Base):
              'qtde_ram_mb_padrao': randint(512, 524288),
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word()
-             } for _ in range(randrange(1, Base.MAX_REDES_POR_VM))],
+             } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'nome': nome_vm
-             } for _ in range(randrange(2, Base.MAX_VMS_POR_TESTE))]
+             } for _ in range(randrange(2, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
         monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',

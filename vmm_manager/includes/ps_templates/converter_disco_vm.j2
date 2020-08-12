@@ -1,0 +1,15 @@
+$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
+$Drive = $VM | Get-SCVirtualDiskDrive | where {$_.ID -eq "{{ id_drive }}"}
+
+if ($VM.Status -eq 'Running' ){
+    Stop-SCVirtualMachine -VM $VM | Out-Null
+}
+
+Convert-SCVirtualDiskDrive -VirtualDiskDrive $Drive -{{ tamanho_tipo }} | Out-Null
+
+Start-SCVirtualMachine -VM $VM | Out-Null
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+}
+ConvertTo-Json -Depth 3 $Resultado
