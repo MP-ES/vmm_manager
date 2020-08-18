@@ -29,7 +29,7 @@ def parametro_arquivo_yaml(nome_arquivo):
             yaml = YAML()
             yaml.load(stream)
             return nome_arquivo
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, IsADirectoryError) as exc:
         raise argparse.ArgumentTypeError(exc)
     except scanner.ScannerError as exc:
         raise argparse.ArgumentTypeError(

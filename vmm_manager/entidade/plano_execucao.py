@@ -128,8 +128,7 @@ class PlanoExecucao(YamlAble):
                 cmd = acao.get_cmd_pos_execucao(
                     self.agrupamento, servidor_acesso)
 
-                imprimir_acao_corrente(
-                    f'Executando {cmd.descricao}', ocultar_progresso)
+                imprimir_acao_corrente(cmd.descricao, ocultar_progresso)
 
                 status, resultado = cmd.executar(servidor_acesso)
 

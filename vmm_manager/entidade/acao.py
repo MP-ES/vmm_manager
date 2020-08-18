@@ -70,7 +70,7 @@ class Acao(YamlAble):
     def get_cmd_pos_execucao(self, agrupamento, servidor_acesso):
         if self.is_criacao_vm():
             cmd = Comando('criar_vm_pos',
-                          descricao=f"tagueamento da VM { self.args['nome']}",
+                          descricao=f"Taguear VM { self.args['nome']}",
                           servidor_vmm=servidor_acesso.servidor_vmm,
                           campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                           campo_id=CAMPO_ID[0],
