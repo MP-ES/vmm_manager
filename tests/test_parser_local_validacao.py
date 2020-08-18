@@ -51,8 +51,8 @@ class TestParserLocalValidacao(Base):
             {'agrupamento': dados_teste.get_random_word(),
              'nuvem': dados_teste.get_random_word(),
              'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(1, 64),
-             'qtde_ram_mb_padrao': randint(512, 524288),
+             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
              'vms': [{
                  'nome': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
@@ -76,8 +76,8 @@ class TestParserLocalValidacao(Base):
             {'agrupamento': dados_teste.get_random_word(),
              'nuvem': dados_teste.get_random_word(),
              'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(1, 64),
-             'qtde_ram_mb_padrao': randint(512, 524288),
+             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
              'redes_padrao': [{
                  'nome': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
@@ -105,8 +105,8 @@ class TestParserLocalValidacao(Base):
             {'agrupamento': dados_teste.get_random_word(),
              'nuvem': dados_teste.get_random_word(),
              'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(1, 64),
-             'qtde_ram_mb_padrao': randint(512, 524288),
+             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
              'redes_padrao': [{
                  'nome': nome_rede,
                  'principal': num_iter == 0,
@@ -312,8 +312,8 @@ class TestParserLocalValidacao(Base):
             {'agrupamento': dados_teste.get_random_word(),
              'nuvem': dados_teste.get_random_word(),
              'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(1, 64),
-             'qtde_ram_mb_padrao': randint(512, 524288),
+             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word()
              } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
