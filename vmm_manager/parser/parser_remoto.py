@@ -74,6 +74,28 @@ class ParserRemoto:
 
         return discos_vms
 
+    def __get_regioes_disponiveis(self, servidor_acesso):
+        cmd = Comando('obter_regioes_disponiveis',
+                      servidor_vmm=servidor_acesso.servidor_vmm)
+        status, regioes = cmd.executar(servidor_acesso)
+        if not status:
+            raise Exception(
+                f'Erro ao recuperar regiões disponíveis: {regioes}')
+
+        regioes_remoto = json.loads(regioes)
+        regioes_disponiveis = []
+        for regiao in regioes_remoto:
+            regiao_obj = disco.set_parametros_extras_vmm(
+                regiao.get('IDDrive'),
+                regiao.get('IDDisco'),
+                regiao.get('Bus'),
+                regiao.get('Lun'),
+            )
+
+            regioes_disponiveis.append(regiao_obj)
+
+        return regioes_disponiveis
+
     def __montar_inventario(self, servidor_acesso,
                             filtro_nome_vm=None, filtro_dados_completos=True):
         self.__inventario = Inventario(self.agrupamento, self.nuvem)
@@ -106,6 +128,10 @@ class ParserRemoto:
             # discos
             self.__inventario.set_discos_vms(
                 self.__get_discos_adicionais(servidor_acesso))
+
+            # regioes
+            self.__inventario.set_mapeamento_regioes(
+                self.__get_regioes_disponiveis(servidor_acesso))
 
     def get_inventario(self, servidor_acesso, filtro_nome_vm=None, filtro_dados_completos=True):
         if not self.__inventario:

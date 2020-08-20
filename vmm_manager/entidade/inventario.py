@@ -38,6 +38,16 @@ class Inventario:
         self.nuvem = nuvem
         self.vms = {}
 
+        self.__mapeamento_regioes = None
+
+    def get_mapeamento_regioes(self):
+        if not self.__mapeamento_regioes:
+            raise ValueError('Inventário não possui mapeamento de regiões.')
+
+    def set_mapeamento_regioes(self, discos_adicionais):
+        for nome_vm in discos_adicionais:
+            self.vms[nome_vm].add_discos_adicionais(discos_adicionais[nome_vm])
+
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.agrupamento != inventario_remoto.agrupamento
                 or self.nuvem != inventario_remoto.nuvem):
