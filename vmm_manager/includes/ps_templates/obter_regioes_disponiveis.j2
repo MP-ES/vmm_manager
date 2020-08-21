@@ -3,7 +3,7 @@ $regioes = @()
 
 foreach($no_cluster in $hosts_cluster) {
   $regiao = [PSCustomObject]@{
-    ID = $no_cluster.ID
+    IDNo = $no_cluster.ID
     NomeNo = $no_cluster.Name
     Grupo = $no_cluster.VMHostGroup.Name
     Cluster = $no_cluster.HostCluster.Name

@@ -38,15 +38,16 @@ class Inventario:
         self.nuvem = nuvem
         self.vms = {}
 
-        self.__mapeamento_regioes = None
+        self.__regioes_por_no = None
+        self.__regioes_por_letra_id = None
 
-    def get_mapeamento_regioes(self):
-        if not self.__mapeamento_regioes:
-            raise ValueError('Inventário não possui mapeamento de regiões.')
+    def set_mapeamento_regioes(self, regioes_disponiveis):
+        self.__regioes_por_no = {}
+        self.__regioes_por_letra_id = {}
 
-    def set_mapeamento_regioes(self, discos_adicionais):
-        for nome_vm in discos_adicionais:
-            self.vms[nome_vm].add_discos_adicionais(discos_adicionais[nome_vm])
+        for regiao in regioes_disponiveis:
+            self.__regioes_por_no[regiao.nome_no] = regiao
+            self.__regioes_por_letra_id[regiao.letra_id] = regiao
 
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.agrupamento != inventario_remoto.agrupamento
@@ -160,6 +161,7 @@ class Inventario:
             agrupamento: {self.agrupamento}
             nuvem: {self.nuvem}
             vms: {self.vms}
+            regioes: {self.__regioes_por_letra_id}
             '''
 
     def to_dict(self):
