@@ -38,15 +38,11 @@ class Inventario:
         self.nuvem = nuvem
         self.vms = {}
 
-        self.__regioes_por_no = None
         self.__regioes_por_letra_id = None
 
     def set_mapeamento_regioes(self, regioes_disponiveis):
-        self.__regioes_por_no = {}
         self.__regioes_por_letra_id = {}
-
         for regiao in regioes_disponiveis:
-            self.__regioes_por_no[regiao.nome_no] = regiao
             self.__regioes_por_letra_id[regiao.letra_id] = regiao
 
     def calcular_plano_execucao(self, inventario_remoto):
@@ -60,8 +56,11 @@ class Inventario:
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(
             inventario_remoto, plano_execucao)
+
         self.__add_acoes_diferenca_discos_adicionais(
             inventario_remoto, plano_execucao)
+        # self.__add_acoes_diferenca_regiao(
+        # inventario_remoto, plano_execucao)
 
         return True, plano_execucao
 
@@ -150,6 +149,12 @@ class Inventario:
             self.vms[nome_vm].add_acoes_diferenca_discos_adicionais(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao)
+
+    def __add_acoes_diferenca_regiao(self, inventario_remoto, plano_execucao):
+        for nome_vm in self.vms:
+            self.vms[nome_vm].add_acoes_diferenca_regiao(
+                inventario_remoto.vms.get(nome_vm, None),
+                plano_execucao, self.__regioes_por_letra_id)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento

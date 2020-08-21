@@ -1,7 +1,7 @@
 """
 Classe de apoio e geração de dados para os testes
 """
-from random import choice
+from random import choice, randint
 from faker import Faker
 
 
@@ -12,6 +12,10 @@ class DadosTeste():
         return choice([item for item in lista if item != excecao])
 
     @staticmethod
+    def get_random_regiao_vm(qtde_regioes):
+        return chr(ord('A') + randint(0, qtde_regioes - 1))
+
+    @ staticmethod
     def get_random_string_com_excecao(excecao):
         faker = Faker()
         string_random = faker.format('word')

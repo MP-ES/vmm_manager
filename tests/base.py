@@ -9,6 +9,7 @@ from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.entidade.vm_ansible import VMAnsible, VMAnsibleVars
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+from vmm_manager.scvmm.scregion import SCRegion
 from tests.dados_teste import DadosTeste
 
 
@@ -23,6 +24,7 @@ class Base():
     CPU_MAX = 64
     RAM_MIN = 512
     RAM_MAX = 524288
+    REGIOES_QTDE = 10
 
     @staticmethod
     def get_inventario_completo(num_min_discos_por_vm=1):
@@ -30,14 +32,27 @@ class Base():
         inventario = Inventario(
             dados_teste.get_random_word(), dados_teste.get_random_word())
 
+        # regiões
+        regioes = []
+        for num_iter in range(0, Base.REGIOES_QTDE):
+            regioes.append(SCRegion(
+                str(uuid.uuid4()),
+                dados_teste.get_nome_unico(),
+                dados_teste.get_random_word(),
+                dados_teste.get_random_word(),
+                chr(ord('A') + num_iter)))
+        inventario.set_mapeamento_regioes(regioes)
+
         for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
             nome_vm = dados_teste.get_nome_unico()
 
+            # redes
             redes_vm = []
             for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX)):
                 redes_vm.append(
                     VMRede(dados_teste.get_random_word(), num_iter == 0))
 
+            # discos adicionais
             discos_vm = []
             for num_iter in range(randrange(num_min_discos_por_vm, Base.DISCOS_POR_VM_MAX)):
                 disco = VMDisco(
@@ -58,10 +73,11 @@ class Base():
             vm_obj = VM(nome_vm,
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
-                        dados_teste.get_random_word(),
+                        DadosTeste.get_random_regiao_vm(Base.REGIOES_QTDE),
                         randint(Base.CPU_MIN, Base.CPU_MAX),
                         randint(Base.RAM_MIN, Base.RAM_MAX),
-                        redes_vm)
+                        redes_vm,
+                        no_regiao=dados_teste.get_random_word())
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj
 
