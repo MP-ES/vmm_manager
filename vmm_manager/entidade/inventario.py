@@ -161,7 +161,6 @@ class Inventario:
             agrupamento: {self.agrupamento}
             nuvem: {self.nuvem}
             vms: {self.vms}
-            regioes: {self.__regioes_por_letra_id}
             '''
 
     def to_dict(self):
