@@ -70,14 +70,15 @@ class Base():
                 )
                 discos_vm.append(disco)
 
+            regiao_vm = DadosTeste.get_random_regiao_vm(Base.REGIOES_QTDE)
             vm_obj = VM(nome_vm,
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
-                        DadosTeste.get_random_regiao_vm(Base.REGIOES_QTDE),
+                        regiao_vm,
                         randint(Base.CPU_MIN, Base.CPU_MAX),
                         randint(Base.RAM_MIN, Base.RAM_MAX),
                         redes_vm,
-                        no_regiao=dados_teste.get_random_word())
+                        no_regiao=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj
 

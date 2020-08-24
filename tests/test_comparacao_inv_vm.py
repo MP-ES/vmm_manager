@@ -24,6 +24,11 @@ class TestComparacaoInvVm(Base):
                     .discos_adicionais[disco_adicional]
                     .get_acao_criar_disco(nome_vm))
 
+        for nome_vm in inventario.vms:
+            plano_execucao.acoes.append(
+                inventario.vms[nome_vm].get_acao_mover_vm_regiao(
+                    inventario.get_id_no_regiao(inventario.vms[nome_vm].regiao)))
+
         return plano_execucao
 
     @staticmethod

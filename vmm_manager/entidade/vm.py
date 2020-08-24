@@ -72,8 +72,8 @@ class VM:
                     self.discos_adicionais[nome_disco].get_acoes_diferenca_disco(
                         vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
-    def add_acoes_diferenca_regiao(self, vm_remota, plano_execucao,
-                                   regioes):
+    def add_acoes_diferenca_regiao(self, vm_remota,
+                                   plano_execucao, regioes):
         if (not vm_remota
                 or (self.regiao != Inventario.REGIAO_PADRAO
                     and (self.regiao != vm_remota.regiao

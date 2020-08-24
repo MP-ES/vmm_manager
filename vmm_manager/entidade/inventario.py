@@ -40,6 +40,18 @@ class Inventario:
 
         self.__regioes_por_letra_id = None
 
+    def get_nome_no_regiao(self, regiao):
+        if regiao in self.__regioes_por_letra_id or {}:
+            return self.__regioes_por_letra_id[regiao].nome_no
+
+        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+
+    def get_id_no_regiao(self, regiao):
+        if regiao in self.__regioes_por_letra_id or {}:
+            return self.__regioes_por_letra_id[regiao].id_no
+
+        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+
     def set_mapeamento_regioes(self, regioes_disponiveis):
         self.__regioes_por_letra_id = {}
         for regiao in regioes_disponiveis:
@@ -59,8 +71,8 @@ class Inventario:
 
         self.__add_acoes_diferenca_discos_adicionais(
             inventario_remoto, plano_execucao)
-        # self.__add_acoes_diferenca_regiao(
-        # inventario_remoto, plano_execucao)
+        self.__add_acoes_diferenca_regiao(
+            inventario_remoto, plano_execucao)
 
         return True, plano_execucao
 
