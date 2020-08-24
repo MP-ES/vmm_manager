@@ -5,6 +5,7 @@ from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
 from vmm_manager.entidade.acao import Acao
 from vmm_manager.entidade.inventario import Inventario
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 class VM:
@@ -75,17 +76,11 @@ class VM:
     def add_acoes_diferenca_regiao(self, vm_remota,
                                    plano_execucao, regioes):
         if (not vm_remota
-                or (self.regiao != Inventario.REGIAO_PADRAO
+                or (self.regiao != SCRegion.REGIAO_PADRAO
                     and (self.regiao != vm_remota.regiao
                          or regioes[self.regiao].nome_no != self.no_regiao))):
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
                 regioes[self.regiao].id_no))
-
-    def get_acao_mover_vm_regiao(self, id_no_regiao):
-        return Acao('mover_vm_regiao',
-                    nome_vm=self.nome,
-                    id_no_regiao=id_no_regiao,
-                    regiao=self.regiao)
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
@@ -108,6 +103,12 @@ class VM:
     def get_acao_excluir_vm(self):
         return Acao(Acao.ACAO_EXCLUIR_VM,
                     id_vmm=self.id_vmm)
+
+    def get_acao_mover_vm_regiao(self, id_no_regiao):
+        return Acao('mover_vm_regiao',
+                    nome_vm=self.nome,
+                    id_no_regiao=id_no_regiao,
+                    regiao=self.regiao)
 
     def __hash__(self):
         return hash(self.nome)

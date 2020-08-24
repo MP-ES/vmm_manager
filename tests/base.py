@@ -100,7 +100,7 @@ class Base():
                 maquina_virtual.get('descricao'),
                 maquina_virtual.get(
                     'imagem', array_yaml[0][0].get('imagem_padrao', None)),
-                maquina_virtual.get('regiao', Inventario.REGIAO_PADRAO),
+                maquina_virtual.get('regiao', SCRegion.REGIAO_PADRAO),
                 maquina_virtual.get(
                     'qtde_cpu', array_yaml[0][0].get('qtde_cpu_padrao', None)),
                 maquina_virtual.get(

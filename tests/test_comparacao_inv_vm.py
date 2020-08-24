@@ -1,6 +1,7 @@
 """
 Testes de comparação de inventários e geração de ações, focado em vms
 """
+import copy
 from tests.base import Base
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.entidade.inventario import Inventario
@@ -52,14 +53,16 @@ class TestComparacaoInvVm(Base):
         assert not plano_execucao.acoes
 
     def test_inventario_local_sem_remoto(self):
-        inventario = Base.get_inventario_completo()
+        inventario_local = Base.get_inventario_completo()
+        inventario_remoto = copy.deepcopy(inventario_local)
+        inventario_remoto.vms = {}
 
-        status, plano_execucao = inventario.calcular_plano_execucao(
-            Inventario(inventario.agrupamento, inventario.nuvem))
+        status, plano_execucao = inventario_local.calcular_plano_execucao(
+            inventario_remoto)
 
         assert status is True
         assert plano_execucao == self.get_plano_execucao_criar_inventario(
-            inventario)
+            inventario_local)
 
     def test_inventario_remoto_sem_local(self):
         inventario_remoto = Base.get_inventario_completo()

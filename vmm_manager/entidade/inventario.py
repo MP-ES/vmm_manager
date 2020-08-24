@@ -5,6 +5,7 @@ import json
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 def json_handle_inventario(obj):
@@ -14,7 +15,6 @@ def json_handle_inventario(obj):
 
 
 class Inventario:
-    REGIAO_PADRAO = 'default'
 
     @staticmethod
     def get_json(inventario_local, inventario_remoto, dados_completos=True):
@@ -51,6 +51,12 @@ class Inventario:
             return self.__regioes_por_letra_id[regiao].id_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
+
+    def get_mapeamento_regioes(self):
+        if self.__regioes_por_letra_id is None:
+            ValueError('Mapeamento de regiões não definido.')
+
+        return self.__regioes_por_letra_id
 
     def set_mapeamento_regioes(self, regioes_disponiveis):
         self.__regioes_por_letra_id = {}
@@ -118,7 +124,7 @@ class Inventario:
         for maquina_virtual in self.vms.values():
             imagens.add(maquina_virtual.imagem)
 
-            if maquina_virtual.regiao != Inventario.REGIAO_PADRAO:
+            if maquina_virtual.regiao != SCRegion.REGIAO_PADRAO:
                 regioes.add(maquina_virtual.regiao)
 
             redes.update([rede.nome for rede in maquina_virtual.redes])
@@ -166,7 +172,7 @@ class Inventario:
         for nome_vm in self.vms:
             self.vms[nome_vm].add_acoes_diferenca_regiao(
                 inventario_remoto.vms.get(nome_vm, None),
-                plano_execucao, self.__regioes_por_letra_id)
+                plano_execucao, inventario_remoto.get_mapeamento_regioes())
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento
