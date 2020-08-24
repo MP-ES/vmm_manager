@@ -172,7 +172,7 @@ class Inventario:
         for nome_vm in self.vms:
             self.vms[nome_vm].add_acoes_diferenca_regiao(
                 inventario_remoto.vms.get(nome_vm, None),
-                plano_execucao, inventario_remoto.get_mapeamento_regioes())
+                plano_execucao, inventario_remoto)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento

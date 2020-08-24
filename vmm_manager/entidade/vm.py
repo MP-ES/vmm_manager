@@ -4,7 +4,6 @@ Representação de uma máquina virtual
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
 from vmm_manager.entidade.acao import Acao
-from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.scvmm.scregion import SCRegion
 
 
@@ -74,13 +73,13 @@ class VM:
                         vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
     def add_acoes_diferenca_regiao(self, vm_remota,
-                                   plano_execucao, regioes):
+                                   plano_execucao, inventario):
         if (not vm_remota
                 or (self.regiao != SCRegion.REGIAO_PADRAO
                     and (self.regiao != vm_remota.regiao
-                         or regioes[self.regiao].nome_no != self.no_regiao))):
+                         or inventario.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao))):
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
-                regioes[self.regiao].id_no))
+                inventario.get_id_no_regiao(self.regiao)))
 
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
