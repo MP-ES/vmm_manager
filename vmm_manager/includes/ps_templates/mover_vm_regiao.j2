@@ -1,0 +1,39 @@
+# Recuperar VM com segurança
+# Pelo ID gera dependência cíclica e, só pelo nome, pode gerar conflito
+# O SCVMM permite mais de uma VM com o mesmo nome!
+$VM = $null
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
+$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+
+foreach($vm_obj in $vms_nuvem) {
+  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
+  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+    $nome_id = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_nome_id
+
+    # Recuperando VM correta
+    if ("{{ nome_vm }}" -eq $nome_id.Value){
+        $VM = $vm_obj
+    }
+  }
+}
+
+$VMHost = Get-SCVMHost -ID "{{ id_no_regiao }}"
+$guid = $null
+
+# Setando campo de controle
+$custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
+Set-SCCustomPropertyValue -InputObject $VM -CustomProperty $custom_regiao -Value "{{ regiao }}" | Out-Null
+
+# Movendo vm
+if (-not $VM.VMHost.ID.Equals($VMHost.ID)){
+  Move-SCVirtualMachine -VM $VM -VMHost $VMHost -HighlyAvailable $true -RunAsynchronously -UseDiffDiskOptimization -JobVariable job | Out-Null
+  $guid = $job.ID
+}
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+    Guid = $guid
+}
+ConvertTo-Json -Depth 3 $Resultado

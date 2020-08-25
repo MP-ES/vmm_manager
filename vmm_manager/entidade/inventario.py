@@ -5,6 +5,7 @@ import json
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 def json_handle_inventario(obj):
@@ -14,7 +15,6 @@ def json_handle_inventario(obj):
 
 
 class Inventario:
-    REGIAO_PADRAO = 'default'
 
     @staticmethod
     def get_json(inventario_local, inventario_remoto, dados_completos=True):
@@ -38,6 +38,31 @@ class Inventario:
         self.nuvem = nuvem
         self.vms = {}
 
+        self.__regioes_por_letra_id = None
+
+    def get_nome_no_regiao(self, regiao):
+        if regiao in self.__regioes_por_letra_id or {}:
+            return self.__regioes_por_letra_id[regiao].nome_no
+
+        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+
+    def get_id_no_regiao(self, regiao):
+        if regiao in self.__regioes_por_letra_id or {}:
+            return self.__regioes_por_letra_id[regiao].id_no
+
+        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+
+    def get_mapeamento_regioes(self):
+        if self.__regioes_por_letra_id is None:
+            ValueError('Mapeamento de regiões não definido.')
+
+        return self.__regioes_por_letra_id
+
+    def set_mapeamento_regioes(self, regioes_disponiveis):
+        self.__regioes_por_letra_id = {}
+        for regiao in regioes_disponiveis:
+            self.__regioes_por_letra_id[regiao.letra_id] = regiao
+
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.agrupamento != inventario_remoto.agrupamento
                 or self.nuvem != inventario_remoto.nuvem):
@@ -49,7 +74,10 @@ class Inventario:
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(
             inventario_remoto, plano_execucao)
+
         self.__add_acoes_diferenca_discos_adicionais(
+            inventario_remoto, plano_execucao)
+        self.__add_acoes_diferenca_regiao(
             inventario_remoto, plano_execucao)
 
         return True, plano_execucao
@@ -96,7 +124,7 @@ class Inventario:
         for maquina_virtual in self.vms.values():
             imagens.add(maquina_virtual.imagem)
 
-            if maquina_virtual.regiao != Inventario.REGIAO_PADRAO:
+            if maquina_virtual.regiao != SCRegion.REGIAO_PADRAO:
                 regioes.add(maquina_virtual.regiao)
 
             redes.update([rede.nome for rede in maquina_virtual.redes])
@@ -139,6 +167,12 @@ class Inventario:
             self.vms[nome_vm].add_acoes_diferenca_discos_adicionais(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao)
+
+    def __add_acoes_diferenca_regiao(self, inventario_remoto, plano_execucao):
+        for nome_vm in self.vms:
+            self.vms[nome_vm].add_acoes_diferenca_regiao(
+                inventario_remoto.vms.get(nome_vm, None),
+                plano_execucao, inventario_remoto)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento

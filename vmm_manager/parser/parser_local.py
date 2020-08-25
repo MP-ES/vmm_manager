@@ -8,6 +8,7 @@ from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.entidade.vm_disco import VMDisco
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 class ParserLocal:
@@ -88,7 +89,7 @@ class ParserLocal:
                 maquina_virtual.get('descricao'),
                 maquina_virtual.get(
                     'imagem', dados_inventario.get('imagem_padrao', None)),
-                maquina_virtual.get('regiao', Inventario.REGIAO_PADRAO),
+                maquina_virtual.get('regiao', SCRegion.REGIAO_PADRAO),
                 maquina_virtual.get(
                     'qtde_cpu', dados_inventario.get('qtde_cpu_padrao', None)),
                 maquina_virtual.get(

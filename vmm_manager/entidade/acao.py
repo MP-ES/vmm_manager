@@ -27,6 +27,7 @@ class Acao(YamlAble):
                       agrupamento=agrupamento,
                       campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                       campo_id=CAMPO_ID[0],
+                      campo_regiao=CAMPO_REGIAO[0],
                       nuvem=nuvem,
                       guid=guid,
                       servidor_vmm=servidor_acesso.servidor_vmm)

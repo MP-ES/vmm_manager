@@ -11,9 +11,35 @@ from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 class ParserRemoto:
+
+    @staticmethod
+    def __get_regioes_disponiveis(servidor_acesso):
+        cmd = Comando('obter_regioes_disponiveis',
+                      servidor_vmm=servidor_acesso.servidor_vmm)
+        status, regioes = cmd.executar(servidor_acesso)
+        if not status:
+            raise Exception(
+                f'Erro ao recuperar regiões disponíveis: {regioes}')
+
+        regioes_remoto = json.loads(regioes)
+        regioes_disponiveis = []
+        for indice, regiao in enumerate(regioes_remoto):
+            regiao_obj = SCRegion(
+                regiao.get('IDNo'),
+                regiao.get('NomeNo'),
+                regiao.get('Grupo'),
+                regiao.get('Cluster'),
+                chr(ord('A') + indice)
+            )
+
+            regioes_disponiveis.append(regiao_obj)
+
+        return regioes_disponiveis
+
     def __init__(self, agrupamento, nuvem):
         self.agrupamento = agrupamento
         self.nuvem = nuvem
@@ -106,6 +132,10 @@ class ParserRemoto:
             # discos
             self.__inventario.set_discos_vms(
                 self.__get_discos_adicionais(servidor_acesso))
+
+            # regioes
+            self.__inventario.set_mapeamento_regioes(
+                ParserRemoto.__get_regioes_disponiveis(servidor_acesso))
 
     def get_inventario(self, servidor_acesso, filtro_nome_vm=None, filtro_dados_completos=True):
         if not self.__inventario:

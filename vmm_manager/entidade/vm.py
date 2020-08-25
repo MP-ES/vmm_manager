@@ -4,6 +4,7 @@ Representação de uma máquina virtual
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
 from vmm_manager.entidade.acao import Acao
+from vmm_manager.scvmm.scregion import SCRegion
 
 
 class VM:
@@ -71,6 +72,15 @@ class VM:
                     self.discos_adicionais[nome_disco].get_acoes_diferenca_disco(
                         vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
+    def add_acoes_diferenca_regiao(self, vm_remota,
+                                   plano_execucao, inventario):
+        if (not vm_remota
+                or (self.regiao != SCRegion.REGIAO_PADRAO
+                    and (self.regiao != vm_remota.regiao
+                         or inventario.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao))):
+            plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
+                inventario.get_id_no_regiao(self.regiao)))
+
     def get_qtde_rede_principal(self):
         return sum([1 for rede in self.redes if rede.principal])
 
@@ -92,6 +102,12 @@ class VM:
     def get_acao_excluir_vm(self):
         return Acao(Acao.ACAO_EXCLUIR_VM,
                     id_vmm=self.id_vmm)
+
+    def get_acao_mover_vm_regiao(self, id_no_regiao):
+        return Acao('mover_vm_regiao',
+                    nome_vm=self.nome,
+                    id_no_regiao=id_no_regiao,
+                    regiao=self.regiao)
 
     def __hash__(self):
         return hash(self.nome)
