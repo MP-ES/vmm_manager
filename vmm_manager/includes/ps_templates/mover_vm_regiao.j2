@@ -27,7 +27,7 @@ $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ 
 Set-SCCustomPropertyValue -InputObject $VM -CustomProperty $custom_regiao -Value "{{ regiao }}" | Out-Null
 
 # Movendo vm
-if (-not $VM.VMHost.ID -eq "{{ id_no_regiao }}"){
+if (-not $VM.VMHost.ID.Equals($VMHost.ID)){
   Move-SCVirtualMachine -VM $VM -VMHost $VMHost -HighlyAvailable $true -RunAsynchronously -UseDiffDiskOptimization -JobVariable job | Out-Null
   $guid = $job.ID
 }
