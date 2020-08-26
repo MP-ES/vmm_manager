@@ -52,7 +52,7 @@ class TestParserLocal(Base):
              'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
              'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
              'redes_padrao': [{
-                 'nome': dados_teste.get_random_word(),
+                 'nome': dados_teste.get_nome_unico(),
                  'principal': num_iter == 0,
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
