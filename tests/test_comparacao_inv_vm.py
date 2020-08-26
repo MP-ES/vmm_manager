@@ -36,6 +36,22 @@ class TestComparacaoInvVm(Base):
                     vm_obj.descricao)
 
     @staticmethod
+    def alterar_imagem_vms_inventario(inventario):
+        for vm_obj in inventario.vms.values():
+            vm_obj.imagem = DadosTeste.get_random_string_com_excecao(
+                vm_obj.imagem)
+
+    @staticmethod
+    def alterar_redes_vms_inventario(inventario):
+        for vm_obj in inventario.vms.values():
+            if random.getrandbits(1):
+                vm_obj.redes = []
+            else:
+                for rede in vm_obj.redes:
+                    rede.nome = DadosTeste.get_random_string_com_excecao(
+                        rede.nome)
+
+    @staticmethod
     def get_plano_execucao_criar_inventario(inventario):
         plano_execucao = PlanoExecucao(
             inventario.agrupamento, inventario.nuvem)
@@ -80,6 +96,19 @@ class TestComparacaoInvVm(Base):
 
         return plano_execucao
 
+    @staticmethod
+    def get_plano_execucao_resetar_vm(inventario):
+        plano_execucao = PlanoExecucao(
+            inventario.agrupamento, inventario.nuvem)
+
+        for nome_vm in inventario.vms:
+            plano_execucao.acoes.append(
+                inventario.vms[nome_vm].get_acao_excluir_vm())
+            plano_execucao.acoes.append(
+                inventario.vms[nome_vm].get_acao_criar_vm())
+
+        return plano_execucao
+
     # pylint: disable=R0201
     def test_inventarios_iguais(self):
         inventario = Base.get_inventario_completo()
@@ -113,7 +142,7 @@ class TestComparacaoInvVm(Base):
         assert plano_execucao == self.get_plano_execucao_excluir_inventario(
             inventario_remoto)
 
-    def test_inventario_local_vm_desc_ram_ou_cpu_alterados(self):
+    def test_inventario_local_vms_desc_ram_ou_cpu_alterados(self):
         inventario_local = Base.get_inventario_completo()
         inventario_remoto = copy.deepcopy(inventario_local)
         self.alterar_desc_ram_cpu_vms_inventario(inventario_local)
@@ -123,4 +152,28 @@ class TestComparacaoInvVm(Base):
 
         assert status is True
         assert plano_execucao == self.get_plano_execucao_atualizar_vm(
+            inventario_local)
+
+    def test_inventario_local_vms_imagem_alterada(self):
+        inventario_local = Base.get_inventario_completo()
+        inventario_remoto = copy.deepcopy(inventario_local)
+        self.alterar_imagem_vms_inventario(inventario_local)
+
+        status, plano_execucao = inventario_local.calcular_plano_execucao(
+            inventario_remoto)
+
+        assert status is True
+        assert plano_execucao == self.get_plano_execucao_resetar_vm(
+            inventario_local)
+
+    def test_inventario_local_vms_redes_alteradas(self):
+        inventario_local = Base.get_inventario_completo()
+        inventario_remoto = copy.deepcopy(inventario_local)
+        self.alterar_redes_vms_inventario(inventario_local)
+
+        status, plano_execucao = inventario_local.calcular_plano_execucao(
+            inventario_remoto)
+
+        assert status is True
+        assert plano_execucao == self.get_plano_execucao_resetar_vm(
             inventario_local)
