@@ -1,0 +1,23 @@
+$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
+
+$Description = "{{ descricao }}"
+$CPUCount = "{{ qtde_cpu }}"
+$MemoryMB = "{{ qtde_ram_mb }}"
+$MemoryMBMin = [math]::min( 512 , $MemoryMB )
+
+$NeedShutdown = ($VM.CPUCount -ne $CPUCount) -or ($VM.Memory -ne $MemoryMB)
+
+if ($NeedShutdown -and $VM.Status -eq 'Running'){
+    Stop-SCVirtualMachine -VM $VM | Out-Null
+}
+
+Set-SCVirtualMachine -VM $VM -Description $Description -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $true -DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB | Out-Null
+
+if ($NeedShutdown){
+    Start-SCVirtualMachine -VM $VM | Out-Null
+}
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+}
+ConvertTo-Json -Depth 3 $Resultado

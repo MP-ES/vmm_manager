@@ -76,7 +76,7 @@ class TestComparacaoInvVm(Base):
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_atualizar_vm())
+                inventario.vms[nome_vm].get_acao_atualizar_vm(inventario.vms[nome_vm].id_vmm))
 
         return plano_execucao
 
