@@ -75,6 +75,8 @@ class Inventario:
         self.__add_acoes_execucao_excluir_vms(
             inventario_remoto, plano_execucao)
 
+        self.__add_acoes_diferenca_vm(
+            inventario_remoto, plano_execucao)
         self.__add_acoes_diferenca_discos_adicionais(
             inventario_remoto, plano_execucao)
         self.__add_acoes_diferenca_regiao(
@@ -173,6 +175,12 @@ class Inventario:
             self.vms[nome_vm].add_acoes_diferenca_regiao(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao, inventario_remoto)
+
+    def __add_acoes_diferenca_vm(self, inventario_remoto, plano_execucao):
+        for nome_vm in self.vms:
+            if nome_vm in inventario_remoto.vms:
+                self.vms[nome_vm].add_acoes_diferenca_vm(
+                    inventario_remoto.vms[nome_vm], plano_execucao)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento

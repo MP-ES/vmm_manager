@@ -15,7 +15,6 @@ class VMRede:
 
     def __eq__(self, other):
         return isinstance(other, VMRede) and (self.nome == other.nome
-                                              and self.ips == other.ips
                                               and self.principal == other.principal)
 
     def __repr__(self):
