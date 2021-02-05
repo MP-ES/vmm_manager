@@ -39,9 +39,9 @@ def parametro_arquivo_yaml(nome_arquivo):
 def parametro_booleano(valor):
     try:
         return strtobool(valor)
-    except ValueError:
+    except ValueError as error:
         raise argparse.ArgumentTypeError(
-            f"'{valor}' não é um valor booleano")
+            f"'{valor}' não é um valor booleano") from error
 
 
 def parametro_alfanumerico_limitado(valor):

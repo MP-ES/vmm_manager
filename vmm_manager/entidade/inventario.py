@@ -99,7 +99,12 @@ class Inventario:
         return ','.join([f'"{nome_vm}"' for nome_vm in self.vms])
 
     def __validar_regras_locais(self):
+        regioes = set()
+
         for maquina_virtual in self.vms.values():
+            if maquina_virtual.regiao != SCRegion.REGIAO_PADRAO:
+                regioes.add(maquina_virtual.regiao)
+
             if maquina_virtual.imagem is None:
                 raise ValueError(
                     f'Imagem da VM {maquina_virtual.nome} não definida.')
@@ -115,6 +120,13 @@ class Inventario:
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
                     f'VM {maquina_virtual.nome} deve ter exatamente uma rede principal.')
+
+        regioes_validas = [chr(ord('A') + num)
+                           for num in range(0, len(regioes))]
+        for regiao in regioes:
+            if regiao not in regioes_validas:
+                raise ValueError(
+                    f"Região '{regiao}' não é válida.")
 
     def validar(self, servidor_acesso):
         self.__validar_regras_locais()

@@ -82,7 +82,7 @@ echo 'source $HOME/.poetry/env' >>~/.bashrc
 
 # Configurar autocomplete
 # Bash
-poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
+$HOME/.poetry/bin/poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
 ```
 
 ### Variáveis de ambiente

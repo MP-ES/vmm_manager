@@ -24,6 +24,10 @@ class DadosTeste():
 
         return string_random
 
+    @staticmethod
+    def get_regiao_vm_por_iteracao(num_iter):
+        return chr(ord('A') + num_iter)
+
     def __init__(self):
         self.__faker = Faker()
         self.__nomes_unicos = []
