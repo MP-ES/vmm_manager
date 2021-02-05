@@ -74,10 +74,10 @@ class VM:
 
     def add_acoes_diferenca_regiao(self, vm_remota,
                                    plano_execucao, inv_remoto):
-        if (not vm_remota
-                or (self.regiao != SCRegion.REGIAO_PADRAO
-                    and (self.regiao != vm_remota.regiao or
-                         inv_remoto.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao))):
+        if (self.regiao != SCRegion.REGIAO_PADRAO
+            and (not vm_remota
+                 or (self.regiao != vm_remota.regiao or
+                     inv_remoto.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao))):
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.regiao)))
 
