@@ -317,7 +317,7 @@ ignore-docstrings=yes
 ignore-imports=yes
 
 # Minimum lines number of a similarity.
-min-similarity-lines=10
+min-similarity-lines=15
 
 
 [VARIABLES]
