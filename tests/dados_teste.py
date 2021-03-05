@@ -1,7 +1,7 @@
 """
 Classe de apoio e geração de dados para os testes
 """
-from random import choice, randint
+from random import choice, randint, getrandbits
 from faker import Faker
 
 
@@ -44,4 +44,12 @@ class DadosTeste():
         word = self.__faker.format('word')
         while len(word) < 3:
             word = self.__faker.format('word')
+        return word
+
+    def get_random_nome_vm_incorreto(self):
+        word = self.get_random_word()
+        if getrandbits(1):
+            word = word * 6
+        else:
+            word = word + '_-'
         return word

@@ -7,7 +7,7 @@ redes_padrao: list(include('rede'), required=False)
 vms: list(include('vm'), min=1)
 ---
 vm:
-  nome: regex('^[a-z]{1}[a-z0-9_]{2,39}$', name='caracteres alfanuméricos', ignore_case=True)
+  nome: regex('^[a-z]{1}[a-z0-9]{2,14}$', name='caracteres alfanuméricos (máx 15)', ignore_case=True)
   descricao: str(min=3, required=False)
   imagem: str(min=3, required=False)
   regiao: regex('^[A-Z]{1}$', name='letra maiúscula do alfabeto', ignore_case=False, required=False)
