@@ -1,7 +1,7 @@
 """
 Classe de apoio e geração de dados para os testes
 """
-from random import choice, randint, getrandbits
+from random import choice, randint
 from faker import Faker
 
 
@@ -48,7 +48,7 @@ class DadosTeste():
 
     def get_random_nome_vm_incorreto(self):
         word = self.get_random_word()
-        if getrandbits(1):
+        if choice([True, False]):
             word = word * 6
         else:
             word = word + '_-'
