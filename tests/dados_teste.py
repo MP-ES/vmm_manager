@@ -45,3 +45,11 @@ class DadosTeste():
         while len(word) < 3:
             word = self.__faker.format('word')
         return word
+
+    def get_random_nome_vm_incorreto(self):
+        word = self.get_random_word()
+        if choice([True, False]):
+            word = word * 6
+        else:
+            word = word + '_-'
+        return word

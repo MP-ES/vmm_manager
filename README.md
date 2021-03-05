@@ -115,7 +115,7 @@ poetry add <pacote> [--dev]
 pylint tests/* vmm_manager/*
 
 # Executar testes
-python -m pytest -v
+python -m pytest -vv
 ```
 
 ## Referências

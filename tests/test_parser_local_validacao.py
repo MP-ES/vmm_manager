@@ -3,6 +3,7 @@ Testes do ParserLocal (casos que precisam dar erro)
 """
 from unittest import mock
 from random import randrange, randint, choice
+import re
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.parser.parser_local import ParserLocal
 from tests.base import Base
@@ -42,6 +43,29 @@ class TestParserLocalValidacao(Base):
 
         assert status is False
         assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['nome']} não definida."
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_vms_nome_invalido(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        qtde_vms = randrange(1, Base.VMS_POR_TESTE_MAX)
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'vms': [{
+                 'nome': dados_teste.get_random_nome_vm_incorreto()
+             } for _ in range(qtde_vms)]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, msg = parser_local.get_inventario(servidor_acesso)
+
+        assert status is False
+        assert qtde_vms == sum(1 for _ in re.finditer(
+            re.escape('is not a caracteres alfanuméricos (máx 15)'), msg))
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
