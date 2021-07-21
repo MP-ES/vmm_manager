@@ -5,13 +5,26 @@ import sys
 from datetime import datetime
 from pytz import timezone
 
+# Parâmetros globais de escrita
+_EXIBIR_CORES = True
+
+
+def set_parametros_globais_escrita(exibir_cores):
+    global _EXIBIR_CORES  # pylint: disable=global-statement
+    _EXIBIR_CORES = exibir_cores
+
 
 def formatar_msg_aviso(msg):
-    return f'\033[93m{msg}\033[0m'
+    msg_inicial = 'AVISO'
+    if _EXIBIR_CORES:
+        return f'\033[93m{msg_inicial}: {msg}\033[0m'
+    return f'{msg_inicial}: {msg}'
 
 
 def formatar_msg_erro(msg):
-    return f'\033[91m{msg}\033[0m'
+    if _EXIBIR_CORES:
+        return f'\033[91m{msg}\033[0m'
+    return msg
 
 
 def finalizar_com_erro(msg_erro):
