@@ -16,7 +16,8 @@ from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.util.config import(CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
                                     CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
-from vmm_manager.util.msgs import finalizar_com_erro, imprimir_acao_corrente
+from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
+                                   imprimir_acao_corrente, set_parametros_globais_escrita)
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
 from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
 from vmm_manager.util.operacao import adquirir_lock, liberar_lock, confirmar_acao_usuario_com_lock
@@ -77,6 +78,10 @@ def get_parser():
     parser.add('-o', '--ocultar-progresso',
                help='Não imprime informações de progresso do comando',
                action='store_true')
+    parser.add('--exibir-cores',
+               help='Se for False, não exibe cores na saída do terminal',
+               dest='exibir_cores', env_var='VMM_EXIBIR_CORES', default=True,
+               required=False, type=parametro_booleano)
 
     subprasers = parser.add_subparsers(dest='comando')
     plan = subprasers.add_parser(
@@ -284,8 +289,9 @@ def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
             status, plano_execucao, ocultar_progresso)
     # Caso de ter informado o arquivo de inventário
     elif arquivo_inventario:
-        print('AVISO: plano de execução será calculado à partir do inventário.',
-              flush=True)
+        print(formatar_msg_aviso(
+            'plano de execução será calculado à partir do inventário.'),
+            flush=True)
         inventario_local = obter_inventario_local(
             servidor_acesso, arquivo_inventario, ocultar_progresso)
 
@@ -359,6 +365,9 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
 def main():
     parser = get_parser()
     args = parser.parse_args()
+
+    set_parametros_globais_escrita(args.exibir_cores)
+
     if not args.comando:
         finalizar_com_erro('Comando não informado. Use a opção -h para ajuda.')
 
