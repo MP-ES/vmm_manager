@@ -2,7 +2,8 @@ name: Tests
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
 
 jobs:
@@ -10,21 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.7
-    - name: Install dependencies
-      run: |
-        curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-        source $HOME/.poetry/env
-        poetry install --no-root
-    - name: Lint with pylint
-      run: |
-        source $HOME/.poetry/env
-        poetry run pylint tests/* vmm_manager/*
-    - name: Test with pytest
-      run: |
-        source $HOME/.poetry/env
-        poetry run python -m pytest -v
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+          source $HOME/.poetry/env
+          poetry install --no-root
+      - name: Lint with pylint
+        run: |
+          source $HOME/.poetry/env
+          poetry run pylint tests/* vmm_manager/*
+      - name: Test with pytest
+        run: |
+          source $HOME/.poetry/env
+          poetry run python -m pytest -v
