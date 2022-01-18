@@ -21,7 +21,7 @@ class TestComparacaoInvDisco(Base):
         discos_removidos = {}
         for nome_vm in inventario.vms:
             discos_removidos[nome_vm] = inventario.vms[nome_vm].discos_adicionais
-            inventario.vms[nome_vm].discos_adicionais = []
+            inventario.vms[nome_vm].discos_adicionais = {}
         return discos_removidos
 
     @staticmethod

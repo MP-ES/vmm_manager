@@ -13,9 +13,7 @@ Script python que gerencia recursos no System Center Virtual Machine Manager (SC
 É necessário ter uma máquina Windows, que servirá como ponto de acesso ao SCVMM, com as seguintes ferramentas:
 
 - OpenSSH
-- Módulo PowerShell do SCVMM (**virtualmachinemanager**), geralmente instalado junto com o Console do Virtual Machine Manager (VMM)
-  
-Nessa máquina, também é necessário executar o comando PowerShell `set-executionpolicy unrestricted`, com poderes administrativos.
+- Módulo PowerShell do SCVMM (**virtualmachinemanager**), instalado junto com o Console do Virtual Machine Manager (VMM). Você também pode obtê-lo em <https://github.com/MP-ES/VirtualMachineManager-PowerShellModule>
 
 ## Instalação
 

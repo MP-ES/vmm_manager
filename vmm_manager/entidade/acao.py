@@ -86,10 +86,9 @@ class Acao(YamlAble):
             f'Ação "{self.nome_comando}" não possui comando de pós-execução.')
 
     def get_str_impressao_inline(self):
-        return '{} - [{}]'.format(self.nome_comando,
-                                  ', '.join(
-                                      ['{}={}'.format(arg, self.args[arg])
-                                       for arg in self.args]))
+        cmd_args = ', '.join([f'{arg}={value}'
+                              for arg, value in self.args.items()])
+        return f'{self.nome_comando} - [{cmd_args}]'
 
     def __eq__(self, other):
         return isinstance(other, Acao) and (self.nome_comando == other.nome_comando

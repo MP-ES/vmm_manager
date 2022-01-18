@@ -26,7 +26,7 @@ from vmm_manager.entidade.inventario import Inventario
 
 def parametro_arquivo_yaml(nome_arquivo):
     try:
-        with open(nome_arquivo, 'r') as stream:
+        with open(nome_arquivo, 'r', encoding='utf8') as stream:
             yaml = YAML()
             yaml.load(stream)
             return nome_arquivo

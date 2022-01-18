@@ -144,24 +144,25 @@ class ServidorAcesso:
             arquivo_script = None
 
             if self.__is_conexao_ok():
-                arquivo_script = tempfile.NamedTemporaryFile(
-                    prefix=nome, suffix='.ps1', delete=True)
-                arquivo_script.file.write(conteudo.encode(
-                    ServidorAcesso.__ENCODE_WINDOWS))
-                arquivo_script.flush()
+                with tempfile.NamedTemporaryFile(
+                        prefix=nome, suffix='.ps1', delete=True) as arquivo_script:
+                    arquivo_script.file.write(conteudo.encode(
+                        ServidorAcesso.__ENCODE_WINDOWS))
+                    arquivo_script.flush()
 
-                res_envio_arquivo = self.__enviar_arquivo(arquivo_script.name)
-                if not res_envio_arquivo[0]:
-                    return res_envio_arquivo
+                    res_envio_arquivo = self.__enviar_arquivo(
+                        arquivo_script.name)
+                    if not res_envio_arquivo[0]:
+                        return res_envio_arquivo
 
-                caminho_arquivo = ServidorAcesso.__get_caminho_arquivo(
-                    arquivo_script.name)
-                resultado = self.__executar_comando(
-                    f'powershell.exe -file {caminho_arquivo}')
+                    caminho_arquivo = ServidorAcesso.__get_caminho_arquivo(
+                        arquivo_script.name)
+                    resultado = self.__executar_comando(
+                        f'powershell.exe -file {caminho_arquivo}')
 
-                self.__excluir_arquivo(arquivo_script.name)
+                    self.__excluir_arquivo(arquivo_script.name)
 
-                return resultado
+                    return resultado
 
             return False, self.get_msg_erro_conexao()
         # pylint: disable=broad-except
