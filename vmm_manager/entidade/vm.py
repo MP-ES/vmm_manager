@@ -61,15 +61,15 @@ class VM:
                         vm_remota.id_vmm))
 
         # verificando discos atuais
-        for nome_disco in self.discos_adicionais:
+        for nome_disco, data_disco in self.discos_adicionais.items():
             # discos a criar
             if not vm_remota or not nome_disco in vm_remota.discos_adicionais:
                 plano_execucao.acoes.append(
-                    self.discos_adicionais[nome_disco].get_acao_criar_disco(self.nome))
+                    data_disco.get_acao_criar_disco(self.nome))
             else:
                 # discos a alterar
                 plano_execucao.acoes.extend(
-                    self.discos_adicionais[nome_disco].get_acoes_diferenca_disco(
+                    data_disco.get_acoes_diferenca_disco(
                         vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
     def add_acoes_diferenca_regiao(self, vm_remota,
@@ -176,12 +176,12 @@ class VM:
             'id_vmm': self.id_vmm,
             'status': self.status.value,
             'no_regiao': self.no_regiao,
-            'ansible': [self.dados_ansible[dados_ansible].to_dict()
-                        for dados_ansible in self.dados_ansible]
+            'ansible': [data_ansible.to_dict()
+                        for data_ansible in self.dados_ansible.values()]
         }
 
         if self.to_json_dados_completos:
-            dict_objeto['discos_adicionais'] = [self.discos_adicionais[disco_adicional].to_dict()
-                                                for disco_adicional in self.discos_adicionais]
+            dict_objeto['discos_adicionais'] = [data_disco.to_dict()
+                                                for data_disco in self.discos_adicionais.values()]
 
         return dict_objeto

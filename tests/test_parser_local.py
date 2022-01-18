@@ -79,8 +79,8 @@ class TestParserLocal(Base):
         assert inventario_resposta == self.get_obj_inventario(inventario)
 
         # Assert dados ansible
-        for nome_vm in inventario_resposta.vms:
-            dados_ansible_vm = inventario_resposta.vms[nome_vm].dados_ansible
+        for nome_vm, data_vm in inventario_resposta.vms.items():
+            dados_ansible_vm = data_vm.dados_ansible
             dados_ansible_ok = self.get_dados_ansible_vm(inventario, nome_vm)
 
             assert not dados_ansible_vm.keys() - dados_ansible_ok.keys()
@@ -124,8 +124,8 @@ class TestParserLocal(Base):
         assert inventario_resposta == self.get_obj_inventario(inventario)
 
         # Assert discos adicionais
-        for nome_vm in inventario_resposta.vms:
-            discos_adicionais_vm = inventario_resposta.vms[nome_vm].discos_adicionais
+        for nome_vm, data_vm in inventario_resposta.vms.items():
+            discos_adicionais_vm = data_vm.discos_adicionais
             discos_adicionais_ok = self.get_discos_adicionais_vm(
                 inventario, nome_vm)
 

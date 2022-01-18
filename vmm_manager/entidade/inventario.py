@@ -41,13 +41,13 @@ class Inventario:
         self.__regioes_por_letra_id = None
 
     def get_nome_no_regiao(self, regiao):
-        if regiao in self.__regioes_por_letra_id or {}:
+        if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].nome_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
 
     def get_id_no_regiao(self, regiao):
-        if regiao in self.__regioes_por_letra_id or {}:
+        if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].id_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
@@ -177,21 +177,21 @@ class Inventario:
                 inventario_remoto.vms[nome_vm].get_acao_excluir_vm())
 
     def __add_acoes_diferenca_discos_adicionais(self, inventario_remoto, plano_execucao):
-        for nome_vm in self.vms:
-            self.vms[nome_vm].add_acoes_diferenca_discos_adicionais(
+        for nome_vm, data_vm in self.vms.items():
+            data_vm.add_acoes_diferenca_discos_adicionais(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao)
 
     def __add_acoes_diferenca_regiao(self, inventario_remoto, plano_execucao):
-        for nome_vm in self.vms:
-            self.vms[nome_vm].add_acoes_diferenca_regiao(
+        for nome_vm, data_vm in self.vms.items():
+            data_vm.add_acoes_diferenca_regiao(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao, inventario_remoto)
 
     def __add_acoes_diferenca_vm(self, inventario_remoto, plano_execucao):
-        for nome_vm in self.vms:
+        for nome_vm, data_vm in self.vms.items():
             if nome_vm in inventario_remoto.vms:
-                self.vms[nome_vm].add_acoes_diferenca_vm(
+                data_vm.add_acoes_diferenca_vm(
                     inventario_remoto.vms[nome_vm], plano_execucao)
 
     def __eq__(self, other):
@@ -210,5 +210,5 @@ class Inventario:
         return {
             'agrupamento': self.agrupamento,
             'nuvem': self.nuvem,
-            'vms': [self.vms[vm_name].to_dict() for vm_name in self.vms]
+            'vms': [vm_data.to_dict() for vm_data in self.vms.values()]
         }

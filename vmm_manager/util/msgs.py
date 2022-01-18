@@ -44,7 +44,7 @@ def imprimir_erro(ocultar_progresso):
 
 def imprimir_acao_corrente(acao, ocultar_progresso):
     if not ocultar_progresso:
-        print('{:<60}'.format(acao + '...'), end='', flush=True)
+        print(f'{acao:<57}...', end='', flush=True)
 
 
 def get_str_data_formatada(formato):

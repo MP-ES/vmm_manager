@@ -21,7 +21,7 @@ class PlanoExecucao(YamlAble):
     @staticmethod
     def carregar_plano_execucao(arquivo_plano_execucao):
         try:
-            with open(arquivo_plano_execucao, 'r') as arquivo:
+            with open(arquivo_plano_execucao, 'r', encoding='utf8') as arquivo:
                 plano_execucao = yaml.safe_load(arquivo)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
@@ -51,7 +51,7 @@ class PlanoExecucao(YamlAble):
     def gerar_arquivo(self):
         try:
             conteudo = yaml.safe_dump(self, default_flow_style=False)
-            with open(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO, 'w') as arquivo_yaml:
+            with open(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
             return False, f'Erro ao gerar arquivo {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
@@ -64,7 +64,7 @@ class PlanoExecucao(YamlAble):
             self.__jobs_em_execucao = {}
 
             for acao in acoes:
-                print('{:<100} => '.format(textwrap.shorten(acao.get_str_impressao_inline(), 100)),
+                print(f'{textwrap.shorten(acao.get_str_impressao_inline(), 100)} => ',
                       end='', flush=True)
 
                 # Caso específico de criação de vms
@@ -189,7 +189,7 @@ class PlanoExecucao(YamlAble):
 
     def __gerar_arquivo_erros(self):
         try:
-            with open(PlanoExecucao.ARQUIVO_LOG_ERROS, 'w') as arquivo_erros:
+            with open(PlanoExecucao.ARQUIVO_LOG_ERROS, 'w', encoding='utf8') as arquivo_erros:
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
             print(
