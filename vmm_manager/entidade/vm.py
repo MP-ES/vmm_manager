@@ -12,6 +12,7 @@ class VM:
                  imagem, regiao,
                  qtde_cpu, qtde_ram_mb, redes,
                  id_vmm=None,
+                 virt_aninhada=False,
                  status=VMStatusEnum.EM_EXECUCAO,
                  no_regiao=None):
         self.nome = nome
@@ -24,6 +25,7 @@ class VM:
         self.id_vmm = id_vmm
         self.status = status
         self.no_regiao = no_regiao
+        self.virt_aninhada = virt_aninhada
 
         self.dados_ansible = {}
         self.discos_adicionais = {}
