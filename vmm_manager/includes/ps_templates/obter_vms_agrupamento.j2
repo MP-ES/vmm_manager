@@ -42,6 +42,7 @@ foreach($vm in $vms_nuvem) {
       Redes = $redes
       Imagem = $imagem.Value
       Regiao = $regiao.Value
+      VirtAninhada = $vm.EnabledNestedVirtualization
     }
     $vms_agrupamento += $vm_agrupamento
   }

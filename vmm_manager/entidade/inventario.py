@@ -81,6 +81,8 @@ class Inventario:
             inventario_remoto, plano_execucao)
         self.__add_acoes_diferenca_regiao(
             inventario_remoto, plano_execucao)
+        self.__add_acoes_virt_aninhada(
+            inventario_remoto, plano_execucao)
 
         return True, plano_execucao
 
@@ -185,6 +187,12 @@ class Inventario:
     def __add_acoes_diferenca_regiao(self, inventario_remoto, plano_execucao):
         for nome_vm, data_vm in self.vms.items():
             data_vm.add_acoes_diferenca_regiao(
+                inventario_remoto.vms.get(nome_vm, None),
+                plano_execucao, inventario_remoto)
+
+    def __add_acoes_virt_aninhada(self, inventario_remoto, plano_execucao):
+        for nome_vm, data_vm in self.vms.items():
+            data_vm.add_acoes_virt_aninhada(
                 inventario_remoto.vms.get(nome_vm, None),
                 plano_execucao, inventario_remoto)
 
