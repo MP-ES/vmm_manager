@@ -122,8 +122,8 @@ class ParserRemoto:
                 maquina_virtual.get('QtdeCpu'),
                 maquina_virtual.get('QtdeRam'),
                 vms_rede,
-                maquina_virtual.get('VirtAninhada'),
                 maquina_virtual.get('ID'),
+                maquina_virtual.get('VirtAninhada'),
                 VMStatusEnum(maquina_virtual.get('Status')),
                 maquina_virtual.get('NoRegiao'),
             )

@@ -194,7 +194,7 @@ class Inventario:
         for nome_vm, data_vm in self.vms.items():
             data_vm.add_acoes_virt_aninhada(
                 inventario_remoto.vms.get(nome_vm, None),
-                plano_execucao, inventario_remoto)
+                plano_execucao)
 
     def __add_acoes_diferenca_vm(self, inventario_remoto, plano_execucao):
         for nome_vm, data_vm in self.vms.items():

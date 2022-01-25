@@ -19,21 +19,18 @@ foreach($vm_obj in $vms_nuvem) {
   }
 }
 
-$VMHost = Get-SCVMHost -ID "{{ id_no_regiao }}"
-$guid = $null
+$VirtAninhada = ${{ virt_aninhada }}
 
-# Setando campo de controle
-$custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
-Set-SCCustomPropertyValue -InputObject $VM -CustomProperty $custom_regiao -Value "{{ regiao }}" | Out-Null
-
-# Movendo vm
-if (-not $VM.VMHost.ID.Equals($VMHost.ID)){
-  Move-SCVirtualMachine -VM $VM -VMHost $VMHost -HighlyAvailable $true -RunAsynchronously -UseDiffDiskOptimization -JobVariable job | Out-Null
-  $guid = $job.ID
+# Máquina deve estar desligada
+if ($VM.Status -ne "Poweroff"){
+    Stop-SCVirtualMachine -VM $VM | Out-Null
 }
+
+Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtAninhada | Out-Null
+Start-SCVirtualMachine -VM $VM -RunAsynchronously -JobVariable job | Out-Null
 
 $Resultado = [PSCustomObject]@{
     Status = 'OK'
-    Guid = $guid
+    Guid = $job.ID
 }
 ConvertTo-Json -Depth 3 $Resultado

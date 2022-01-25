@@ -2,7 +2,7 @@
 Classe com funções básicas de teste
 """
 import uuid
-from random import randrange, randint, choice
+from random import randrange, randint, choice, getrandbits
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
 from vmm_manager.entidade.vm_rede import VMRede
@@ -78,6 +78,7 @@ class Base():
                         randint(Base.CPU_MIN, Base.CPU_MAX),
                         randint(Base.RAM_MIN, Base.RAM_MAX),
                         redes_vm,
+                        virt_aninhada=bool(getrandbits(1)),
                         no_regiao=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj

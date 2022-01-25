@@ -84,9 +84,9 @@ class VM:
                 inv_remoto.get_id_no_regiao(self.regiao)))
 
     def add_acoes_virt_aninhada(self, vm_remota,
-                                plano_execucao, inv_remoto):
+                                plano_execucao):
         if ((not vm_remota and self.virt_aninhada)
-                or (vm_remota.virt_aninhada != self.virt_aninhada)):
+                or (vm_remota and vm_remota.virt_aninhada != self.virt_aninhada)):
             plano_execucao.acoes.append(
                 self.get_acao_atualizar_virt_aninhada())
 
