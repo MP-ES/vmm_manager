@@ -201,7 +201,7 @@ class TestComparacaoInvVm(Base):
         assert plano_execucao == self.get_plano_execucao_resetar_vm(
             inventario_local)
 
-    @pytest.mark.parametrize("virt_aninhada", [True, False])
+    @pytest.mark.parametrize('virt_aninhada', [True, False])
     def test_inventario_local_vms_virt_aninhada(self, virt_aninhada):
         inventario_local = Base.get_inventario_completo()
         inventario_remoto = copy.deepcopy(inventario_local)
