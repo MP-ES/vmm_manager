@@ -16,6 +16,7 @@ vm:
   redes: list(include('rede'), required=False)
   discos_adicionais: list(include('disco_adicional'), required=False)
   ansible: list(include('ansible'), required=False)
+  habilitar_virtualizacao_aninhada: bool(required=False)
 
 rede:
   nome: str(min=3, required=True)
@@ -26,7 +27,7 @@ disco_adicional:
   arquivo: str(min=3, required=True)
   caminho: str(min=3, required=False)
   tamanho_mb: int(min=1, max=1073741824, required=True)
-  tamanho_tipo: enum("FixedSize", "DynamicallyExpanding", required=True)  
+  tamanho_tipo: enum("FixedSize", "DynamicallyExpanding", required=True)
 
 ansible:
   grupo: regex('^[a-z]{1}[a-z_]{2,39}$', name='caracteres alfabéticos', ignore_case=True, required=True)

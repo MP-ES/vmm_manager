@@ -12,6 +12,7 @@ class VM:
                  imagem, regiao,
                  qtde_cpu, qtde_ram_mb, redes,
                  id_vmm=None,
+                 virt_aninhada=False,
                  status=VMStatusEnum.EM_EXECUCAO,
                  no_regiao=None):
         self.nome = nome
@@ -24,6 +25,7 @@ class VM:
         self.id_vmm = id_vmm
         self.status = status
         self.no_regiao = no_regiao
+        self.virt_aninhada = virt_aninhada
 
         self.dados_ansible = {}
         self.discos_adicionais = {}
@@ -81,6 +83,13 @@ class VM:
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.regiao)))
 
+    def add_acoes_virt_aninhada(self, vm_remota,
+                                plano_execucao):
+        if ((not vm_remota and self.virt_aninhada)
+                or (vm_remota and vm_remota.virt_aninhada != self.virt_aninhada)):
+            plano_execucao.acoes.append(
+                self.get_acao_atualizar_virt_aninhada())
+
     def add_acoes_diferenca_vm(self, vm_remota, plano_execucao):
         # alteração da imagem é irreversível
         if self.imagem != vm_remota.imagem:
@@ -128,6 +137,11 @@ class VM:
                     nome_vm=self.nome,
                     id_no_regiao=id_no_regiao,
                     regiao=self.regiao)
+
+    def get_acao_atualizar_virt_aninhada(self):
+        return Acao('atualizar_virt_aninhada',
+                    nome_vm=self.nome,
+                    virt_aninhada=self.virt_aninhada)
 
     def get_acao_atualizar_vm(self, id_vm_remota):
         return Acao('atualizar_vm',

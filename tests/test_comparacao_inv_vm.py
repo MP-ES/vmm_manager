@@ -3,6 +3,7 @@ Testes de comparação de inventários e geração de ações, focado em vms
 """
 import random
 import copy
+import pytest
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
@@ -52,6 +53,11 @@ class TestComparacaoInvVm(Base):
                         rede.nome)
 
     @staticmethod
+    def alterar_virt_aninhada_vms_inventario(inventario, novo_valor):
+        for vm_obj in inventario.vms.values():
+            vm_obj.virt_aninhada = novo_valor
+
+    @staticmethod
     def get_plano_execucao_criar_inventario(inventario):
         plano_execucao = PlanoExecucao(
             inventario.agrupamento, inventario.nuvem)
@@ -71,6 +77,11 @@ class TestComparacaoInvVm(Base):
             plano_execucao.acoes.append(
                 inventario.vms[nome_vm].get_acao_mover_vm_regiao(
                     inventario.get_id_no_regiao(inventario.vms[nome_vm].regiao)))
+
+        for nome_vm in inventario.vms:
+            if inventario.vms[nome_vm].virt_aninhada:
+                plano_execucao.acoes.append(
+                    inventario.vms[nome_vm].get_acao_atualizar_virt_aninhada())
 
         return plano_execucao
 
@@ -106,6 +117,18 @@ class TestComparacaoInvVm(Base):
                 inventario.vms[nome_vm].get_acao_excluir_vm())
             plano_execucao.acoes.append(
                 inventario.vms[nome_vm].get_acao_criar_vm())
+
+        return plano_execucao
+
+    @staticmethod
+    def get_plano_execucao_alterar_virt_aninhada(inventario_local, inventario_remoto, novo_valor):
+        plano_execucao = PlanoExecucao(
+            inventario_local.agrupamento, inventario_local.nuvem)
+
+        for nome_vm in inventario_local.vms:
+            if inventario_remoto.vms[nome_vm].virt_aninhada != novo_valor:
+                plano_execucao.acoes.append(
+                    inventario_local.vms[nome_vm].get_acao_atualizar_virt_aninhada())
 
         return plano_execucao
 
@@ -177,3 +200,17 @@ class TestComparacaoInvVm(Base):
         assert status is True
         assert plano_execucao == self.get_plano_execucao_resetar_vm(
             inventario_local)
+
+    @pytest.mark.parametrize('virt_aninhada', [True, False])
+    def test_inventario_local_vms_virt_aninhada(self, virt_aninhada):
+        inventario_local = Base.get_inventario_completo()
+        inventario_remoto = copy.deepcopy(inventario_local)
+        self.alterar_virt_aninhada_vms_inventario(
+            inventario_local, virt_aninhada)
+
+        status, plano_execucao = inventario_local.calcular_plano_execucao(
+            inventario_remoto)
+
+        assert status is True
+        assert plano_execucao == self.get_plano_execucao_alterar_virt_aninhada(
+            inventario_local, inventario_remoto, virt_aninhada)
