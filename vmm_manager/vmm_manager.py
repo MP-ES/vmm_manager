@@ -6,7 +6,6 @@ import re
 import string
 import os
 import argparse
-from distutils.util import strtobool
 import configargparse
 from ruamel.yaml import YAML, scanner
 from vmm_manager.infra.servidor_acesso import ServidorAcesso
@@ -39,7 +38,7 @@ def parametro_arquivo_yaml(nome_arquivo):
 
 def parametro_booleano(valor):
     try:
-        return strtobool(valor)
+        return str(valor).lower() in ('y', 'yes', 't', 'true', 'on', '1')
     except ValueError as error:
         raise argparse.ArgumentTypeError(
             f"'{valor}' não é um valor booleano") from error
