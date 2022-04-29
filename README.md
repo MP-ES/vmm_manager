@@ -31,41 +31,7 @@ vmm_manager -h
 
 ### Exemplo de arquivo de inventário
 
-```yaml
-agrupamento: vmm_manager_test
-nuvem: "developer"
-imagem_padrao: "vm_linux"
-qtde_cpu_padrao: 1
-qtde_ram_mb_padrao: 512
-redes_padrao:
-  - nome: "vlan1"
-    principal: true
-vms:
-  - nome: VMM_TEST1
-    descricao: "Test VM"
-    redes:
-      - nome: "vlan1"
-        principal: true
-      - nome: "vlan2"
-    regiao: A
-    discos_adicionais:
-      - tipo: SCSI
-        arquivo: "disk_var_dir"
-        caminho: "C:\\Storage\\disk1"
-        tamanho_mb: 1024
-        tamanho_tipo: DynamicallyExpanding
-  - nome: VMM_TEST2
-    regiao: B
-    ansible:
-      - grupo: "web_server"
-  - nome: VMM_TEST3
-    ansible:
-      - grupo: "database"
-        vars:
-          - nome: "data_dir"
-            valor: "/mnt/data"
-      - grupo: "load_balancer"
-```
+[inventario_exemplo.yaml](inventario_exemplo.yaml)
 
 ## Desenvolvimento
 
@@ -114,6 +80,12 @@ pylint tests/* vmm_manager/*
 
 # Executar testes
 python -m pytest -vv
+
+# listar virtualenvs
+poetry env list
+
+# Remover um virtualenv
+poetry env remove <nome>
 ```
 
 ## Referências
