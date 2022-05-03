@@ -2,7 +2,7 @@
 Testes do ParserLocal
 """
 from unittest import mock
-from random import randrange, randint, choice
+from random import randrange, randint, choice, getrandbits
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.parser.parser_local import ParserLocal
 from tests.base import Base
@@ -22,6 +22,8 @@ class TestParserLocal(Base):
              'imagem_padrao': dados_teste.get_random_word(),
              'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
              'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'memoria_dinamica_padrao': bool(getrandbits(1)),
+             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
              'redes_padrao': [{
                  'nome': dados_teste.get_random_word(),
                  'principal': num_iter == 0,
@@ -51,6 +53,8 @@ class TestParserLocal(Base):
              'imagem_padrao': dados_teste.get_random_word(),
              'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
              'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'memoria_dinamica_padrao': bool(getrandbits(1)),
+             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
              'redes_padrao': [{
                  'nome': dados_teste.get_nome_unico(),
                  'principal': num_iter == 0,
@@ -97,6 +101,8 @@ class TestParserLocal(Base):
              'imagem_padrao': dados_teste.get_random_word(),
              'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
              'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'memoria_dinamica_padrao': bool(getrandbits(1)),
+             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
              'redes_padrao': [{
                  'nome': dados_teste.get_nome_unico(),
                  'principal': num_iter == 0,
@@ -136,6 +142,38 @@ class TestParserLocal(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_min_sem_padrao(self, _, servidor_acesso, monkeypatch):
+        dados_teste = DadosTeste()
+        inventario = [(
+            {'agrupamento': dados_teste.get_random_word(),
+             'nuvem': dados_teste.get_random_word(),
+             'vms': [{
+                 'nome': dados_teste.get_nome_unico(),
+                 'descricao': dados_teste.get_random_word(),
+                 'imagem': dados_teste.get_random_word(),
+                 'qtde_cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
+                 'qtde_ram_mb': randint(Base.RAM_MIN, Base.RAM_MAX),
+                 'memoria_dinamica': bool(getrandbits(1)),
+                 'virtualizacao_aninhada': bool(getrandbits(1)),
+                 'redes': [{
+                     'nome': dados_teste.get_nome_unico(),
+                     'principal': num_iter == 0
+                 } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
+             } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
+             },
+            'inventario.yaml')]
+        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
+                            lambda mock: inventario)
+
+        parser_local = ParserLocal(None)
+        status, inventario_resposta = parser_local.get_inventario(
+            servidor_acesso)
+
+        assert status is True
+        assert inventario_resposta == self.get_obj_inventario(inventario)
+
+    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
+                return_value=None)
+    def test_parser_inventario_min_com_mem_dinam_virtualizacao_aninhada_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
             {'agrupamento': dados_teste.get_random_word(),

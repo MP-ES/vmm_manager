@@ -78,7 +78,8 @@ class Base():
                         randint(Base.CPU_MIN, Base.CPU_MAX),
                         randint(Base.RAM_MIN, Base.RAM_MAX),
                         redes_vm,
-                        virt_aninhada=bool(getrandbits(1)),
+                        virtualizacao_aninhada=bool(getrandbits(1)),
+                        memoria_dinamica=bool(getrandbits(1)),
                         no_regiao=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj
@@ -106,7 +107,11 @@ class Base():
                     'qtde_cpu', array_yaml[0][0].get('qtde_cpu_padrao', None)),
                 maquina_virtual.get(
                     'qtde_ram_mb', array_yaml[0][0].get('qtde_ram_mb_padrao', None)),
-                vm_redes
+                vm_redes,
+                virtualizacao_aninhada=maquina_virtual.get('virtualizacao_aninhada', array_yaml[0][0].get(
+                    'virtualizacao_aninhada_padrao', False)),
+                memoria_dinamica=maquina_virtual.get(
+                    'memoria_dinamica', array_yaml[0][0].get('memoria_dinamica_padrao', True)),
             )
         return inventario
 

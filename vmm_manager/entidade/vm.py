@@ -12,7 +12,8 @@ class VM:
                  imagem, regiao,
                  qtde_cpu, qtde_ram_mb, redes,
                  id_vmm=None,
-                 virt_aninhada=False,
+                 virtualizacao_aninhada=False,
+                 memoria_dinamica=True,
                  status=VMStatusEnum.EM_EXECUCAO,
                  no_regiao=None):
         self.nome = nome
@@ -25,7 +26,8 @@ class VM:
         self.id_vmm = id_vmm
         self.status = status
         self.no_regiao = no_regiao
-        self.virt_aninhada = virt_aninhada
+        self.virtualizacao_aninhada = virtualizacao_aninhada
+        self.memoria_dinamica = memoria_dinamica
 
         self.dados_ansible = {}
         self.discos_adicionais = {}
@@ -83,12 +85,12 @@ class VM:
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.regiao)))
 
-    def add_acoes_virt_aninhada(self, vm_remota,
-                                plano_execucao):
-        if ((not vm_remota and self.virt_aninhada)
-                or (vm_remota and vm_remota.virt_aninhada != self.virt_aninhada)):
+    def add_acoes_virtualizacao_aninhada(self, vm_remota,
+                                         plano_execucao):
+        if ((not vm_remota and self.virtualizacao_aninhada)
+                or (vm_remota and vm_remota.virtualizacao_aninhada != self.virtualizacao_aninhada)):
             plano_execucao.acoes.append(
-                self.get_acao_atualizar_virt_aninhada())
+                self.get_acao_atualizar_virtualizacao_aninhada())
 
     def add_acoes_diferenca_vm(self, vm_remota, plano_execucao):
         # alteração da imagem é irreversível
@@ -138,10 +140,10 @@ class VM:
                     id_no_regiao=id_no_regiao,
                     regiao=self.regiao)
 
-    def get_acao_atualizar_virt_aninhada(self):
-        return Acao('atualizar_virt_aninhada',
+    def get_acao_atualizar_virtualizacao_aninhada(self):
+        return Acao('atualizar_virtualizacao_aninhada',
                     nome_vm=self.nome,
-                    virt_aninhada=self.virt_aninhada)
+                    virtualizacao_aninhada=self.virtualizacao_aninhada)
 
     def get_acao_atualizar_vm(self, id_vm_remota):
         return Acao('atualizar_vm',
@@ -159,6 +161,8 @@ class VM:
                                           and self.regiao == other.regiao
                                           and self.qtde_cpu == other.qtde_cpu
                                           and self.qtde_ram_mb == other.qtde_ram_mb
+                                          and self.virtualizacao_aninhada == other.virtualizacao_aninhada
+                                          and self.memoria_dinamica == other.memoria_dinamica
                                           and self.redes == other.redes
                                           and self.status == other.status)
 

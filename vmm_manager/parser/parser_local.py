@@ -95,8 +95,11 @@ class ParserLocal:
                 maquina_virtual.get(
                     'qtde_ram_mb', dados_inventario.get('qtde_ram_mb_padrao', None)),
                 vm_redes,
-                virt_aninhada=maquina_virtual.get(
-                    'habilitar_virtualizacao_aninhada', False),
+                virtualizacao_aninhada=maquina_virtual.get(
+                    'virtualizacao_aninhada', dados_inventario.get('virtualizacao_aninhada_padrao', False)),
+                memoria_dinamica=maquina_virtual.get(
+                    'memoria_dinamica',
+                    dados_inventario.get('memoria_dinamica_padrao', True)),
             )
             self.__inventario.vms[nome_vm].extrair_dados_ansible_dict(
                 maquina_virtual.get('ansible'))

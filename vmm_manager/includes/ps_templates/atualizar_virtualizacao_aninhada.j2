@@ -19,14 +19,14 @@ foreach($vm_obj in $vms_nuvem) {
   }
 }
 
-$VirtAninhada = ${{ virt_aninhada }}
+$VirtualizacaoAninhada = ${{ virtualizacao_aninhada }}
 
 # Máquina deve estar desligada
 if ($VM.Status -ne "Poweroff"){
     Stop-SCVirtualMachine -VM $VM | Out-Null
 }
 
-Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtAninhada | Out-Null
+Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtualizacaoAninhada | Out-Null
 Start-SCVirtualMachine -VM $VM -RunAsynchronously -JobVariable job | Out-Null
 
 $Resultado = [PSCustomObject]@{
