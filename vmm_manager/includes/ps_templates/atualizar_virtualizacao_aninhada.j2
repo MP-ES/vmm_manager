@@ -1,0 +1,36 @@
+# Recuperar VM com segurança
+# Pelo ID gera dependência cíclica e, só pelo nome, pode gerar conflito
+# O SCVMM permite mais de uma VM com o mesmo nome!
+$VM = $null
+$custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
+$custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
+$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+
+foreach($vm_obj in $vms_nuvem) {
+  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
+  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+    $nome_id = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_nome_id
+
+    # Recuperando VM correta
+    if ("{{ nome_vm }}" -eq $nome_id.Value){
+        $VM = $vm_obj
+    }
+  }
+}
+
+$VirtualizacaoAninhada = ${{ virtualizacao_aninhada }}
+
+# Máquina deve estar desligada
+if ($VM.Status -ne "Poweroff"){
+    Stop-SCVirtualMachine -VM $VM | Out-Null
+}
+
+Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtualizacaoAninhada | Out-Null
+Start-SCVirtualMachine -VM $VM -RunAsynchronously -JobVariable job | Out-Null
+
+$Resultado = [PSCustomObject]@{
+    Status = 'OK'
+    Guid = $job.ID
+}
+ConvertTo-Json -Depth 3 $Resultado

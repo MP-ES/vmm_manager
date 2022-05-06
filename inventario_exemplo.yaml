@@ -9,7 +9,8 @@ redes_padrao:
     principal: true
 vms:
   - nome: VMM_TEST1
-    habilitar_virtualizacao_aninhada: true
+    virtualizacao_aninhada: true # default: false
+    memoria_dinamica: false # default: true
     descricao: 'Test VM'
     redes:
       - nome: 'vlan1'

@@ -19,14 +19,17 @@ foreach($vm_obj in $vms_nuvem) {
   }
 }
 
-$VirtAninhada = ${{ virt_aninhada }}
+$MemoryMB = $VM.Memory
+$MemoryMBMin = [math]::min( 512 , $MemoryMB )
+$DynamicMemory = {{ "$true" if memoria_dinamica else "$false" }}
+{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if memoria_dinamica else "" %}
 
 # Máquina deve estar desligada
 if ($VM.Status -ne "Poweroff"){
     Stop-SCVirtualMachine -VM $VM | Out-Null
 }
 
-Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtAninhada | Out-Null
+Set-SCVirtualMachine -VM $VM -DynamicMemoryEnabled $DynamicMemory {{ memoria_dinamica_params_adic }} | Out-Null
 Start-SCVirtualMachine -VM $VM -RunAsynchronously -JobVariable job | Out-Null
 
 $Resultado = [PSCustomObject]@{
