@@ -96,7 +96,8 @@ class ParserLocal:
                     'qtde_ram_mb', dados_inventario.get('qtde_ram_mb_padrao', None)),
                 vm_redes,
                 virtualizacao_aninhada=maquina_virtual.get(
-                    'virtualizacao_aninhada', dados_inventario.get('virtualizacao_aninhada_padrao', False)),
+                    'virtualizacao_aninhada',
+                    dados_inventario.get('virtualizacao_aninhada_padrao', False)),
                 memoria_dinamica=maquina_virtual.get(
                     'memoria_dinamica',
                     dados_inventario.get('memoria_dinamica_padrao', True)),

@@ -108,7 +108,8 @@ class Base():
                 maquina_virtual.get(
                     'qtde_ram_mb', array_yaml[0][0].get('qtde_ram_mb_padrao', None)),
                 vm_redes,
-                virtualizacao_aninhada=maquina_virtual.get('virtualizacao_aninhada', array_yaml[0][0].get(
+                virtualizacao_aninhada=maquina_virtual.
+                get('virtualizacao_aninhada', array_yaml[0][0].get(
                     'virtualizacao_aninhada_padrao', False)),
                 memoria_dinamica=maquina_virtual.get(
                     'memoria_dinamica', array_yaml[0][0].get('memoria_dinamica_padrao', True)),

@@ -173,7 +173,10 @@ class TestParserLocal(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
-    def test_parser_inventario_min_com_mem_dinam_virtualizacao_aninhada_padrao(self, _, servidor_acesso, monkeypatch):
+    def test_parser_inventario_min_com_mem_dinam_virtualizacao_aninhada_padrao(self,
+                                                                               _,
+                                                                               servidor_acesso,
+                                                                               monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
             {'agrupamento': dados_teste.get_random_word(),

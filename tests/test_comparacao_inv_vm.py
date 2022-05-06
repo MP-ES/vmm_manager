@@ -58,6 +58,11 @@ class TestComparacaoInvVm(Base):
             vm_obj.virtualizacao_aninhada = novo_valor
 
     @staticmethod
+    def alterar_memoria_dinamica_vms_inventario(inventario, novo_valor):
+        for vm_obj in inventario.vms.values():
+            vm_obj.memoria_dinamica = novo_valor
+
+    @staticmethod
     def get_plano_execucao_criar_inventario(inventario):
         plano_execucao = PlanoExecucao(
             inventario.agrupamento, inventario.nuvem)
@@ -121,7 +126,9 @@ class TestComparacaoInvVm(Base):
         return plano_execucao
 
     @staticmethod
-    def get_plano_execucao_alterar_virtualizacao_aninhada(inventario_local, inventario_remoto, novo_valor):
+    def get_plano_execucao_alterar_virtualizacao_aninhada(inventario_local,
+                                                          inventario_remoto,
+                                                          novo_valor):
         plano_execucao = PlanoExecucao(
             inventario_local.agrupamento, inventario_local.nuvem)
 
@@ -129,6 +136,20 @@ class TestComparacaoInvVm(Base):
             if inventario_remoto.vms[nome_vm].virtualizacao_aninhada != novo_valor:
                 plano_execucao.acoes.append(
                     inventario_local.vms[nome_vm].get_acao_atualizar_virtualizacao_aninhada())
+
+        return plano_execucao
+
+    @staticmethod
+    def get_plano_execucao_alterar_memoria_dinamica(inventario_local,
+                                                    inventario_remoto,
+                                                    novo_valor):
+        plano_execucao = PlanoExecucao(
+            inventario_local.agrupamento, inventario_local.nuvem)
+
+        for nome_vm in inventario_local.vms:
+            if inventario_remoto.vms[nome_vm].memoria_dinamica != novo_valor:
+                plano_execucao.acoes.append(
+                    inventario_local.vms[nome_vm].get_acao_atualizar_memoria_dinamica())
 
         return plano_execucao
 
@@ -202,7 +223,7 @@ class TestComparacaoInvVm(Base):
             inventario_local)
 
     @pytest.mark.parametrize('virtualizacao_aninhada', [True, False])
-    def test_inventario_local_vms_virtualizacao_aninhada(self, virtualizacao_aninhada):
+    def test_inventario_local_vms_virtualizacao_aninhada_alterada(self, virtualizacao_aninhada):
         inventario_local = Base.get_inventario_completo()
         inventario_remoto = copy.deepcopy(inventario_local)
         self.alterar_virtualizacao_aninhada_vms_inventario(
@@ -214,3 +235,17 @@ class TestComparacaoInvVm(Base):
         assert status is True
         assert plano_execucao == self.get_plano_execucao_alterar_virtualizacao_aninhada(
             inventario_local, inventario_remoto, virtualizacao_aninhada)
+
+    @pytest.mark.parametrize('memoria_dinamica', [True, False])
+    def test_inventario_local_vms_memoria_dinamica_alterada(self, memoria_dinamica):
+        inventario_local = Base.get_inventario_completo()
+        inventario_remoto = copy.deepcopy(inventario_local)
+        self.alterar_memoria_dinamica_vms_inventario(
+            inventario_local, memoria_dinamica)
+
+        status, plano_execucao = inventario_local.calcular_plano_execucao(
+            inventario_remoto)
+
+        assert status is True
+        assert plano_execucao == self.get_plano_execucao_alterar_memoria_dinamica(
+            inventario_local, inventario_remoto, memoria_dinamica)

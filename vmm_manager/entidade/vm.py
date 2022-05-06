@@ -92,6 +92,12 @@ class VM:
             plano_execucao.acoes.append(
                 self.get_acao_atualizar_virtualizacao_aninhada())
 
+    def add_acoes_memoria_dinamica(self, vm_remota,
+                                   plano_execucao):
+        if (vm_remota and vm_remota.memoria_dinamica != self.memoria_dinamica):
+            plano_execucao.acoes.append(
+                self.get_acao_atualizar_memoria_dinamica())
+
     def add_acoes_diferenca_vm(self, vm_remota, plano_execucao):
         # alteração da imagem é irreversível
         if self.imagem != vm_remota.imagem:
@@ -126,6 +132,7 @@ class VM:
                     regiao=self.regiao,
                     qtde_cpu=self.qtde_cpu,
                     qtde_ram_mb=self.qtde_ram_mb,
+                    memoria_dinamica=self.memoria_dinamica,
                     redes=[rede.nome for rede in self.redes],
                     rede_principal=self.get_rede_principal()
                     )
@@ -145,6 +152,11 @@ class VM:
                     nome_vm=self.nome,
                     virtualizacao_aninhada=self.virtualizacao_aninhada)
 
+    def get_acao_atualizar_memoria_dinamica(self):
+        return Acao('atualizar_memoria_dinamica',
+                    nome_vm=self.nome,
+                    memoria_dinamica=self.memoria_dinamica)
+
     def get_acao_atualizar_vm(self, id_vm_remota):
         return Acao('atualizar_vm',
                     id_vm=id_vm_remota,
@@ -161,6 +173,7 @@ class VM:
                                           and self.regiao == other.regiao
                                           and self.qtde_cpu == other.qtde_cpu
                                           and self.qtde_ram_mb == other.qtde_ram_mb
+                                          # pylint: disable=line-too-long
                                           and self.virtualizacao_aninhada == other.virtualizacao_aninhada
                                           and self.memoria_dinamica == other.memoria_dinamica
                                           and self.redes == other.redes
