@@ -11,7 +11,7 @@ if (!$imagem ) {
 {% endfor %}
 
 $qtde_minima_regioes = {{ qtde_minima_regioes }}
-$qtde_regioes = (Get-SCVMHost -VMMServer "{{ servidor_vmm }}" | Where-Object {$_.OverallState -eq "OK"} | Measure-Object).Count
+$qtde_regioes = (Get-SCVMHost -VMMServer "{{ servidor_vmm }}" | Where-Object {$_.OverallState -in "OK","NeedsAttention"} | Measure-Object).Count
 if ($qtde_minima_regioes -gt $qtde_regioes) {
   Write-Host "Número de regiões incompatível. Disponíveis: $qtde_regioes. Quantidade necessária: $qtde_minima_regioes."
 }
