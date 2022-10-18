@@ -102,7 +102,6 @@ class TestComparacaoInvDisco(Base):
 
         return plano_execucao
 
-    # pylint: disable=R0201
     def test_discos_iguais(self):
         inventario = Base.get_inventario_completo(
             num_min_discos_por_vm=2)

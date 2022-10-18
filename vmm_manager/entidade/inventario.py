@@ -2,7 +2,6 @@
 Representação de um inventário
 """
 import json
-import re
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
@@ -43,7 +42,7 @@ class Inventario:
         self.__regioes_disponiveis = None
 
     def get_nome_no_regiao(self, regiao):
-        self.__obter_regiao_pool(regiao)
+        self.__retirar_regiao_pool(regiao)
 
         if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].nome_no
@@ -51,14 +50,20 @@ class Inventario:
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
 
     def get_id_no_regiao(self, regiao):
-        self.__obter_regiao_pool(regiao)
+        self.__retirar_regiao_pool(regiao)
 
         if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].id_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
 
-    def get_mapeamento_regioes(self):
+    def get_mapeamento_regioes_to_test(self):
+        # flush regions
+        it_regioes = 0
+        while self.__regioes_disponiveis:
+            self.__retirar_regiao_pool(chr(ord('A') + it_regioes))
+            it_regioes += 1
+
         if self.__regioes_por_letra_id is None:
             ValueError('Mapeamento de regiões não definido.')
 
@@ -68,7 +73,7 @@ class Inventario:
         self.__regioes_por_letra_id = {}
         self.__regioes_disponiveis = regioes_disponiveis
 
-    def __obter_regiao_pool(self, regiao):
+    def __retirar_regiao_pool(self, regiao):
         if regiao in self.__regioes_por_letra_id:
             return
 

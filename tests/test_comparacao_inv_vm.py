@@ -153,7 +153,6 @@ class TestComparacaoInvVm(Base):
 
         return plano_execucao
 
-    # pylint: disable=R0201
     def test_inventarios_iguais(self):
         inventario = Base.get_inventario_completo()
 

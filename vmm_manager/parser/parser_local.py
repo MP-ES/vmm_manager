@@ -11,6 +11,7 @@ from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.scvmm.scregion import SCRegion
 
 
+# pylint: disable=too-few-public-methods
 class ParserLocal:
     __ARQUIVO_SCHEMA = '../includes/schema.yaml'
     __YAML_PARSER = 'ruamel'

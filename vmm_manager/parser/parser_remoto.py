@@ -14,6 +14,7 @@ from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.scvmm.scregion import SCRegion
 
 
+# pylint: disable=too-few-public-methods
 class ParserRemoto:
 
     @staticmethod

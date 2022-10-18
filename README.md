@@ -75,7 +75,7 @@ poetry shell
 poetry add <pacote> [--dev]
 
 # Executar lint
-pylint tests/* vmm_manager/*
+pylint --load-plugins pylint_quotes tests/* vmm_manager/*
 
 # Executar testes
 python -m pytest -vv

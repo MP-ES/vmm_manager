@@ -121,7 +121,7 @@ class VM:
                 self.get_acao_atualizar_vm(vm_remota.id_vmm))
 
     def get_qtde_rede_principal(self):
-        return sum([1 for rede in self.redes if rede.principal])
+        return sum(1 for rede in self.redes if rede.principal)
 
     def get_rede_principal(self):
         return next((rede.nome for rede in self.redes if rede.principal), None)

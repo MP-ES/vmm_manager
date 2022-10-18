@@ -4,6 +4,7 @@ Para seguir a nomemclatura de nuvem, designado aqui como 'Region'
 """
 
 
+# pylint: disable=too-few-public-methods
 class SCRegion():
     REGIAO_PADRAO = 'default'
 

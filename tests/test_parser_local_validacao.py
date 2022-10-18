@@ -10,7 +10,6 @@ from tests.base import Base
 from tests.dados_teste import DadosTeste
 
 
-# pylint: disable=R0201
 class TestParserLocalValidacao(Base):
 
     def test_parser_inventario_vazio(self, tmpdir, servidor_acesso):
