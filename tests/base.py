@@ -41,7 +41,7 @@ class Base():
                 dados_teste.get_random_word(),
                 dados_teste.get_random_word(),
                 chr(ord('A') + num_iter)))
-        inventario.set_mapeamento_regioes(regioes)
+        inventario.set_regioes_disponiveis(regioes)
 
         for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
             nome_vm = dados_teste.get_nome_unico()

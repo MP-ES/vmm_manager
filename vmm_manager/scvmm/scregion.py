@@ -7,7 +7,7 @@ Para seguir a nomemclatura de nuvem, designado aqui como 'Region'
 class SCRegion():
     REGIAO_PADRAO = 'default'
 
-    def __init__(self, id_no, nome_no, grupo, cluster, letra_id):
+    def __init__(self, id_no, nome_no, grupo, cluster, letra_id=None):
         self.id_no = id_no
         self.nome_no = nome_no
         self.grupo = grupo

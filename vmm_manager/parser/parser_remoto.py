@@ -27,13 +27,12 @@ class ParserRemoto:
 
         regioes_remoto = json.loads(regioes)
         regioes_disponiveis = []
-        for indice, regiao in enumerate(regioes_remoto):
+        for regiao in regioes_remoto:
             regiao_obj = SCRegion(
                 regiao.get('IDNo'),
                 regiao.get('NomeNo'),
                 regiao.get('Grupo'),
-                regiao.get('Cluster'),
-                chr(ord('A') + indice)
+                regiao.get('Cluster')
             )
 
             regioes_disponiveis.append(regiao_obj)
@@ -136,7 +135,7 @@ class ParserRemoto:
                 self.__get_discos_adicionais(servidor_acesso))
 
             # regioes
-            self.__inventario.set_mapeamento_regioes(
+            self.__inventario.set_regioes_disponiveis(
                 ParserRemoto.__get_regioes_disponiveis(servidor_acesso))
 
     def get_inventario(self, servidor_acesso, filtro_nome_vm=None, filtro_dados_completos=True):

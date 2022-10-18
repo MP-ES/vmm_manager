@@ -180,35 +180,6 @@ class TestParserLocalValidacao(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
-    def test_parser_inventario_vms_com_regiao_invalida(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
-        inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'principal': num_iter == 0,
-             } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
-             'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'regiao': DadosTeste.get_regiao_vm_por_iteracao(num_iter + 1)
-             } for num_iter in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
-             },
-            'inventario.yaml')]
-        monkeypatch.setattr(ParserLocal, '_ParserLocal__carregar_yaml',
-                            lambda mock: inventario)
-
-        parser_local = ParserLocal(None)
-        status, msg = parser_local.get_inventario(servidor_acesso)
-
-        assert status is False
-        assert 'Região' in msg and 'não é válida.' in msg
-
-    @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
-                return_value=None)
     def test_parser_inventario_ansible_sem_grupo(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
