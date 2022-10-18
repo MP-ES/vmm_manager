@@ -41,12 +41,11 @@ Execute os comandos a seguir:
 
 ```shell
 # instalar o poetry
-curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-echo 'source $HOME/.poetry/env' >>~/.bashrc
+curl -sSL https://install.python-poetry.org | python3 -
 
 # Configurar autocomplete
 # Bash
-$HOME/.poetry/bin/poetry completions bash | sudo tee /etc/bash_completion.d/poetry.bash-completion
+poetry completions bash >> ~/.bash_completion
 ```
 
 ### Variáveis de ambiente

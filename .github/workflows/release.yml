@@ -32,18 +32,15 @@ jobs:
           python-version: 3.9
       - name: Install Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+          curl -sSL https://install.python-poetry.org | python3 -
       - name: Install dependencies
         run: |
-          source $HOME/.poetry/env
           poetry install --no-dev --no-root
       - name: Build project for distribution
         run: |
-          source $HOME/.poetry/env
           poetry run poetry build
       - name: Publish to PyPI
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
         run: |
-          source $HOME/.poetry/env
           poetry run poetry publish
