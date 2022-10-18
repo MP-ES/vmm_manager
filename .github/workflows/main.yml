@@ -18,14 +18,11 @@ jobs:
           python-version: 3.9
       - name: Install dependencies
         run: |
-          curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-          source $HOME/.poetry/env
+          curl -sSL https://install.python-poetry.org | python3 -
           poetry install --no-root
       - name: Lint with pylint
         run: |
-          source $HOME/.poetry/env
           poetry run pylint tests/* vmm_manager/*
       - name: Test with pytest
         run: |
-          source $HOME/.poetry/env
           poetry run python -m pytest -v
