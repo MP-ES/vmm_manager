@@ -16,13 +16,13 @@ class TestComparacaoInvRegiao(Base):
 
     @staticmethod
     def alterar_nome_nos_regiao(inventario):
-        for regiao in inventario.get_mapeamento_regioes().values():
+        for regiao in inventario.get_mapeamento_regioes_to_test().values():
             regiao.nome_no = DadosTeste.get_random_string_com_excecao(
                 regiao.nome_no)
 
     @staticmethod
     def alterar_regiao_vms(inventario):
-        lista_regioes = inventario.get_mapeamento_regioes().keys()
+        lista_regioes = inventario.get_mapeamento_regioes_to_test().keys()
         for vm_obj in inventario.vms.values():
             vm_obj.regiao = DadosTeste.get_random_lista_com_excecao(
                 lista_regioes, vm_obj.regiao)
@@ -38,7 +38,6 @@ class TestComparacaoInvRegiao(Base):
 
         return plano_execucao
 
-    # pylint: disable=R0201
     def test_regioes_iguais(self):
         inventario = Base.get_inventario_completo()
 

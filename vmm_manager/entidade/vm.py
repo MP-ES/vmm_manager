@@ -78,10 +78,12 @@ class VM:
 
     def add_acoes_diferenca_regiao(self, vm_remota,
                                    plano_execucao, inv_remoto):
-        if (self.regiao != SCRegion.REGIAO_PADRAO
-            and (not vm_remota
-                 or (self.regiao != vm_remota.regiao or
-                     inv_remoto.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao))):
+        if self.regiao == SCRegion.REGIAO_PADRAO:
+            return
+
+        if (not vm_remota
+            or (self.regiao != vm_remota.regiao or
+                inv_remoto.get_nome_no_regiao(self.regiao) != vm_remota.no_regiao)):
             plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.regiao)))
 
@@ -119,7 +121,7 @@ class VM:
                 self.get_acao_atualizar_vm(vm_remota.id_vmm))
 
     def get_qtde_rede_principal(self):
-        return sum([1 for rede in self.redes if rede.principal])
+        return sum(1 for rede in self.redes if rede.principal)
 
     def get_rede_principal(self):
         return next((rede.nome for rede in self.redes if rede.principal), None)

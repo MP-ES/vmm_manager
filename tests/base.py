@@ -41,7 +41,7 @@ class Base():
                 dados_teste.get_random_word(),
                 dados_teste.get_random_word(),
                 chr(ord('A') + num_iter)))
-        inventario.set_mapeamento_regioes(regioes)
+        inventario.set_regioes_disponiveis(regioes)
 
         for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
             nome_vm = dados_teste.get_nome_unico()
@@ -86,7 +86,6 @@ class Base():
 
         return inventario
 
-    # pylint: disable=R0201
     def get_obj_inventario(self, array_yaml):
         inventario = Inventario(
             array_yaml[0][0]['agrupamento'], array_yaml[0][0]['nuvem'])

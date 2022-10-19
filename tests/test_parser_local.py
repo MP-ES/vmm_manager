@@ -9,7 +9,6 @@ from tests.base import Base
 from tests.dados_teste import DadosTeste
 
 
-# pylint: disable=R0201
 class TestParserLocal(Base):
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',

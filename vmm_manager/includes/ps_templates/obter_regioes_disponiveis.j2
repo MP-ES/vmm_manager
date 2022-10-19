@@ -1,4 +1,4 @@
-$hosts_cluster = Get-SCVMHost -VMMServer "{{ servidor_vmm }}" | Where-Object {$_.OverallState -eq "OK"}
+$hosts_cluster = Get-SCVMHost -VMMServer "{{ servidor_vmm }}" | Where-Object {$_.OverallState -in "OK","NeedsAttention"}
 $regioes = @()
 
 foreach($no_cluster in $hosts_cluster) {

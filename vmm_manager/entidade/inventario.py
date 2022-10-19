@@ -39,29 +39,48 @@ class Inventario:
         self.vms = {}
 
         self.__regioes_por_letra_id = None
+        self.__regioes_disponiveis = None
 
     def get_nome_no_regiao(self, regiao):
+        self.__retirar_regiao_pool(regiao)
+
         if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].nome_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
 
     def get_id_no_regiao(self, regiao):
+        self.__retirar_regiao_pool(regiao)
+
         if regiao in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[regiao].id_no
 
         raise ValueError(f"Região '{regiao}' não possui nó definido.")
 
-    def get_mapeamento_regioes(self):
+    def get_mapeamento_regioes_to_test(self):
+        # flush regions
+        it_regioes = 0
+        while self.__regioes_disponiveis:
+            self.__retirar_regiao_pool(chr(ord('A') + it_regioes))
+            it_regioes += 1
+
         if self.__regioes_por_letra_id is None:
             ValueError('Mapeamento de regiões não definido.')
 
         return self.__regioes_por_letra_id
 
-    def set_mapeamento_regioes(self, regioes_disponiveis):
+    def set_regioes_disponiveis(self, regioes_disponiveis):
         self.__regioes_por_letra_id = {}
-        for regiao in regioes_disponiveis:
-            self.__regioes_por_letra_id[regiao.letra_id] = regiao
+        self.__regioes_disponiveis = regioes_disponiveis
+
+    def __retirar_regiao_pool(self, regiao):
+        if regiao in self.__regioes_por_letra_id:
+            return
+
+        if not self.__regioes_disponiveis:
+            return
+
+        self.__regioes_por_letra_id[regiao] = self.__regioes_disponiveis.pop()
 
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.agrupamento != inventario_remoto.agrupamento
@@ -124,13 +143,6 @@ class Inventario:
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
                     f'VM {maquina_virtual.nome} deve ter exatamente uma rede principal.')
-
-        regioes_validas = [chr(ord('A') + num)
-                           for num in range(0, len(regioes))]
-        for regiao in regioes:
-            if regiao not in regioes_validas:
-                raise ValueError(
-                    f"Região '{regiao}' não é válida.")
 
     def validar(self, servidor_acesso):
         self.__validar_regras_locais()
