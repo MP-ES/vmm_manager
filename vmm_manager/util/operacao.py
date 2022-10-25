@@ -15,7 +15,7 @@ from vmm_manager.infra.comando import Comando
 def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None,
                              ocultar_progresso=False):
     resposta = None
-    while resposta not in ['s', 'n']:
+    while resposta not in ['s', 'n', 'y']:
         resposta = input('Deseja executar? (s/n): ')
         if resposta == 'n':
             if servidor_acesso and agrupamento and nuvem:
