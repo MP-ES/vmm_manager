@@ -7,6 +7,7 @@ from enum import Enum
 class VMStatusEnum(Enum):
     EM_EXECUCAO = 0
     DESLIGADA = 1
+    FALHA_NA_ATUALIZACAO = 107
 
 
 class SCJobStatusEnum(Enum):
