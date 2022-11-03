@@ -16,7 +16,7 @@ foreach($vm in $vms_nuvem) {
     $discos = @()
     foreach($drive in $vm.VirtualDiskDrives) {
       # pulando disco principal
-      if ($drive.Bus -eq 0 -and $drive.Lun -eq 0 -and $drive.VolumeType -eq 3){Continue}
+      if ($drive.Bus -eq 0 -and $drive.Lun -eq 0){Continue}
 
       $disco = [PSCustomObject]@{
       IDDrive = $drive.ID
