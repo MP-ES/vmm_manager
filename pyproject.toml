@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vmm_manager"
-version = "0.3.1"
+version = "0.3.2"
 description = "Management of resources on System Center Virtual Machine Manager (SCVMM) in a declarative way."
 authors = ["Estevão Costa <ecosta@mpes.mp.br>"]
 
