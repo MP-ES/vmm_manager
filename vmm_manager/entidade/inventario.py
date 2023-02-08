@@ -65,7 +65,7 @@ class Inventario:
             it_regioes += 1
 
         if self.__regioes_por_letra_id is None:
-            ValueError('Mapeamento de regiões não definido.')
+            raise ValueError('Mapeamento de regiões não definido.')
 
         return self.__regioes_por_letra_id
 
