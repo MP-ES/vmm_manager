@@ -3,7 +3,7 @@
 Script python que gerencia recursos no System Center Virtual Machine Manager (SCVMM), de forma declarativa, com base em um arquivo de configuração YAML.
 
 [![License](https://img.shields.io/github/license/MP-ES/vmm_manager.svg)](LICENSE)
-[![Tests](https://github.com/MP-ES/vmm_manager/workflows/Tests/badge.svg)](https://github.com/MP-ES/vmm_manager/actions?query=workflow%3ATests)
+[![Integration](https://github.com/MP-ES/vmm_manager/workflows/Integration/badge.svg)](https://github.com/MP-ES/vmm_manager/actions?query=workflow%3AIntegration)
 [![Release](https://github.com/MP-ES/vmm_manager/workflows/Release/badge.svg)](https://github.com/MP-ES/vmm_manager/actions?query=workflow%3ARelease)
 [![Python](https://img.shields.io/pypi/pyversions/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
 [![PyPI](http://img.shields.io/pypi/v/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
