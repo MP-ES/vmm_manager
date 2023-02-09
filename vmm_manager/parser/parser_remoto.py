@@ -23,7 +23,7 @@ class ParserRemoto:
                       servidor_vmm=servidor_acesso.servidor_vmm)
         status, regioes = cmd.executar(servidor_acesso)
         if not status:
-            raise Exception(
+            raise Exception( # pylint: disable=broad-exception-raised
                 f'Erro ao recuperar regiões disponíveis: {regioes}')
 
         regioes_remoto = json.loads(regioes)
@@ -58,7 +58,7 @@ class ParserRemoto:
                       nuvem=self.nuvem)
         status, vms = cmd.executar(servidor_acesso)
         if not status:
-            raise Exception(
+            raise Exception( # pylint: disable=broad-exception-raised
                 f"Erro ao recuperar VM's do agrupamento: {vms}")
         return vms
 
@@ -72,7 +72,7 @@ class ParserRemoto:
                       vm_nomes=','.join([f'"{nome_vm}"' for nome_vm in self.__inventario.vms]))
         status, discos_adicionais = cmd.executar(servidor_acesso)
         if not status:
-            raise Exception(
+            raise Exception( # pylint: disable=broad-exception-raised
                 f'Erro ao recuperar discos adicionais: {discos_adicionais}')
 
         discos_vms_remoto = json.loads(discos_adicionais)
