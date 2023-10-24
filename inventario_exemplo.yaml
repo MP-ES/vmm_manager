@@ -28,6 +28,8 @@ vms:
     ansible:
       - grupo: 'web_server'
   - nome: VMM_TEST3
+    qtde_cpu: 2
+    qtde_ram_mb: 1024
     ansible:
       - grupo: 'database'
         vars:
