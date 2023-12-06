@@ -128,7 +128,7 @@ class VM:
 
     def get_acao_criar_vm(self):
         return Acao(Acao.ACAO_CRIAR_VM,
-                    nome=self.nome,
+                    nome_vm=self.nome,
                     descricao=self.descricao,
                     imagem=self.imagem,
                     regiao=self.regiao,
@@ -141,7 +141,7 @@ class VM:
 
     def get_acao_excluir_vm(self):
         return Acao(Acao.ACAO_EXCLUIR_VM,
-                    id_vmm=self.id_vmm)
+                    id_vm=self.id_vmm)
 
     def get_acao_mover_vm_regiao(self, id_no_regiao):
         return Acao('mover_vm_regiao',
