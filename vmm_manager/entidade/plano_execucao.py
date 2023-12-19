@@ -2,6 +2,7 @@
 Representação de um plano de execução
 """
 import os
+import time
 import uuid
 import textwrap
 from yamlable import yaml_info, YamlAble
@@ -59,46 +60,62 @@ class PlanoExecucao(YamlAble):
         return True, conteudo
 
     def __executar_acoes(self, acoes, servidor_acesso, ocultar_progresso):
-        if acoes:
-            # zerando jobs em execução
-            self.__jobs_em_execucao = {}
+        if not acoes:
+            return  # retornando caso não haja ações
 
-            for acao in acoes:
-                print(f'{textwrap.shorten(acao.get_str_impressao_inline(), 100)} => ',
-                      end='', flush=True)
+        # zerando jobs em execução
+        self.__jobs_em_execucao = {}
 
-                # Caso específico de criação de vms
-                guid = uuid.uuid4()
-                if acao.is_criacao_vm():
-                    self.__guids_a_limpar.append(guid)
+        total_acoes = len(acoes)
+        for i in range(total_acoes):
+            acao = acoes[i]
 
-                acao.executar(self.agrupamento, self.nuvem,
-                              servidor_acesso, guid)
+            print(f'{textwrap.shorten(acao.get_str_impressao_inline(), 100)} => ',
+                  end='', flush=True)
 
-                # Tratando resultado
-                if acao.was_executada_com_sucesso():
-                    guid = acao.get_resultado_execucao().get('Guid')
-                    if guid:
-                        # Job em execução
-                        self.__jobs_em_execucao[guid] = SCJob(
-                            guid, acao)
-                        print(f'[Iniciado {guid}]')
-                    else:
-                        # Comando já finalizado
-                        imprimir_ok(ocultar_progresso)
+            # Caso específico de criação de vms
+            guid = uuid.uuid4()
+            if acao.is_criacao_vm():
+                self.__guids_a_limpar.append(guid)
+
+            acao.executar(self.agrupamento, self.nuvem,
+                          servidor_acesso, guid)
+
+            # Tratando resultado
+            if acao.was_executada_com_sucesso():
+                guid = acao.get_resultado_execucao().get('Guid')
+                if guid:
+                    # Job em execução
+                    self.__jobs_em_execucao[guid] = SCJob(
+                        guid, acao)
+                    print(f'[Iniciado {guid}]')
                 else:
-                    imprimir_erro(ocultar_progresso)
-                    self.__logar_erros_acao(
-                        acao, acao.get_resultado_execucao().get('Msgs'))
+                    # Comando já finalizado
+                    imprimir_ok(ocultar_progresso)
+            else:
+                imprimir_erro(ocultar_progresso)
+                self.__logar_erros_acao(
+                    acao, acao.get_resultado_execucao().get('Msgs'))
 
-            # Monitorando jobs
-            SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
-            self.__coletar_resultado_jobs()
+            # If the action is not the last, check if we need to wait
+            if i < total_acoes - 1:
+                proxima_acao = acoes[i + 1]
 
-            # Ações pós execução
-            print()
-            self.__executar_cmds_finalizacao(
-                acoes, servidor_acesso, ocultar_progresso)
+                if not acao.is_same_resource(proxima_acao):
+                    interval = 10
+                    print(f'{textwrap.shorten(f"Aguardando {interval} segundos", 100)} => ',
+                          end='', flush=True)
+                    time.sleep(interval)
+                    imprimir_ok(ocultar_progresso)
+
+        # Monitorando jobs
+        SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
+        self.__coletar_resultado_jobs()
+
+        # Ações pós execução
+        print()
+        self.__executar_cmds_finalizacao(
+            acoes, servidor_acesso, ocultar_progresso)
 
     def executar(self, servidor_acesso, ocultar_progresso):
         if not self.is_vazio():

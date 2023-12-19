@@ -27,10 +27,9 @@ if ($VM.Status -ne "Poweroff"){
 }
 
 Set-SCVirtualMachine -VM $VM -EnableNestedVirtualization $VirtualizacaoAninhada | Out-Null
-Start-SCVirtualMachine -VM $VM -RunAsynchronously -JobVariable job | Out-Null
+Start-SCVirtualMachine -VM $VM | Out-Null
 
 $Resultado = [PSCustomObject]@{
     Status = 'OK'
-    Guid = $job.ID
 }
 ConvertTo-Json -Depth 3 $Resultado
