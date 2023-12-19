@@ -14,7 +14,18 @@ class Acao(YamlAble):
     ACAO_EXCLUIR_VM = 'excluir_vm'
     ACAO_EXCLUIR_DISCO_VM = 'excluir_disco_vm'
 
+    RESOURCE_IDENTIFIER_NAME = 'nome_vm'
+    RESOURCE_IDENTIFIER_ID = 'id_vm'
+
     def __init__(self, nome_comando, **kwargs):
+        # Validate if the args contain the resource identifier
+        if (Acao.RESOURCE_IDENTIFIER_NAME not in kwargs
+                and Acao.RESOURCE_IDENTIFIER_ID not in kwargs):
+            raise ValueError(
+                f'Os argumentos devem conter o identificador do recurso: '
+                f'{Acao.RESOURCE_IDENTIFIER_NAME} ou {Acao.RESOURCE_IDENTIFIER_ID}.'
+            )
+
         self.nome_comando = nome_comando
         self.args = kwargs
 
@@ -51,6 +62,18 @@ class Acao(YamlAble):
         return (self.is_criacao_vm()
                 or self.nome_comando == Acao.ACAO_EXCLUIR_VM
                 or self.nome_comando == Acao.ACAO_EXCLUIR_DISCO_VM)
+
+    def is_same_resource(self, other):
+        if (self.RESOURCE_IDENTIFIER_NAME in self.args
+                and self.RESOURCE_IDENTIFIER_NAME in other.args):
+            return (self.args[self.RESOURCE_IDENTIFIER_NAME]
+                    == other.args[self.RESOURCE_IDENTIFIER_NAME])
+
+        if (self.RESOURCE_IDENTIFIER_ID in self.args
+                and self.RESOURCE_IDENTIFIER_ID in other.args):
+            return self.args[self.RESOURCE_IDENTIFIER_ID] == other.args[self.RESOURCE_IDENTIFIER_ID]
+
+        return False
 
     def has_cmd_pos_execucao(self):
         return self.is_criacao_vm()
