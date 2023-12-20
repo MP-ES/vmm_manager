@@ -1,6 +1,6 @@
 # vmm-manager
 
-Script python que gerencia recursos no System Center Virtual Machine Manager (SCVMM), de forma declarativa, com base em um arquivo de configuração YAML.
+Python script that manages resources in the System Center Virtual Machine Manager (SCVMM), in a declarative way, based on a YAML configuration file.
 
 [![License](https://img.shields.io/github/license/MP-ES/vmm_manager.svg)](LICENSE)
 [![Integration](https://github.com/MP-ES/vmm_manager/workflows/Integration/badge.svg)](https://github.com/MP-ES/vmm_manager/actions?query=workflow%3AIntegration)
@@ -8,86 +8,89 @@ Script python que gerencia recursos no System Center Virtual Machine Manager (SC
 [![Python](https://img.shields.io/pypi/pyversions/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
 [![PyPI](http://img.shields.io/pypi/v/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
 
-## Pré-requisitos
+## Prerequisites
 
-É necessário ter uma máquina Windows, que servirá como ponto de acesso ao SCVMM, com as seguintes ferramentas:
+You need a Windows machine, which will serve as the access point to SCVMM, with the following tools:
 
 - OpenSSH
-- Módulo PowerShell do SCVMM (**virtualmachinemanager**), instalado junto com o Console do Virtual Machine Manager (VMM). Você também pode obtê-lo em <https://github.com/MP-ES/VirtualMachineManager-PowerShellModule>
+- SCVMM's PowerShell Module (**virtualmachinemanager**), installed with the Virtual Machine Manager (VMM) Console. You can also get it at <https://github.com/MP-ES/VirtualMachineManager-PowerShellModule>
 
-## Instalação
+## Installation
 
 ```shell
 pip install -U vmm-manager
 ```
 
-## Uso
+## How to use
 
-Para consultar as funções e os parâmetros disponíveis, utilize o comando:
+Use the command below to see the available options:
 
 ```shell
 vmm_manager -h
 ```
 
-### Exemplo de arquivo de inventário
+### Example of a inventory file
 
-[inventario_exemplo.yaml](inventario_exemplo.yaml)
+[inventory_example.yaml](inventory_example.yaml)
 
-## Desenvolvimento
+## Development
 
-### Instalação e configuração do python-poetry
+### Install Poetry
 
-Execute os comandos a seguir:
+Run the following commands to install Poetry:
 
 ```shell
-# instalar o poetry
+# install
 curl -sSL https://install.python-poetry.org | python3 -
 
-# Configurar autocomplete
+# auto-completion
 # Bash
 poetry completions bash >> ~/.bash_completion
 ```
 
-### Variáveis de ambiente
+### Environment variables
 
-Defina as variáveis de ambiente de acordo com as instruções do arquivo **.env.default**. Você pode criar um arquivo **.env** e executar o comando `export $(cat .env | xargs)` para defini-las antes da execução do script.
+Use the **.env.default** file as a template to create a **.env** file with the environment variables needed to run the script. You can load them by running the command `export $(cat .env | xargs)` before executing the script.
 
-### Como executar
+### How to run
 
 ```shell
-# Carregando envs (opcional)
+# Loading environment variables (optional)
 export $(cat .env | xargs)
 
-# Instalando dependências
+# Install dependencies
 poetry install --no-root
 
-# Executando script
+# Run
 poetry run python -m vmm_manager -h
 ```
 
-### Comandos úteis para DEV
+### Helpful commands
 
 ```shell
-# Habilitar shell
+# Poetry shell
 poetry shell
 
-# Incluir uma dependência
+# Add a dependency
 poetry add <pacote> [--dev]
 
-# Executar lint
+# Update dependencies
+poetry update
+
+# Run linting
 pylint --load-plugins pylint_quotes tests/* vmm_manager/*
 
-# Executar testes
+# Run tests
 python -m pytest -vv
 
-# listar virtualenvs
+# List virtualenvs
 poetry env list
 
-# Remover um virtualenv
+# Remove a virtualenv
 poetry env remove <nome>
 ```
 
-## Referências
+## References
 
 - [Virtual Machine Manager](https://docs.microsoft.com/en-us/powershell/module/virtualmachinemanager/?view=systemcenter-ps-2019)
 - [Poetry](https://python-poetry.org/)
