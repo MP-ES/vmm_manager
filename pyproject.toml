@@ -23,10 +23,10 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-paramiko = "^2"
+paramiko = "^3"
 configargparse = "^1"
 jinja2 = "^3"
-"ruamel.yaml" = "^0.17"
+"ruamel.yaml" = "^0.18"
 yamale = "^4"
 yamlable = "^1"
 tqdm = "^4"
@@ -35,11 +35,11 @@ pytz = ">=2023.3"
 [tool.poetry.dev-dependencies]
 pylint = "^2"
 pylint-quotes = "^0.2"
-autopep8 = "^1"
+autopep8 = "^2"
 rope = "^1"
 pytest = "^7"
 pytest-mock = "^3"
-Faker = "^15"
+Faker = "^21"
 
 [tool.poetry.scripts]
 vmm_manager = "vmm_manager.vmm_manager:main"
