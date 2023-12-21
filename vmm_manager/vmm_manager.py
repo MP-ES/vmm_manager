@@ -122,7 +122,7 @@ def get_parser():
                       help='Virtual machine name', default='',
                       required=False, type=parametro_alfanumerico_limitado)
     show.add_argument('--all-data',
-                      help='Show all resource data',
+                      help='Show all the resource data',
                       env_var='VMM_ALL_DATA', required=False, action='store_true')
 
     return parser
