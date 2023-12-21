@@ -7,7 +7,6 @@ import string
 import os
 import argparse
 import configargparse
-from pkg_resources import require
 from ruamel.yaml import YAML, scanner
 from vmm_manager.infra.servidor_acesso import ServidorAcesso
 from vmm_manager.infra.comando import Comando
