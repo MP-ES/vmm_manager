@@ -29,6 +29,10 @@ Use the command below to see the available options:
 vmm_manager -h
 ```
 
+### Environment variables
+
+You can set environment variables to avoid passing the same parameters every time you run the script. See an example in the [**.env.default**](.env.default) file.
+
 ### Example of a inventory file
 
 [inventory_example.yaml](inventory_example.yaml)
@@ -48,7 +52,7 @@ curl -sSL https://install.python-poetry.org | python3 -
 poetry completions bash >> ~/.bash_completion
 ```
 
-### Environment variables
+### Environment variables (optional)
 
 Use the **.env.default** file as a template to create a **.env** file with the environment variables needed to run the script. You can load them by running the command `export $(cat .env | xargs)` before executing the script.
 

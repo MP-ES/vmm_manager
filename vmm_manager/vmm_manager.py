@@ -13,8 +13,8 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.util.config import(CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
-                                    CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
+from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
+                                     CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
                                    imprimir_acao_corrente, set_parametros_globais_escrita)
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
@@ -64,16 +64,16 @@ def get_parser():
                    que executará os scripts PowerShell. \
                    Ex: windows_host.domain.com
                ''',
-               env_var='VMM_SERVIDOR_ACESSO', required=True, type=str)
+               env_var='VMM_ACCESS_POINT', required=True, type=str)
     parser.add('-u', '--usuario',
                help='Usuário com permissões no servidor de acesso e no SCVMM',
-               env_var='VMM_USUARIO', required=True, type=str)
+               env_var='VMM_USERNAME', required=True, type=str)
     parser.add('-p', '--senha',
                help='Senha do usuário',
-               env_var='VMM_SENHA', required=True, type=str)
+               env_var='VMM_PASSWORD', required=True, type=str)
     parser.add('-s', '--servidor',
                help='Servidor SCVMM. Ex: scvmm_server.domain.com',
-               env_var='VMM_SERVIDOR', required=True, type=str)
+               env_var='VMM_SERVER', required=True, type=str)
     parser.add('-o', '--ocultar-progresso',
                help='Não imprime informações de progresso do comando',
                action='store_true')
@@ -88,7 +88,7 @@ def get_parser():
             com ações necessárias à sincronização do inventário')
     plan.add_argument('--inventario',
                       help='Arquivo YAML com a especificação das máquinas',
-                      dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+                      dest='arquivo_inventario', env_var='VMM_INVENTORY',
                       required=True, type=parametro_arquivo_yaml)
 
     apply = subprasers.add_parser(
@@ -103,7 +103,7 @@ def get_parser():
                        required=False, type=parametro_booleano)
     apply.add_argument('--inventario',
                        help='Arquivo YAML com a especificação das máquinas',
-                       dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+                       dest='arquivo_inventario', env_var='VMM_INVENTORY',
                        required=False, type=parametro_arquivo_yaml)
 
     destroy = subprasers.add_parser(
@@ -124,7 +124,7 @@ def get_parser():
         'show', help='Imprime json com os dados e situação dos ativos do inventário')
     show.add_argument('--inventario',
                       help='Arquivo YAML com a especificação das máquinas',
-                      dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+                      dest='arquivo_inventario', env_var='VMM_INVENTORY',
                       required=True, type=parametro_arquivo_yaml)
     show.add_argument('--vm',
                       help='Nome da máquina virtual', default='',
