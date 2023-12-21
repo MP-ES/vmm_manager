@@ -45,8 +45,8 @@ class ParserLocal:
 
         return discos_adicionais
 
-    def __init__(self, arquivo_inventario):
-        self.__arquivo_inventario = arquivo_inventario
+    def __init__(self, inventory_file):
+        self.__arquivo_inventario = inventory_file
         self.__inventario = None
 
     def __validar_arquivo_yaml(self):

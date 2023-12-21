@@ -11,20 +11,20 @@ class Comando:
     __TEMPLATES_DIR = '../includes/ps_templates'
     __TEMPLATES_EXTENSAO = '.j2'
 
-    def __init__(self, comando, descricao=None, **kwargs):
+    def __init__(self, command, descricao=None, **kwargs):
         try:
-            self.comando = comando
-            self.descricao = descricao if descricao else self.comando
+            self.command = command
+            self.descricao = descricao if descricao else self.command
             self.args = kwargs
             j2_env = Environment(
                 loader=FileSystemLoader(os.path.join(
                     os.path.dirname(__file__), Comando.__TEMPLATES_DIR)),
                 trim_blocks=True)
             self.template = j2_env.get_template(
-                self.comando + Comando.__TEMPLATES_EXTENSAO)
+                self.command + Comando.__TEMPLATES_EXTENSAO)
         except exceptions.TemplateNotFound as ex:
             print(
-                f"Template '{ex}' não encontrado para o comando '{self.comando}'.")
+                f"Template '{ex}' não encontrado para o command '{self.command}'.")
             sys.exit(1)
 
     def imprimir(self):
@@ -33,4 +33,4 @@ class Comando:
     def executar(self, servidor_acesso):
         conteudo_script = self.template.render(self.args)
         return servidor_acesso.executar_script(
-            self.comando, conteudo_script)
+            self.command, conteudo_script)

@@ -109,7 +109,7 @@ class ServidorAcesso:
 
                 return True, stdout.read().decode(ServidorAcesso.__ENCODE_CMD)
             except paramiko.SSHException as ex:
-                return False, f"Erro ao executar comando '{cmd}': {ex}"
+                return False, f"Erro ao executar command '{cmd}': {ex}"
             except socket.error as ex:
                 return False, f"Erro de socket ao executar '{cmd}': {ex}"
         else:

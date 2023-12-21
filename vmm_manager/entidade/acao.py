@@ -106,7 +106,7 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            f'Ação "{self.nome_comando}" não possui comando de pós-execução.')
+            f'Ação "{self.nome_comando}" não possui command de pós-execução.')
 
     def get_str_impressao_inline(self):
         cmd_args = ', '.join([f'{arg}={value}'

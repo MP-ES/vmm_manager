@@ -17,7 +17,7 @@ def json_handle_inventario(obj):
 class Inventario:
 
     @staticmethod
-    def get_json(inventario_local, inventario_remoto, dados_completos=True):
+    def get_json(inventario_local, inventario_remoto, all_data=True):
         for nome_vm in inventario_remoto.vms:
             if nome_vm not in inventario_local.vms:
                 # máquina órfã: não exibir
@@ -27,7 +27,7 @@ class Inventario:
                 inventario_local.vms[nome_vm].dados_ansible
 
             # definindo tipo de impressão
-            inventario_remoto.vms[nome_vm].to_json_dados_completos = dados_completos
+            inventario_remoto.vms[nome_vm].to_json_dados_completos = all_data
 
         return True, json.dumps(inventario_remoto,
                                 default=json_handle_inventario,

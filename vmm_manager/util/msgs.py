@@ -9,9 +9,9 @@ from pytz import timezone
 _EXIBIR_CORES = True
 
 
-def set_parametros_globais_escrita(exibir_cores):
+def set_parametros_globais_escrita(color):
     global _EXIBIR_CORES  # pylint: disable=global-statement
-    _EXIBIR_CORES = exibir_cores
+    _EXIBIR_CORES = color
 
 
 def formatar_msg_aviso(msg):

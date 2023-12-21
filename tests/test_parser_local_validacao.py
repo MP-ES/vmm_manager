@@ -13,10 +13,10 @@ from tests.dados_teste import DadosTeste
 class TestParserLocalValidacao(Base):
 
     def test_parser_inventario_vazio(self, tmpdir, servidor_acesso):
-        arquivo_inventario = tmpdir.join('inventario_vazio.yaml')
-        arquivo_inventario.write('')
+        inventory_file = tmpdir.join('inventario_vazio.yaml')
+        inventory_file.write('')
 
-        parser_local = ParserLocal(arquivo_inventario.strpath)
+        parser_local = ParserLocal(inventory_file.strpath)
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
