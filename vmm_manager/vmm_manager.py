@@ -96,9 +96,8 @@ def get_parser():
                        dest='inventory_file', env_var='VMM_INVENTORY',
                        required=False, type=parametro_arquivo_yaml)
     apply.add_argument('--skip-confirmation',
-                       help='Whether to skip confirmation. Default: False',
-                       env_var='VMM_SKIP_CONFIRMATION', default=False,
-                       required=False, action='store_true')
+                       help='Skip confirmation',
+                       env_var='VMM_SKIP_CONFIRMATION', required=False, action='store_true')
 
     destroy = subprasers.add_parser(
         'destroy', help='Remove all machines from the specified group in the specified cloud')
@@ -107,9 +106,8 @@ def get_parser():
     destroy.add_argument(
         '--cloud', help='Cloud name', required=True)
     destroy.add_argument('--skip-confirmation',
-                         help='Whether to skip confirmation. Default: False',
-                         env_var='VMM_SKIP_CONFIRMATION', default=False,
-                         required=False, action='store_true')
+                         help='Skip confirmation',
+                         env_var='VMM_SKIP_CONFIRMATION', required=False, action='store_true')
 
     subprasers.add_parser(
         'opts', help='List available options in the SCVMM for each field')
