@@ -9,9 +9,9 @@ from pytz import timezone
 _EXIBIR_CORES = True
 
 
-def set_parametros_globais_escrita(color):
+def set_parametros_globais_escrita(no_color):
     global _EXIBIR_CORES  # pylint: disable=global-statement
-    _EXIBIR_CORES = color
+    _EXIBIR_CORES = not no_color
 
 
 def formatar_msg_aviso(msg):
@@ -34,12 +34,18 @@ def finalizar_com_erro(msg_erro):
 
 def imprimir_ok(ocultar_progresso):
     if not ocultar_progresso:
-        print('[OK]')
+        if _EXIBIR_CORES:
+            print('\033[92m[OK]\033[0m')
+        else:
+            print('[OK]')
 
 
 def imprimir_erro(ocultar_progresso):
     if not ocultar_progresso:
-        print('[ERRO]')
+        if _EXIBIR_CORES:
+            print('\033[91m[ERR]\033[0m')
+        else:
+            print('[ERR]')
 
 
 def imprimir_acao_corrente(acao, ocultar_progresso):

@@ -69,13 +69,11 @@ def get_parser():
                help='SCVMM server. E.g.: scvmm_server.domain.com',
                env_var='VMM_SERVER', required=True, type=str)
     parser.add('--hide-progress',
-               help='Whether to hide the progress bar. Default: False',
-               env_var='VMM_HIDE_PROGRESS', default=False,
-               required=False, action='store_true')
-    parser.add('--color',
-               help='Whether to use colors in the output. Default: True',
-               env_var='VMM_COLOR', default=True,
-               required=False, action='store_true')
+               help='Hide progress messages',
+               env_var='VMM_HIDE_PROGRESS', required=False, action='store_true')
+    parser.add('--no-color',
+               help='Do not use colors in the output',
+               env_var='VMM_NO_COLOR', required=False, action='store_true')
 
     subprasers = parser.add_subparsers(dest='command')
     plan = subprasers.add_parser(
@@ -125,10 +123,9 @@ def get_parser():
     show.add_argument('--vm-name',
                       help='Virtual machine name', default='',
                       required=False, type=parametro_alfanumerico_limitado)
-    show.add_argument('--all',
-                      help='Whether to show all data. Default: False',
-                      dest='all_data', env_var='VMM_ALL_DATA', default=False,
-                      required=False, action='store_true')
+    show.add_argument('--all-data',
+                      help='Show all resource data',
+                      env_var='VMM_ALL_DATA', required=False, action='store_true')
 
     return parser
 
@@ -360,7 +357,7 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    set_parametros_globais_escrita(args.color)
+    set_parametros_globais_escrita(args.no_color)
 
     if not args.command:
         finalizar_com_erro('Comando não informado. Use a opção -h para ajuda.')
