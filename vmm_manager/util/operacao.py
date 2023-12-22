@@ -12,8 +12,12 @@ from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
 from vmm_manager.infra.comando import Comando
 
 
-def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None,
-                             ocultar_progresso=False):
+def __confirmar_acao_usuario(
+    servidor_acesso=None,
+    agrupamento=None,
+    nuvem=None,
+    ocultar_progresso=False
+):
     resposta = None
     while resposta not in ['s', 'n', 'y']:
         resposta = input('Deseja executar? (s/n): ')
