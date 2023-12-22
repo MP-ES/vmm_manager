@@ -19,8 +19,11 @@ class Acao(YamlAble):
 
     def __init__(self, nome_comando, **kwargs):
         # Validate if the args contain the resource identifier
-        if (Acao.RESOURCE_IDENTIFIER_NAME not in kwargs
-                and Acao.RESOURCE_IDENTIFIER_ID not in kwargs):
+        if (
+            'args' not in kwargs  # passed by Yamlable
+            and Acao.RESOURCE_IDENTIFIER_NAME not in kwargs
+            and Acao.RESOURCE_IDENTIFIER_ID not in kwargs
+        ):
             raise ValueError(
                 f'Os argumentos devem conter o identificador do recurso: '
                 f'{Acao.RESOURCE_IDENTIFIER_NAME} ou {Acao.RESOURCE_IDENTIFIER_ID}.'
@@ -106,7 +109,7 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            f'Ação "{self.nome_comando}" não possui comando de pós-execução.')
+            f'Ação "{self.nome_comando}" não possui command de pós-execução.')
 
     def get_str_impressao_inline(self):
         cmd_args = ', '.join([f'{arg}={value}'

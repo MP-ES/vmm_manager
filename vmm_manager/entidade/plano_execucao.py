@@ -20,13 +20,13 @@ class PlanoExecucao(YamlAble):
     ARQUIVO_LOG_ERROS = 'erros.log'
 
     @staticmethod
-    def carregar_plano_execucao(arquivo_plano_execucao):
+    def carregar_plano_execucao(execution_plan_file):
         try:
-            with open(arquivo_plano_execucao, 'r', encoding='utf8') as arquivo:
+            with open(execution_plan_file, 'r', encoding='utf8') as arquivo:
                 plano_execucao = yaml.safe_load(arquivo)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
-            return False, f"Erro ao carregar plano de execução '{arquivo_plano_execucao}'.\n{erro}"
+            return False, f"Erro ao carregar plano de execução '{execution_plan_file}'.\n{erro}"
 
     @staticmethod
     def excluir_arquivo():
@@ -103,7 +103,8 @@ class PlanoExecucao(YamlAble):
 
                 if not acao.is_same_resource(proxima_acao):
                     interval = 10
-                    print(f'{textwrap.shorten(f"Aguardando {interval} segundos", 100)} => ',
+
+                    print(f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # pylint: disable=line-too-long
                           end='', flush=True)
                     time.sleep(interval)
                     imprimir_ok(ocultar_progresso)
@@ -197,8 +198,8 @@ class PlanoExecucao(YamlAble):
                         f'Processo {job.id_vmm} finalizado com erro.'))
                     self.__logar_erros_acao(job.acao, job.resumo_erro)
 
-    def __logar_erros_comando(self, comando, erro):
-        self.__msgs_erros += f'Erro no comando "{comando}":\n{erro}\n\n'
+    def __logar_erros_comando(self, command, erro):
+        self.__msgs_erros += f'Erro no command "{command}":\n{erro}\n\n'
 
     def __logar_erros_acao(self, acao, erro):
         self.__msgs_erros += f'Comando:\n{ acao.get_str_impressao_inline()}' \
@@ -234,11 +235,12 @@ class PlanoExecucao(YamlAble):
                 'nuvem': self.nuvem,
                 'acoes': self.acoes}
 
-    @ classmethod
+    @classmethod
     def __from_yaml_dict__(cls, dct, yaml_tag):
         plano_execucao = PlanoExecucao(dct['agrupamento'], dct['nuvem'])
+
         for acao_str in dct['acoes']:
-            acao = Acao(acao_str.nome_comando)
-            acao.args = acao_str.args['args']
+            acao = Acao(acao_str.nome_comando, **acao_str.args['args'])
             plano_execucao.acoes.append(acao)
+
         return plano_execucao

@@ -6,22 +6,30 @@ import sys
 import os
 import platform
 import json
-from vmm_manager.util.msgs import imprimir_ok, imprimir_erro
+from vmm_manager.util.msgs import formatar_msg_aviso, imprimir_ok, imprimir_erro
 from vmm_manager.util.msgs import formatar_msg_erro, finalizar_com_erro
 from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
 from vmm_manager.infra.comando import Comando
 
 
-def __confirmar_acao_usuario(servidor_acesso=None, agrupamento=None, nuvem=None,
-                             ocultar_progresso=False):
+def __confirmar_acao_usuario(
+    servidor_acesso=None,
+    agrupamento=None,
+    nuvem=None,
+    ocultar_progresso=False
+):
     resposta = None
     while resposta not in ['s', 'n', 'y']:
         resposta = input('Deseja executar? (s/n): ')
+
         if resposta == 'n':
             if servidor_acesso and agrupamento and nuvem:
                 liberar_lock(servidor_acesso, agrupamento,
                              nuvem, ocultar_progresso)
-            print('Ação cancelada pelo usuário.')
+
+            if not ocultar_progresso:
+                print(formatar_msg_aviso('Operação cancelada pelo usuário.'))
+
             sys.exit(0)
 
 
@@ -29,8 +37,9 @@ def confirmar_acao_usuario_sem_lock():
     __confirmar_acao_usuario()
 
 
-def confirmar_acao_usuario_com_lock(servidor_acesso, agrupamento, nuvem):
-    __confirmar_acao_usuario(servidor_acesso, agrupamento, nuvem)
+def confirmar_acao_usuario_com_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+    __confirmar_acao_usuario(
+        servidor_acesso, agrupamento, nuvem, ocultar_progresso)
 
 
 def validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso):

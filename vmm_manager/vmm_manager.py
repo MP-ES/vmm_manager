@@ -13,8 +13,8 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.util.config import(CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
-                                    CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
+from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
+                                     CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
                                    imprimir_acao_corrente, set_parametros_globais_escrita)
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
@@ -33,107 +33,96 @@ def parametro_arquivo_yaml(nome_arquivo):
         raise argparse.ArgumentTypeError(exc)
     except scanner.ScannerError as exc:
         raise argparse.ArgumentTypeError(
-            f'YAML inválido: {exc}')
-
-
-def parametro_booleano(valor):
-    try:
-        return str(valor).lower() in ('y', 'yes', 't', 'true', 'on', '1')
-    except ValueError as error:
-        raise argparse.ArgumentTypeError(
-            f"'{valor}' não é um valor booleano") from error
+            f'Invalid YAML: {exc}')
 
 
 def parametro_alfanumerico_limitado(valor):
     regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$', re.IGNORECASE)
     if valor and not regex_alfa_num.match(valor):
         raise argparse.ArgumentTypeError(
-            f"Parâmetro inválido: '{valor}'")
+            f"Invalid parameter: '{valor}'")
     return valor
 
 
 def get_parser():
     parser = configargparse.ArgumentParser(
         description='''
-        Script python que gerencia recursos no System Center Virtual Machine Manager (SCVMM), \
-            de forma declarativa, com base em um arquivo de configuração YAML.
+        Python script that manages resources in the System Center Virtual Machine Manager (SCVMM), \
+        in a declarative way, based on a YAML configuration file.
         ''', default_config_files=['vmm_manager.ini'])
-    parser.add('-a', '--servidor-acesso',
+    parser.add('-a', '--access-point',
                help='''
-               Endereço (FQDN ou IP) do servidor Windows, com o módulo PSH do SCVMM instalado, \
-                   que executará os scripts PowerShell. \
-                   Ex: windows_host.domain.com
+                Address (FQDN or IP) of the Windows server, \
+                with the VirtualMachineManager PowerShell module installed, \
+                which will run the PowerShell scripts. \
+                E.g.: windows_host.domain.com
                ''',
-               env_var='VMM_SERVIDOR_ACESSO', required=True, type=str)
-    parser.add('-u', '--usuario',
-               help='Usuário com permissões no servidor de acesso e no SCVMM',
-               env_var='VMM_USUARIO', required=True, type=str)
-    parser.add('-p', '--senha',
-               help='Senha do usuário',
-               env_var='VMM_SENHA', required=True, type=str)
-    parser.add('-s', '--servidor',
-               help='Servidor SCVMM. Ex: scvmm_server.domain.com',
-               env_var='VMM_SERVIDOR', required=True, type=str)
-    parser.add('-o', '--ocultar-progresso',
-               help='Não imprime informações de progresso do comando',
-               action='store_true')
-    parser.add('--exibir-cores',
-               help='Se for False, não exibe cores na saída do terminal',
-               dest='exibir_cores', env_var='VMM_EXIBIR_CORES', default=True,
-               required=False, type=parametro_booleano)
+               env_var='VMM_ACCESS_POINT', required=True, type=str)
+    parser.add('-u', '--username',
+               help='Username with access to the access point and the SCVMM',
+               env_var='VMM_USERNAME', required=True, type=str)
+    parser.add('-p', '--password',
+               help='User password',
+               env_var='VMM_PASSWORD', required=True, type=str)
+    parser.add('-s', '--server',
+               help='SCVMM server. E.g.: scvmm_server.domain.com',
+               env_var='VMM_SERVER', required=True, type=str)
+    parser.add('--hide-progress',
+               help='Hide progress messages',
+               env_var='VMM_HIDE_PROGRESS', required=False, action='store_true')
+    parser.add('--no-color',
+               help='Do not use colors in the output',
+               env_var='VMM_NO_COLOR', required=False, action='store_true')
 
-    subprasers = parser.add_subparsers(dest='comando')
+    subprasers = parser.add_subparsers(dest='command')
     plan = subprasers.add_parser(
-        'plan', help='Cria um plano de execução, \
-            com ações necessárias à sincronização do inventário')
-    plan.add_argument('--inventario',
-                      help='Arquivo YAML com a especificação das máquinas',
-                      dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+        'plan', help='Create an execution plan \
+            based on the difference between the local and remote inventory')
+    plan.add_argument('--inventory',
+                      help='YAML file with resource specifications',
+                      dest='inventory_file', env_var='VMM_INVENTORY',
                       required=True, type=parametro_arquivo_yaml)
 
     apply = subprasers.add_parser(
-        'apply', help='Aplica as alterações necessárias no SCVMM')
-    apply.add_argument('--plano-execucao',
-                       help='Arquivo YAML com o plano de execução',
-                       dest='arquivo_plano_execucao', env_var='VMM_PLANO_EXECUCAO',
+        'apply',
+        help='Apply the execution plan to the SCVMM')
+    apply.add_argument('--execution-plan',
+                       help='YAML file with the execution plan',
+                       dest='execution_plan_file', env_var='VMM_EXECUTION_PLAN',
                        required=False, type=parametro_arquivo_yaml)
-    apply.add_argument('--pular-confirmacao',
-                       help='Se for True, o plano de execução é aplicado sem confirmação',
-                       dest='pular_confirmacao', env_var='VMM_PULAR_CONFIRMACAO',
-                       required=False, type=parametro_booleano)
-    apply.add_argument('--inventario',
-                       help='Arquivo YAML com a especificação das máquinas',
-                       dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+    apply.add_argument('--inventory',
+                       help='YAML file with resource specifications',
+                       dest='inventory_file', env_var='VMM_INVENTORY',
                        required=False, type=parametro_arquivo_yaml)
+    apply.add_argument('--skip-confirmation',
+                       help='Skip confirmation',
+                       env_var='VMM_SKIP_CONFIRMATION', required=False, action='store_true')
 
     destroy = subprasers.add_parser(
-        'destroy', help='Remove todas as máquinas do agrupamento informado')
+        'destroy', help='Remove all machines from the specified group in the specified cloud')
     destroy.add_argument(
-        '--agrupamento', help='Agrupamento a ser excluído', required=True)
+        '--group', help='Group name', required=True)
     destroy.add_argument(
-        '--nuvem', help='Nuvem a ser analisada', required=True)
-    destroy.add_argument('--pular-confirmacao',
-                         help='Se for True, o agrupamento é excluído sem confirmação',
-                         dest='pular_confirmacao', env_var='VMM_PULAR_CONFIRMACAO',
-                         required=False, type=parametro_booleano)
+        '--cloud', help='Cloud name', required=True)
+    destroy.add_argument('--skip-confirmation',
+                         help='Skip confirmation',
+                         env_var='VMM_SKIP_CONFIRMATION', required=False, action='store_true')
 
     subprasers.add_parser(
-        'opts', help='Lista as opções disponíveis no SCVMM para cada parâmetro da VM')
+        'opts', help='List available options in the SCVMM for each field')
 
     show = subprasers.add_parser(
-        'show', help='Imprime json com os dados e situação dos ativos do inventário')
-    show.add_argument('--inventario',
-                      help='Arquivo YAML com a especificação das máquinas',
-                      dest='arquivo_inventario', env_var='VMM_INVENTARIO',
+        'show', help='Show a JSON data with information about the resources')
+    show.add_argument('--inventory',
+                      help='YAML file with resource specifications',
+                      dest='inventory_file', env_var='VMM_INVENTORY',
                       required=True, type=parametro_arquivo_yaml)
-    show.add_argument('--vm',
-                      help='Nome da máquina virtual', default='',
-                      dest='nome_vm', required=False,
-                      type=parametro_alfanumerico_limitado)
-    show.add_argument('--dados-completos',
-                      help='Se for True, exibe todos os dados da VM',
-                      dest='dados_completos', env_var='VMM_DADOS_COMPLETOS',
-                      required=False, type=parametro_booleano)
+    show.add_argument('--vm-name',
+                      help='Virtual machine name', default='',
+                      required=False, type=parametro_alfanumerico_limitado)
+    show.add_argument('--all-data',
+                      help='Show all the resource data',
+                      env_var='VMM_ALL_DATA', required=False, action='store_true')
 
     return parser
 
@@ -152,11 +141,11 @@ def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progres
     return inventario_remoto
 
 
-def obter_inventario_local(servidor_acesso, arquivo_inventario, ocultar_progresso,
+def obter_inventario_local(servidor_acesso, inventory_file, ocultar_progresso,
                            filtro_nome_vm=None, filtro_dados_completos=True):
     imprimir_acao_corrente('Obtendo inventário local', ocultar_progresso)
 
-    parser_local = ParserLocal(arquivo_inventario)
+    parser_local = ParserLocal(inventory_file)
     status, inventario_local = parser_local.get_inventario(
         servidor_acesso, filtro_nome_vm, filtro_dados_completos)
     validar_retorno_operacao_sem_lock(
@@ -212,12 +201,12 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
     print('\n' + opcoes)
 
 
-def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
-                             nome_vm, dados_completos, ocultar_progresso):
+def imprimir_json_inventario(servidor_acesso, inventory_file,
+                             nome_vm, all_data, ocultar_progresso):
     configurar_vmm(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
-        servidor_acesso, arquivo_inventario, ocultar_progresso,
-        filtro_nome_vm=nome_vm, filtro_dados_completos=dados_completos)
+        servidor_acesso, inventory_file, ocultar_progresso,
+        filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
 
     adquirir_lock(servidor_acesso, inventario_local.agrupamento,
                   inventario_local.nuvem, ocultar_progresso)
@@ -225,23 +214,23 @@ def imprimir_json_inventario(servidor_acesso, arquivo_inventario,
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, inventario_local.agrupamento,
         inventario_local.nuvem, ocultar_progresso,
-        filtro_nome_vm=nome_vm, filtro_dados_completos=dados_completos)
+        filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
 
     liberar_lock(servidor_acesso, inventario_local.agrupamento,
                  inventario_local.nuvem, ocultar_progresso)
 
     imprimir_acao_corrente('Gerando JSON', ocultar_progresso)
     status, json_inventario = Inventario.get_json(
-        inventario_local, inventario_remoto, dados_completos)
+        inventario_local, inventario_remoto, all_data)
     validar_retorno_operacao_sem_lock(
         status, json_inventario, ocultar_progresso)
     print(json_inventario)
 
 
-def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progresso):
+def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
     configurar_vmm(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
-        servidor_acesso, arquivo_inventario, ocultar_progresso)
+        servidor_acesso, inventory_file, ocultar_progresso)
 
     adquirir_lock(servidor_acesso,
                   inventario_local.agrupamento,
@@ -270,8 +259,8 @@ def planejar_sincronizacao(servidor_acesso, arquivo_inventario, ocultar_progress
             '\nNenhuma diferença encontrada entre o inventário local e o remoto.')
 
 
-def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
-                           pular_confirmacao, arquivo_inventario,
+def executar_sincronizacao(servidor_acesso, execution_plan_file,
+                           skip_confirmation, inventory_file,
                            ocultar_progresso):
     configurar_vmm(servidor_acesso, ocultar_progresso)
 
@@ -279,20 +268,20 @@ def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
     #
     # Caso de ter informado o plano de execução
     adquiriu_lock = False
-    if arquivo_plano_execucao or os.path.isfile(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO):
+    if execution_plan_file or os.path.isfile(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO):
         imprimir_acao_corrente(
             'Carregando plano de execução', ocultar_progresso)
         status, plano_execucao = PlanoExecucao.carregar_plano_execucao(
-            arquivo_plano_execucao or PlanoExecucao.ARQUIVO_PLANO_EXECUCAO)
+            execution_plan_file or PlanoExecucao.ARQUIVO_PLANO_EXECUCAO)
         validar_retorno_operacao_sem_lock(
             status, plano_execucao, ocultar_progresso)
     # Caso de ter informado o arquivo de inventário
-    elif arquivo_inventario:
+    elif inventory_file:
         print(formatar_msg_aviso(
             'plano de execução será calculado à partir do inventário.'),
             flush=True)
         inventario_local = obter_inventario_local(
-            servidor_acesso, arquivo_inventario, ocultar_progresso)
+            servidor_acesso, inventory_file, ocultar_progresso)
 
         adquirir_lock(servidor_acesso, inventario_local.agrupamento,
                       inventario_local.nuvem, ocultar_progresso)
@@ -316,11 +305,12 @@ def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
             '\nPlano de execução vazio: nada a alterar.')
     else:
         # Exibindo confirmação
-        if not pular_confirmacao:
+        if not skip_confirmation:
             print('\nAs seguintes operações serão executadas:')
             plano_execucao.imprimir_acoes()
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, plano_execucao.agrupamento, plano_execucao.nuvem)
+                servidor_acesso, plano_execucao.agrupamento,
+                plano_execucao.nuvem, ocultar_progresso)
 
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
@@ -330,7 +320,7 @@ def executar_sincronizacao(servidor_acesso, arquivo_plano_execucao,
 
 
 def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
-                                 pular_confirmacao, ocultar_progresso):
+                                 skip_confirmation, ocultar_progresso):
     configurar_vmm(servidor_acesso, ocultar_progresso)
 
     adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
@@ -340,7 +330,7 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
 
     if not inventario_remoto.is_vazio():
         # Exibindo confirmação
-        if not pular_confirmacao:
+        if not skip_confirmation:
             print('\nAs seguintes máquinas serão excluídas:')
             for maquina_virtual in inventario_remoto.vms.values():
                 print(
@@ -348,7 +338,7 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
                     f'Nome: {maquina_virtual.nome}\t'
                     f'Status: { maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, agrupamento, nuvem)
+                servidor_acesso, agrupamento, nuvem, ocultar_progresso)
 
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
@@ -365,31 +355,31 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    set_parametros_globais_escrita(args.exibir_cores)
+    set_parametros_globais_escrita(args.no_color)
 
-    if not args.comando:
+    if not args.command:
         finalizar_com_erro('Comando não informado. Use a opção -h para ajuda.')
 
     servidor_acesso = ServidorAcesso(
-        args.servidor_acesso, args.usuario, args.senha, args.servidor)
-    validar_conexao(servidor_acesso, args.ocultar_progresso)
+        args.access_point, args.username, args.password, args.server)
+    validar_conexao(servidor_acesso, args.hide_progress)
 
-    if args.comando == 'plan':
+    if args.command == 'plan':
         planejar_sincronizacao(
-            servidor_acesso, args.arquivo_inventario, args.ocultar_progresso)
-    elif args.comando == 'apply':
+            servidor_acesso, args.inventory_file, args.hide_progress)
+    elif args.command == 'apply':
         executar_sincronizacao(
-            servidor_acesso, args.arquivo_plano_execucao,
-            args.pular_confirmacao, args.arquivo_inventario,
-            args.ocultar_progresso)
-    elif args.comando == 'destroy':
+            servidor_acesso, args.execution_plan_file,
+            args.skip_confirmation, args.inventory_file,
+            args.hide_progress)
+    elif args.command == 'destroy':
         remover_agrupamento_da_nuvem(
-            servidor_acesso, args.agrupamento, args.nuvem,
-            args.pular_confirmacao, args.ocultar_progresso)
-    elif args.comando == 'opts':
-        listar_opcoes(servidor_acesso, args.ocultar_progresso)
-    elif args.comando == 'show':
+            servidor_acesso, args.group, args.cloud,
+            args.skip_confirmation, args.hide_progress)
+    elif args.command == 'opts':
+        listar_opcoes(servidor_acesso, args.hide_progress)
+    elif args.command == 'show':
         imprimir_json_inventario(
-            servidor_acesso, args.arquivo_inventario,
-            args.nome_vm.upper(), args.dados_completos,
-            args.ocultar_progresso)
+            servidor_acesso, args.inventory_file,
+            args.vm_name.upper(), args.all_data,
+            args.hide_progress)
