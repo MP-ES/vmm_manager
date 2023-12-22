@@ -309,7 +309,8 @@ def executar_sincronizacao(servidor_acesso, execution_plan_file,
             print('\nAs seguintes operações serão executadas:')
             plano_execucao.imprimir_acoes()
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, plano_execucao.agrupamento, plano_execucao.nuvem)
+                servidor_acesso, plano_execucao.agrupamento,
+                plano_execucao.nuvem, ocultar_progresso)
 
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
@@ -337,7 +338,7 @@ def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
                     f'Nome: {maquina_virtual.nome}\t'
                     f'Status: { maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, agrupamento, nuvem)
+                servidor_acesso, agrupamento, nuvem, ocultar_progresso)
 
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
