@@ -55,8 +55,12 @@ class ParserLocal:
         if os.stat(self.__arquivo_inventario).st_size == 0:
             raise ValueError('Arquivo de inventário vazio.')
 
-    def __montar_inventario(self, dados_inventario,
-                            filtro_nome_vm=None, filtro_dados_completos=True):
+    def __montar_inventario(
+        self,
+        dados_inventario,
+        filtro_nome_vm=None,
+        filtro_dados_completos=True
+    ):
         nomes_vm = []
         self.__inventario = Inventario(
             dados_inventario['agrupamento'], dados_inventario['nuvem'])

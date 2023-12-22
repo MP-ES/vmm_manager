@@ -50,8 +50,14 @@ def validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso):
         finalizar_com_erro(msg)
 
 
-def validar_retorno_operacao_com_lock(status, msg, servidor_acesso,
-                                      agrupamento, nuvem, ocultar_progresso):
+def validar_retorno_operacao_com_lock(
+    status,
+    msg,
+    servidor_acesso,
+    agrupamento,
+    nuvem,
+    ocultar_progresso
+):
     if status:
         imprimir_ok(ocultar_progresso)
     else:

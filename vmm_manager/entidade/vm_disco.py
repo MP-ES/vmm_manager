@@ -39,36 +39,46 @@ class VMDisco:
         return self.tamanho_tipo.name
 
     def get_acao_criar_disco(self, nome_vm):
-        return Acao('criar_disco_vm',
-                    nome_vm=nome_vm,
-                    tipo=self.tipo.value,
-                    tamanho_mb=self.tamanho_mb,
-                    tamanho_tipo=self.get_tamanho_tipo_create(),
-                    arquivo=self.arquivo,
-                    caminho=self.caminho)
+        return Acao(
+            'criar_disco_vm',
+            nome_vm=nome_vm,
+            tipo=self.tipo.value,
+            tamanho_mb=self.tamanho_mb,
+            tamanho_tipo=self.get_tamanho_tipo_create(),
+            arquivo=self.arquivo,
+            caminho=self.caminho
+        )
 
     def get_acao_excluir_disco(self, id_vm):
-        return Acao(Acao.ACAO_EXCLUIR_DISCO_VM,
-                    id_vm=id_vm,
-                    id_drive=self.get_id_drive())
+        return Acao(
+            Acao.ACAO_EXCLUIR_DISCO_VM,
+            id_vm=id_vm,
+            id_drive=self.get_id_drive()
+        )
 
     def get_acao_expandir_disco(self, id_vm, id_drive):
-        return Acao('expandir_disco_vm',
-                    id_vm=id_vm,
-                    id_drive=id_drive,
-                    tamanho_mb=self.tamanho_mb)
+        return Acao(
+            'expandir_disco_vm',
+            id_vm=id_vm,
+            id_drive=id_drive,
+            tamanho_mb=self.tamanho_mb
+        )
 
     def get_acao_mover_disco(self, id_vm, id_disco):
-        return Acao('mover_disco_vm',
-                    id_vm=id_vm,
-                    id_disco=id_disco,
-                    caminho=self.caminho)
+        return Acao(
+            'mover_disco_vm',
+            id_vm=id_vm,
+            id_disco=id_disco,
+            caminho=self.caminho
+        )
 
     def get_acao_converter_disco(self, id_vm, id_drive):
-        return Acao('converter_disco_vm',
-                    id_vm=id_vm,
-                    id_drive=id_drive,
-                    tamanho_tipo=self.get_tamanho_tipo_create())
+        return Acao(
+            'converter_disco_vm',
+            id_vm=id_vm,
+            id_drive=id_drive,
+            tamanho_tipo=self.get_tamanho_tipo_create()
+        )
 
     def get_acoes_diferenca_disco(self, disco_remoto, id_vm, nome_vm):
         acoes = []

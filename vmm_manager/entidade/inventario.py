@@ -159,14 +159,16 @@ class Inventario:
 
             redes.update([rede.nome for rede in maquina_virtual.redes])
 
-        cmd = Comando('validar_inventario', imagens=imagens,
-                      nuvem=self.nuvem,
-                      redes=redes,
-                      servidor_vmm=servidor_acesso.servidor_vmm,
-                      qtde_minima_regioes=len(regioes),
-                      agrupamento=self.agrupamento,
-                      lista_nome_vms_str=self.lista_nome_vms_str(),
-                      campo_agrupamento=CAMPO_AGRUPAMENTO[0])
+        cmd = Comando(
+            'validar_inventario', imagens=imagens,
+            nuvem=self.nuvem,
+            redes=redes,
+            servidor_vmm=servidor_acesso.servidor_vmm,
+            qtde_minima_regioes=len(regioes),
+            agrupamento=self.agrupamento,
+            lista_nome_vms_str=self.lista_nome_vms_str(),
+            campo_agrupamento=CAMPO_AGRUPAMENTO[0]
+        )
         _, msg = cmd.executar(servidor_acesso)
         if msg:
             raise ValueError(msg)

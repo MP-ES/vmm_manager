@@ -161,9 +161,11 @@ class PlanoExecucao(YamlAble):
             imprimir_acao_corrente(
                 'Limpando objetos temporários', ocultar_progresso)
 
-            cmd = Comando('limpar_objs_criacao_vm',
-                          servidor_vmm=servidor_acesso.servidor_vmm,
-                          guids=self.__guids_a_limpar)
+            cmd = Comando(
+                'limpar_objs_criacao_vm',
+                servidor_vmm=servidor_acesso.servidor_vmm,
+                guids=self.__guids_a_limpar
+            )
             status, retorno = cmd.executar(servidor_acesso)
 
             if status:

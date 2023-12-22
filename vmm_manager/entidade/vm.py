@@ -8,14 +8,21 @@ from vmm_manager.scvmm.scregion import SCRegion
 
 
 class VM:
-    def __init__(self, nome, descricao,
-                 imagem, regiao,
-                 qtde_cpu, qtde_ram_mb, redes,
-                 id_vmm=None,
-                 virtualizacao_aninhada=False,
-                 memoria_dinamica=True,
-                 status=VMStatusEnum.EM_EXECUCAO,
-                 no_regiao=None):
+    def __init__(
+        self,
+        nome,
+        descricao,
+        imagem,
+        regiao,
+        qtde_cpu,
+        qtde_ram_mb,
+        redes,
+        id_vmm=None,
+        virtualizacao_aninhada=False,
+        memoria_dinamica=True,
+        status=VMStatusEnum.EM_EXECUCAO,
+        no_regiao=None
+    ):
         self.nome = nome
         self.descricao = descricao if not descricao is None else ''
         self.imagem = imagem
@@ -76,8 +83,12 @@ class VM:
                     data_disco.get_acoes_diferenca_disco(
                         vm_remota.discos_adicionais[nome_disco], vm_remota.id_vmm, self.nome))
 
-    def add_acoes_diferenca_regiao(self, vm_remota,
-                                   plano_execucao, inv_remoto):
+    def add_acoes_diferenca_regiao(
+        self,
+        vm_remota,
+        plano_execucao,
+        inv_remoto
+    ):
         if self.regiao == SCRegion.REGIAO_PADRAO:
             return
 
@@ -127,44 +138,55 @@ class VM:
         return next((rede.nome for rede in self.redes if rede.principal), None)
 
     def get_acao_criar_vm(self):
-        return Acao(Acao.ACAO_CRIAR_VM,
-                    nome_vm=self.nome,
-                    descricao=self.descricao,
-                    imagem=self.imagem,
-                    regiao=self.regiao,
-                    qtde_cpu=self.qtde_cpu,
-                    qtde_ram_mb=self.qtde_ram_mb,
-                    memoria_dinamica=self.memoria_dinamica,
-                    redes=[rede.nome for rede in self.redes],
-                    rede_principal=self.get_rede_principal()
-                    )
+        return Acao(
+            Acao.ACAO_CRIAR_VM,
+            nome_vm=self.nome,
+            descricao=self.descricao,
+            imagem=self.imagem,
+            regiao=self.regiao,
+            qtde_cpu=self.qtde_cpu,
+            qtde_ram_mb=self.qtde_ram_mb,
+            memoria_dinamica=self.memoria_dinamica,
+            redes=[rede.nome for rede in self.redes],
+            rede_principal=self.get_rede_principal()
+        )
 
     def get_acao_excluir_vm(self):
-        return Acao(Acao.ACAO_EXCLUIR_VM,
-                    id_vm=self.id_vmm)
+        return Acao(
+            Acao.ACAO_EXCLUIR_VM,
+            id_vm=self.id_vmm
+        )
 
     def get_acao_mover_vm_regiao(self, id_no_regiao):
-        return Acao('mover_vm_regiao',
-                    nome_vm=self.nome,
-                    id_no_regiao=id_no_regiao,
-                    regiao=self.regiao)
+        return Acao(
+            'mover_vm_regiao',
+            nome_vm=self.nome,
+            id_no_regiao=id_no_regiao,
+            regiao=self.regiao
+        )
 
     def get_acao_atualizar_virtualizacao_aninhada(self):
-        return Acao('atualizar_virtualizacao_aninhada',
-                    nome_vm=self.nome,
-                    virtualizacao_aninhada=self.virtualizacao_aninhada)
+        return Acao(
+            'atualizar_virtualizacao_aninhada',
+            nome_vm=self.nome,
+            virtualizacao_aninhada=self.virtualizacao_aninhada
+        )
 
     def get_acao_atualizar_memoria_dinamica(self):
-        return Acao('atualizar_memoria_dinamica',
-                    nome_vm=self.nome,
-                    memoria_dinamica=self.memoria_dinamica)
+        return Acao(
+            'atualizar_memoria_dinamica',
+            nome_vm=self.nome,
+            memoria_dinamica=self.memoria_dinamica
+        )
 
     def get_acao_atualizar_vm(self, id_vm_remota):
-        return Acao('atualizar_vm',
-                    id_vm=id_vm_remota,
-                    descricao=self.descricao,
-                    qtde_cpu=self.qtde_cpu,
-                    qtde_ram_mb=self.qtde_ram_mb)
+        return Acao(
+            'atualizar_vm',
+            id_vm=id_vm_remota,
+            descricao=self.descricao,
+            qtde_cpu=self.qtde_cpu,
+            qtde_ram_mb=self.qtde_ram_mb
+        )
 
     def __hash__(self):
         return hash(self.nome)

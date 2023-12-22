@@ -13,13 +13,26 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plano_execucao import PlanoExecucao
-from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID, CAMPO_IMAGEM,
-                                     CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
-from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
-                                   imprimir_acao_corrente, set_parametros_globais_escrita)
+from vmm_manager.util.config import (
+    CAMPO_AGRUPAMENTO,
+    CAMPO_ID,
+    CAMPO_IMAGEM,
+    CAMPO_REGIAO,
+    CAMPO_REDE_PRINCIPAL
+)
+from vmm_manager.util.msgs import (
+    finalizar_com_erro,
+    formatar_msg_aviso,
+    imprimir_acao_corrente,
+    set_parametros_globais_escrita
+)
 from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
 from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
-from vmm_manager.util.operacao import adquirir_lock, liberar_lock, confirmar_acao_usuario_com_lock
+from vmm_manager.util.operacao import (
+    adquirir_lock,
+    liberar_lock,
+    confirmar_acao_usuario_com_lock
+)
 from vmm_manager.entidade.inventario import Inventario
 
 
@@ -28,6 +41,7 @@ def parametro_arquivo_yaml(nome_arquivo):
         with open(nome_arquivo, 'r', encoding='utf8') as stream:
             yaml = YAML()
             yaml.load(stream)
+
             return nome_arquivo
     except (FileNotFoundError, IsADirectoryError) as exc:
         raise argparse.ArgumentTypeError(exc)
@@ -38,9 +52,11 @@ def parametro_arquivo_yaml(nome_arquivo):
 
 def parametro_alfanumerico_limitado(valor):
     regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$', re.IGNORECASE)
+
     if valor and not regex_alfa_num.match(valor):
         raise argparse.ArgumentTypeError(
             f"Invalid parameter: '{valor}'")
+
     return valor
 
 
@@ -50,6 +66,7 @@ def get_parser():
         Python script that manages resources in the System Center Virtual Machine Manager (SCVMM), \
         in a declarative way, based on a YAML configuration file.
         ''', default_config_files=['vmm_manager.ini'])
+
     parser.add('-a', '--access-point',
                help='''
                 Address (FQDN or IP) of the Windows server, \
@@ -127,8 +144,14 @@ def get_parser():
     return parser
 
 
-def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progresso,
-                            filtro_nome_vm=None, filtro_dados_completos=True):
+def obter_inventario_remoto(
+    servidor_acesso,
+    agrupamento,
+    nuvem,
+    ocultar_progresso,
+    filtro_nome_vm=None,
+    filtro_dados_completos=True
+):
     imprimir_acao_corrente('Obtendo inventário remoto', ocultar_progresso)
 
     parser_remoto = ParserRemoto(agrupamento, nuvem)
@@ -141,8 +164,13 @@ def obter_inventario_remoto(servidor_acesso, agrupamento, nuvem, ocultar_progres
     return inventario_remoto
 
 
-def obter_inventario_local(servidor_acesso, inventory_file, ocultar_progresso,
-                           filtro_nome_vm=None, filtro_dados_completos=True):
+def obter_inventario_local(
+    servidor_acesso,
+    inventory_file,
+    ocultar_progresso,
+    filtro_nome_vm=None,
+    filtro_dados_completos=True
+):
     imprimir_acao_corrente('Obtendo inventário local', ocultar_progresso)
 
     parser_local = ParserLocal(inventory_file)
@@ -201,8 +229,13 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
     print('\n' + opcoes)
 
 
-def imprimir_json_inventario(servidor_acesso, inventory_file,
-                             nome_vm, all_data, ocultar_progresso):
+def imprimir_json_inventario(
+    servidor_acesso,
+    inventory_file,
+    nome_vm,
+    all_data,
+    ocultar_progresso
+):
     configurar_vmm(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
         servidor_acesso, inventory_file, ocultar_progresso,
@@ -259,9 +292,13 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
             '\nNenhuma diferença encontrada entre o inventário local e o remoto.')
 
 
-def executar_sincronizacao(servidor_acesso, execution_plan_file,
-                           skip_confirmation, inventory_file,
-                           ocultar_progresso):
+def executar_sincronizacao(
+    servidor_acesso,
+    execution_plan_file,
+    skip_confirmation,
+    inventory_file,
+    ocultar_progresso
+):
     configurar_vmm(servidor_acesso, ocultar_progresso)
 
     # Obtendo plano de execução
@@ -319,8 +356,13 @@ def executar_sincronizacao(servidor_acesso, execution_plan_file,
         plano_execucao.imprimir_resultado_execucao()
 
 
-def remover_agrupamento_da_nuvem(servidor_acesso, agrupamento, nuvem,
-                                 skip_confirmation, ocultar_progresso):
+def remover_agrupamento_da_nuvem(
+    servidor_acesso,
+    agrupamento,
+    nuvem,
+    skip_confirmation,
+    ocultar_progresso
+):
     configurar_vmm(servidor_acesso, ocultar_progresso)
 
     adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)

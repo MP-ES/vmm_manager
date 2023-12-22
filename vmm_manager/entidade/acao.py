@@ -90,22 +90,27 @@ class Acao(YamlAble):
     def get_resultado_execucao(self):
         if self.__status_execucao is None:
             raise AttributeError('Ação não executada.')
+
         if self.__status_execucao:
             return self.__retorno_execucao
+
         return {'Msgs': self.__retorno_execucao}
 
     def get_cmd_pos_execucao(self, agrupamento, servidor_acesso):
         if self.is_criacao_vm():
-            cmd = Comando('criar_vm_pos',
-                          descricao=f"Taguear VM { self.args['nome_vm']}",
-                          servidor_vmm=servidor_acesso.servidor_vmm,
-                          campo_agrupamento=CAMPO_AGRUPAMENTO[0],
-                          campo_id=CAMPO_ID[0],
-                          campo_imagem=CAMPO_IMAGEM[0],
-                          campo_regiao=CAMPO_REGIAO[0],
-                          campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
-                          agrupamento=agrupamento)
+            cmd = Comando(
+                'criar_vm_pos',
+                descricao=f"Taguear VM { self.args['nome_vm']}",
+                servidor_vmm=servidor_acesso.servidor_vmm,
+                campo_agrupamento=CAMPO_AGRUPAMENTO[0],
+                campo_id=CAMPO_ID[0],
+                campo_imagem=CAMPO_IMAGEM[0],
+                campo_regiao=CAMPO_REGIAO[0],
+                campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
+                agrupamento=agrupamento
+            )
             cmd.args.update(self.args)
+
             return cmd
 
         raise AttributeError(
@@ -114,6 +119,7 @@ class Acao(YamlAble):
     def get_str_impressao_inline(self):
         cmd_args = ', '.join([f'{arg}={value}'
                               for arg, value in self.args.items()])
+
         return f'{self.nome_comando} - [{cmd_args}]'
 
     def __eq__(self, other):

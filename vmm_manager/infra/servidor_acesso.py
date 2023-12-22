@@ -124,10 +124,13 @@ class ServidorAcesso:
             return resultado
 
         if self.__is_conexao_sftp_ok():
-            file_attrs = self.conexao_sftp.put(nome_arquivo,
-                                               ServidorAcesso.__get_caminho_arquivo(
-                                                   nome_arquivo),
-                                               confirm=True)
+            file_attrs = self.conexao_sftp.put(
+                nome_arquivo,
+                ServidorAcesso.__get_caminho_arquivo(
+                    nome_arquivo
+                ),
+                confirm=True
+            )
             return True, file_attrs
 
         return False, self.get_msg_erro_conexao_sftp()
