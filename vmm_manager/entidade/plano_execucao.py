@@ -103,7 +103,8 @@ class PlanoExecucao(YamlAble):
 
                 if not acao.is_same_resource(proxima_acao):
                     interval = 10
-                    print(f'{textwrap.shorten(f"Aguardando {interval} segundos", 100)} => ',
+
+                    print(f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # pylint: disable=line-too-long
                           end='', flush=True)
                     time.sleep(interval)
                     imprimir_ok(ocultar_progresso)
@@ -234,11 +235,12 @@ class PlanoExecucao(YamlAble):
                 'nuvem': self.nuvem,
                 'acoes': self.acoes}
 
-    @ classmethod
+    @classmethod
     def __from_yaml_dict__(cls, dct, yaml_tag):
         plano_execucao = PlanoExecucao(dct['agrupamento'], dct['nuvem'])
+
         for acao_str in dct['acoes']:
-            acao = Acao(acao_str.nome_comando)
-            acao.args = acao_str.args['args']
+            acao = Acao(acao_str.nome_comando, **acao_str.args['args'])
             plano_execucao.acoes.append(acao)
+
         return plano_execucao

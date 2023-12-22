@@ -373,7 +373,7 @@ def main():
             args.hide_progress)
     elif args.command == 'destroy':
         remover_agrupamento_da_nuvem(
-            servidor_acesso, args.agrupamento, args.nuvem,
+            servidor_acesso, args.group, args.cloud,
             args.skip_confirmation, args.hide_progress)
     elif args.command == 'opts':
         listar_opcoes(servidor_acesso, args.hide_progress)
