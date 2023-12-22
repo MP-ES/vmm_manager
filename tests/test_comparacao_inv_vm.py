@@ -126,9 +126,11 @@ class TestComparacaoInvVm(Base):
         return plano_execucao
 
     @staticmethod
-    def get_plano_execucao_alterar_virtualizacao_aninhada(inventario_local,
-                                                          inventario_remoto,
-                                                          novo_valor):
+    def get_plano_execucao_alterar_virtualizacao_aninhada(
+        inventario_local,
+        inventario_remoto,
+        novo_valor
+    ):
         plano_execucao = PlanoExecucao(
             inventario_local.agrupamento, inventario_local.nuvem)
 
@@ -140,9 +142,11 @@ class TestComparacaoInvVm(Base):
         return plano_execucao
 
     @staticmethod
-    def get_plano_execucao_alterar_memoria_dinamica(inventario_local,
-                                                    inventario_remoto,
-                                                    novo_valor):
+    def get_plano_execucao_alterar_memoria_dinamica(
+        inventario_local,
+        inventario_remoto,
+        novo_valor
+    ):
         plano_execucao = PlanoExecucao(
             inventario_local.agrupamento, inventario_local.nuvem)
 
