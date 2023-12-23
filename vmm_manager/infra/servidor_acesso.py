@@ -23,8 +23,8 @@ class ServidorAcesso:
     __DEFAULT_SSH_PORT = 22
 
     @staticmethod
-    def __get_caminho_arquivo(nome):
-        return f'{ServidorAcesso.__PASTA_TEMPORARIA}/{os.path.basename(nome)}'
+    def __get_caminho_arquivo(name):
+        return f'{ServidorAcesso.__PASTA_TEMPORARIA}/{os.path.basename(name)}'
 
     def __init__(self, servidor, usuario, senha, servidor_vmm):
         self.servidor = servidor
@@ -135,20 +135,20 @@ class ServidorAcesso:
 
         return False, self.get_msg_erro_conexao_sftp()
 
-    def __excluir_arquivo(self, nome):
+    def __excluir_arquivo(self, name):
         self.__executar_comando('del {}'.format(
-            ServidorAcesso.__get_caminho_arquivo(nome).replace('/', '\\')))
+            ServidorAcesso.__get_caminho_arquivo(name).replace('/', '\\')))
 
-    def get_caminho_lockfile(self, agrupamento, nuvem):
-        return self.__get_caminho_arquivo(f'{agrupamento}-{nuvem}.lock')
+    def get_caminho_lockfile(self, group, cloud):
+        return self.__get_caminho_arquivo(f'{group}-{cloud}.lock')
 
-    def executar_script(self, nome, conteudo):
+    def executar_script(self, name, conteudo):
         try:
             arquivo_script = None
 
             if self.__is_conexao_ok():
                 with tempfile.NamedTemporaryFile(
-                        prefix=nome, suffix='.ps1', delete=True) as arquivo_script:
+                        prefix=name, suffix='.ps1', delete=True) as arquivo_script:
                     arquivo_script.file.write(conteudo.encode(
                         ServidorAcesso.__ENCODE_WINDOWS))
                     arquivo_script.flush()

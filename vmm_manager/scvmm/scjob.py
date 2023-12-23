@@ -65,7 +65,7 @@ class SCJob():
         self.id_vmm = id_vmm
         self.acao = acao
 
-        self.nome = None
+        self.name = None
         self.status = None
         self.is_finalizado = None
         self.resumo_erro = None
@@ -90,7 +90,7 @@ class SCJob():
                 not self.is_finalizado_com_erro())
 
     def atualizar(self, job_vmm):
-        self.nome = job_vmm.get('Name')
+        self.name = job_vmm.get('Name')
         self.status = SCJobStatusEnum(job_vmm.get('Status'))
         self.is_finalizado = job_vmm.get('IsCompleted')
 
@@ -113,7 +113,7 @@ class SCJob():
         return f'''
             id_vmm: {self.id_vmm}
             acao: {self.acao}
-            nome: {self.nome}
+            name: {self.name}
             status: {self.status}
             is_finalizado: {self.is_finalizado}
             progresso: {self.progresso}

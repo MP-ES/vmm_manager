@@ -1,8 +1,8 @@
 $VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
 
-$Description = "{{ descricao }}"
-$CPUCount = "{{ qtde_cpu }}"
-$MemoryMB = "{{ qtde_ram_mb }}"
+$Description = "{{ description }}"
+$CPUCount = "{{ cpu }}"
+$MemoryMB = "{{ memory }}"
 $MemoryMBMin = [math]::min( 512 , $MemoryMB )
 
 $NeedShutdown = ($VM.CPUCount -ne $CPUCount) -or ($VM.Memory -ne $MemoryMB)

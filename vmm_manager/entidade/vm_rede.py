@@ -1,32 +1,32 @@
 """
-Representação de uma interface de rede de uma máquina virtual
+Representação de uma interface de network de uma máquina virtual
 """
 
 
 class VMRede:
-    def __init__(self, nome, principal=False):
-        self.nome = nome
-        self.principal = principal
+    def __init__(self, name, default=False):
+        self.name = name
+        self.default = default
 
         self.ips = []
 
     def __hash__(self):
-        return hash(self.nome)
+        return hash(self.name)
 
     def __eq__(self, other):
-        return isinstance(other, VMRede) and (self.nome == other.nome
-                                              and self.principal == other.principal)
+        return isinstance(other, VMRede) and (self.name == other.name
+                                              and self.default == other.default)
 
     def __repr__(self):
         return f'''
-                nome: {self.nome}
-                principal: {self.principal}
+                name: {self.name}
+                default: {self.default}
                 ips: {self.ips}
                 '''
 
     def to_dict(self):
         return {
-            'nome': self.nome,
-            'principal': self.principal,
+            'name': self.name,
+            'default': self.default,
             'ips': self.ips,
         }

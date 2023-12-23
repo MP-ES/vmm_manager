@@ -3,32 +3,32 @@ $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{
 $custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_imagem }}"
 $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
 $custom_rede_principal = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_rede_principal }}"
-$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$cloud = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ cloud }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $cloud
 $vms_agrupamento = @()
 
 foreach($vm in $vms_nuvem) {
-  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
-  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+  $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+  if ($group.Value -eq "{{ group }}") {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id
 
     {% if filtro_nome_vm %}
-  # Filtrando por nome: otimização
+  # Filtrando por name: otimização
   if ($nome_id.Value -ne "{{ filtro_nome_vm }}"){Continue}
     {% endif %}
     
-    $imagem = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem
-    $regiao = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao
+    $image = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem
+    $region = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao
     $rede_principal = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal
 
-    $redes = @()
+    $networks = @()
     foreach($interface in $vm.VirtualNetworkAdapters) {
-      $rede = [PSCustomObject]@{
+      $network = [PSCustomObject]@{
         Nome = $interface.VMNetwork.Name
         IPS = $interface.IPv4Addresses
         Principal = $interface.VMNetwork.Name -eq $rede_principal.Value
       }
-      $redes += $rede
+      $networks += $network
     }
 
     $vm_agrupamento = [PSCustomObject]@{
@@ -39,9 +39,9 @@ foreach($vm in $vms_nuvem) {
       NoRegiao = $vm.VMHost.Name
       QtdeCpu = $vm.CPUCount
       QtdeRam = $vm.Memory
-      Redes = $redes
-      Imagem = $imagem.Value
-      Regiao = $regiao.Value
+      Redes = $networks
+      Imagem = $image.Value
+      Regiao = $region.Value
       VirtualizacaoAninhada = $vm.EnabledNestedVirtualization
       MemoriaDinamica = $vm.DynamicMemoryEnabled
     }

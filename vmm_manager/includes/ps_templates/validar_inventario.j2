@@ -1,12 +1,12 @@
-$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-if (!$nuvem ) {
-  Write-Host "Nuvem (Cloud) '{{ nuvem }}' não encontrada."
+$cloud = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ cloud }}"
+if (!$cloud ) {
+  Write-Host "Nuvem (Cloud) '{{ cloud }}' não encontrada."
 }
 
-{% for imagem in imagens %}
-$imagem = Get-SCVMTemplate -VMMServer "{{ servidor_vmm }}" | Where {$_.Name -eq "{{ imagem }}"}
-if (!$imagem ) {
-  Write-Host "Imagem (Template) '{{ imagem }}' não encontrada."
+{% for image in imagens %}
+$image = Get-SCVMTemplate -VMMServer "{{ servidor_vmm }}" | Where {$_.Name -eq "{{ image }}"}
+if (!$image ) {
+  Write-Host "Imagem (Template) '{{ image }}' não encontrada."
 }
 {% endfor %}
 
@@ -16,21 +16,21 @@ if ($qtde_minima_regioes -gt $qtde_regioes) {
   Write-Host "Número de regiões incompatível. Disponíveis: $qtde_regioes. Quantidade necessária: $qtde_minima_regioes."
 }
 
-{% for rede in redes %}
-$rede = Get-SCVMNetwork -VMMServer "{{ servidor_vmm }}" -Name "{{ rede }}"
-if (!$rede ) {
-  Write-Host "Rede '{{ rede }}' não encontrada."
+{% for network in networks %}
+$network = Get-SCVMNetwork -VMMServer "{{ servidor_vmm }}" -Name "{{ network }}"
+if (!$network ) {
+  Write-Host "Rede '{{ network }}' não encontrada."
 }
 {% endfor %} 
 
-if ($nuvem ) {
+if ($cloud ) {
   $custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
-  $vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+  $vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $cloud
   $nomes_vm_desejados = @({{ lista_nome_vms_str }})
   foreach($vm in $vms_nuvem) {
-    $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
-    if ($agrupamento.Value -ne "{{ agrupamento }}" -and $nomes_vm_desejados -Contains $vm.Name) {
-      Write-Output "O nome '$vm' já está sendo usado por uma VM na nuvem '$nuvem'. Por favor, escolha outro nome."
+    $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+    if ($group.Value -ne "{{ group }}" -and $nomes_vm_desejados -Contains $vm.Name) {
+      Write-Output "O name '$vm' já está sendo usado por uma VM na cloud '$cloud'. Por favor, escolha outro name."
     }
   }
 }

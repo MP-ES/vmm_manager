@@ -36,13 +36,13 @@ class Acao(YamlAble):
         self.__retorno_execucao = None
         self.__status_execucao_job = None
 
-    def executar(self, agrupamento, nuvem, servidor_acesso, guid):
+    def executar(self, group, cloud, servidor_acesso, guid):
         cmd = Comando(self.nome_comando,
-                      agrupamento=agrupamento,
+                      group=group,
                       campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                       campo_id=CAMPO_ID[0],
                       campo_regiao=CAMPO_REGIAO[0],
-                      nuvem=nuvem,
+                      cloud=cloud,
                       guid=guid,
                       servidor_vmm=servidor_acesso.servidor_vmm)
         cmd.args.update(self.args)
@@ -96,18 +96,18 @@ class Acao(YamlAble):
 
         return {'Msgs': self.__retorno_execucao}
 
-    def get_cmd_pos_execucao(self, agrupamento, servidor_acesso):
+    def get_cmd_pos_execucao(self, group, servidor_acesso):
         if self.is_criacao_vm():
             cmd = Comando(
                 'criar_vm_pos',
-                descricao=f"Taguear VM { self.args['nome_vm']}",
+                description=f"Taguear VM { self.args['nome_vm']}",
                 servidor_vmm=servidor_acesso.servidor_vmm,
                 campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                 campo_id=CAMPO_ID[0],
                 campo_imagem=CAMPO_IMAGEM[0],
                 campo_regiao=CAMPO_REGIAO[0],
                 campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
-                agrupamento=agrupamento
+                group=group
             )
             cmd.args.update(self.args)
 

@@ -91,7 +91,7 @@ python -m pytest -vv
 poetry env list
 
 # Remove a virtualenv
-poetry env remove <nome>
+poetry env remove <name>
 ```
 
 ## References

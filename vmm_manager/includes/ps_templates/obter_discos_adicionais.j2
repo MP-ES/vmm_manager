@@ -1,13 +1,13 @@
 $custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
 $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
-$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$cloud = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ cloud }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $cloud
 $nomes_vm_desejados = @({{ vm_nomes }})
 $vms_agrupamento = @()
 
 foreach($vm in $vms_nuvem) {
-  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
-  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+  $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+  if ($group.Value -eq "{{ group }}") {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id
 
     # checando se está na lista de nomes
@@ -15,7 +15,7 @@ foreach($vm in $vms_nuvem) {
 
     $discos = @()
     foreach($drive in $vm.VirtualDiskDrives) {
-      # pulando disco principal
+      # pulando disco default
       if ($drive.Bus -eq 0 -and $drive.Lun -eq 0){Continue}
 
       $disco = [PSCustomObject]@{

@@ -33,29 +33,29 @@ class Inventario:
                                 default=json_handle_inventario,
                                 sort_keys=True, indent=4)
 
-    def __init__(self, agrupamento, nuvem):
-        self.agrupamento = agrupamento
-        self.nuvem = nuvem
+    def __init__(self, group, cloud):
+        self.group = group
+        self.cloud = cloud
         self.vms = {}
 
         self.__regioes_por_letra_id = None
         self.__regioes_disponiveis = None
 
-    def get_nome_no_regiao(self, regiao):
-        self.__retirar_regiao_pool(regiao)
+    def get_nome_no_regiao(self, region):
+        self.__retirar_regiao_pool(region)
 
-        if regiao in self.__regioes_por_letra_id:
-            return self.__regioes_por_letra_id[regiao].nome_no
+        if region in self.__regioes_por_letra_id:
+            return self.__regioes_por_letra_id[region].nome_no
 
-        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+        raise ValueError(f"Região '{region}' não possui nó definido.")
 
-    def get_id_no_regiao(self, regiao):
-        self.__retirar_regiao_pool(regiao)
+    def get_id_no_regiao(self, region):
+        self.__retirar_regiao_pool(region)
 
-        if regiao in self.__regioes_por_letra_id:
-            return self.__regioes_por_letra_id[regiao].id_no
+        if region in self.__regioes_por_letra_id:
+            return self.__regioes_por_letra_id[region].id_no
 
-        raise ValueError(f"Região '{regiao}' não possui nó definido.")
+        raise ValueError(f"Região '{region}' não possui nó definido.")
 
     def get_mapeamento_regioes_to_test(self):
         # flush regions
@@ -73,22 +73,22 @@ class Inventario:
         self.__regioes_por_letra_id = {}
         self.__regioes_disponiveis = regioes_disponiveis
 
-    def __retirar_regiao_pool(self, regiao):
-        if regiao in self.__regioes_por_letra_id:
+    def __retirar_regiao_pool(self, region):
+        if region in self.__regioes_por_letra_id:
             return
 
         if not self.__regioes_disponiveis:
             return
 
-        self.__regioes_por_letra_id[regiao] = self.__regioes_disponiveis.pop()
+        self.__regioes_por_letra_id[region] = self.__regioes_disponiveis.pop()
 
     def calcular_plano_execucao(self, inventario_remoto):
-        if (self.agrupamento != inventario_remoto.agrupamento
-                or self.nuvem != inventario_remoto.nuvem):
+        if (self.group != inventario_remoto.group
+                or self.cloud != inventario_remoto.cloud):
             return False, 'Não é possível calcular o plano de execução \
-                para inventários de agrupamento ou nuvem distintos.'
+                para inventários de group ou cloud distintos.'
 
-        plano_execucao = PlanoExecucao(self.agrupamento, self.nuvem)
+        plano_execucao = PlanoExecucao(self.group, self.cloud)
 
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(
@@ -108,7 +108,7 @@ class Inventario:
         return True, plano_execucao
 
     def gerar_plano_exclusao(self):
-        plano_execucao = PlanoExecucao(self.agrupamento, self.nuvem)
+        plano_execucao = PlanoExecucao(self.group, self.cloud)
 
         for maquina_virtual in self.vms.values():
             plano_execucao.acoes.append(maquina_virtual.get_acao_excluir_vm())
@@ -125,47 +125,48 @@ class Inventario:
         regioes = set()
 
         for maquina_virtual in self.vms.values():
-            if maquina_virtual.regiao != SCRegion.REGIAO_PADRAO:
-                regioes.add(maquina_virtual.regiao)
+            if maquina_virtual.region != SCRegion.REGIAO_PADRAO:
+                regioes.add(maquina_virtual.region)
 
-            if maquina_virtual.imagem is None:
+            if maquina_virtual.image is None:
                 raise ValueError(
-                    f'Imagem da VM {maquina_virtual.nome} não definida.')
+                    f'Imagem da VM {maquina_virtual.name} não definida.')
 
-            if maquina_virtual.qtde_cpu is None:
+            if maquina_virtual.cpu is None:
                 raise ValueError(
-                    f'Quantidade de CPUs da VM {maquina_virtual.nome} não definida.')
+                    f'Quantidade de CPUs da VM {maquina_virtual.name} não definida.')
 
-            if maquina_virtual.qtde_ram_mb is None:
+            if maquina_virtual.memory is None:
                 raise ValueError(
-                    f'Quantidade de memória da VM {maquina_virtual.nome} não definida.')
+                    f'Quantidade de memória da VM {maquina_virtual.name} não definida.')
 
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
-                    f'VM {maquina_virtual.nome} deve ter exatamente uma rede principal.')
+                    f'VM {maquina_virtual.name} deve ter exatamente uma network default.')
 
     def validar(self, servidor_acesso):
         self.__validar_regras_locais()
 
         imagens = set()
-        redes = set()
+        networks = set()
         regioes = set()
 
         for maquina_virtual in self.vms.values():
-            imagens.add(maquina_virtual.imagem)
+            imagens.add(maquina_virtual.image)
 
-            if maquina_virtual.regiao != SCRegion.REGIAO_PADRAO:
-                regioes.add(maquina_virtual.regiao)
+            if maquina_virtual.region != SCRegion.REGIAO_PADRAO:
+                regioes.add(maquina_virtual.region)
 
-            redes.update([rede.nome for rede in maquina_virtual.redes])
+            networks.update(
+                [network.name for network in maquina_virtual.networks])
 
         cmd = Comando(
             'validar_inventario', imagens=imagens,
-            nuvem=self.nuvem,
-            redes=redes,
+            cloud=self.cloud,
+            networks=networks,
             servidor_vmm=servidor_acesso.servidor_vmm,
             qtde_minima_regioes=len(regioes),
-            agrupamento=self.agrupamento,
+            group=self.group,
             lista_nome_vms_str=self.lista_nome_vms_str(),
             campo_agrupamento=CAMPO_AGRUPAMENTO[0]
         )
@@ -173,9 +174,9 @@ class Inventario:
         if msg:
             raise ValueError(msg)
 
-    def set_discos_vms(self, discos_adicionais):
-        for nome_vm in discos_adicionais:
-            self.vms[nome_vm].add_discos_adicionais(discos_adicionais[nome_vm])
+    def set_discos_vms(self, additional_disks):
+        for nome_vm in additional_disks:
+            self.vms[nome_vm].add_discos_adicionais(additional_disks[nome_vm])
 
     def __add_acoes_criar_vms(self, inventario_remoto, plano_execucao):
         vms_inserir = [
@@ -225,20 +226,20 @@ class Inventario:
                     inventario_remoto.vms[nome_vm], plano_execucao)
 
     def __eq__(self, other):
-        return isinstance(other, Inventario) and (self.agrupamento == other.agrupamento
-                                                  and self.nuvem == other.nuvem
+        return isinstance(other, Inventario) and (self.group == other.group
+                                                  and self.cloud == other.cloud
                                                   and self.vms == other.vms)
 
     def __str__(self):
         return f'''
-            agrupamento: {self.agrupamento}
-            nuvem: {self.nuvem}
+            group: {self.group}
+            cloud: {self.cloud}
             vms: {self.vms}
             '''
 
     def to_dict(self):
         return {
-            'agrupamento': self.agrupamento,
-            'nuvem': self.nuvem,
+            'group': self.group,
+            'cloud': self.cloud,
             'vms': [vm_data.to_dict() for vm_data in self.vms.values()]
         }

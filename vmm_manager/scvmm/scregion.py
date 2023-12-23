@@ -1,6 +1,6 @@
 """
 Representação de um nó de um cluster no system center virtual machine manager.
-Para seguir a nomemclatura de nuvem, designado aqui como 'Region'
+Para seguir a nomemclatura de cloud, designado aqui como 'Region'
 """
 
 
@@ -8,10 +8,10 @@ Para seguir a nomemclatura de nuvem, designado aqui como 'Region'
 class SCRegion():
     REGIAO_PADRAO = 'default'
 
-    def __init__(self, id_no, nome_no, grupo, cluster, letra_id=None):
+    def __init__(self, id_no, nome_no, group, cluster, letra_id=None):
         self.id_no = id_no
         self.nome_no = nome_no
-        self.grupo = grupo
+        self.group = group
         self.cluster = cluster
         self.letra_id = letra_id
 
@@ -19,7 +19,7 @@ class SCRegion():
         return f'''
             id_no: {self.id_no}
             nome_no: {self.nome_no}
-            grupo: {self.grupo}
+            group: {self.group}
             cluster: {self.cluster}
             letra_id: {self.letra_id}
             '''

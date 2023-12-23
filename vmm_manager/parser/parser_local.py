@@ -25,25 +25,25 @@ class ParserLocal:
 
     @staticmethod
     def __get_discos_adicionais(nome_vm, dict_discos_adicionais):
-        discos_adicionais = []
+        additional_disks = []
         for item in dict_discos_adicionais or {}:
-            arquivo = item.get('arquivo')
+            file = item.get('file')
 
-            if arquivo in [disco_adicional.arquivo for disco_adicional in discos_adicionais]:
+            if file in [additional_disk.file for additional_disk in additional_disks]:
                 raise ValueError(
-                    f"Disco '{arquivo}' referenciado mais de uma vez "
+                    f"Disco '{file}' referenciado mais de uma vez "
                     f"para a VM '{nome_vm}'.")
 
-            disco_adicional = VMDisco(
-                SCDiskBusType(item.get('tipo')),
-                item.get('arquivo'),
-                item.get('tamanho_mb'),
-                SCDiskSizeType(item.get('tamanho_tipo')),
-                item.get('caminho'))
+            additional_disk = VMDisco(
+                SCDiskBusType(item.get('bus_type')),
+                item.get('file'),
+                item.get('size_mb'),
+                SCDiskSizeType(item.get('size_type')),
+                item.get('path'))
 
-            discos_adicionais.append(disco_adicional)
+            additional_disks.append(additional_disk)
 
-        return discos_adicionais
+        return additional_disks
 
     def __init__(self, inventory_file):
         self.__arquivo_inventario = inventory_file
@@ -63,10 +63,10 @@ class ParserLocal:
     ):
         nomes_vm = []
         self.__inventario = Inventario(
-            dados_inventario['agrupamento'], dados_inventario['nuvem'])
+            dados_inventario['group'], dados_inventario['cloud'])
 
         for maquina_virtual in dados_inventario['vms']:
-            nome_vm = maquina_virtual.get('nome').upper()
+            nome_vm = maquina_virtual.get('name').upper()
             if nome_vm in nomes_vm:
                 raise ValueError(
                     f'VM {nome_vm} referenciada mais de uma vez no inventário.')
@@ -78,8 +78,11 @@ class ParserLocal:
 
             vm_redes = []
             nomes_redes = []
-            for rede_vm in maquina_virtual.get('redes', dados_inventario.get('redes_padrao', [])):
-                nome_rede = rede_vm.get('nome')
+            for rede_vm in maquina_virtual.get(
+                'networks',
+                dados_inventario.get('networks_default', [])
+            ):
+                nome_rede = rede_vm.get('name')
 
                 if nome_rede in nomes_redes:
                     raise ValueError(
@@ -87,25 +90,25 @@ class ParserLocal:
 
                 nomes_redes.append(nome_rede)
                 vm_redes.append(
-                    VMRede(nome_rede, rede_vm.get('principal', False)))
+                    VMRede(nome_rede, rede_vm.get('default', False)))
 
             self.__inventario.vms[nome_vm] = VM(
                 nome_vm,
-                maquina_virtual.get('descricao'),
+                maquina_virtual.get('description'),
                 maquina_virtual.get(
-                    'imagem', dados_inventario.get('imagem_padrao', None)),
-                maquina_virtual.get('regiao', SCRegion.REGIAO_PADRAO),
+                    'image', dados_inventario.get('image_default', None)),
+                maquina_virtual.get('region', SCRegion.REGIAO_PADRAO),
                 maquina_virtual.get(
-                    'qtde_cpu', dados_inventario.get('qtde_cpu_padrao', None)),
+                    'cpu', dados_inventario.get('cpu_default', None)),
                 maquina_virtual.get(
-                    'qtde_ram_mb', dados_inventario.get('qtde_ram_mb_padrao', None)),
+                    'memory', dados_inventario.get('memory_default', None)),
                 vm_redes,
-                virtualizacao_aninhada=maquina_virtual.get(
-                    'virtualizacao_aninhada',
-                    dados_inventario.get('virtualizacao_aninhada_padrao', False)),
-                memoria_dinamica=maquina_virtual.get(
-                    'memoria_dinamica',
-                    dados_inventario.get('memoria_dinamica_padrao', True)),
+                nested_virtualization=maquina_virtual.get(
+                    'nested_virtualization',
+                    dados_inventario.get('nested_virtualization_default', False)),
+                dynamic_memory=maquina_virtual.get(
+                    'dynamic_memory',
+                    dados_inventario.get('dynamic_memory_default', True)),
             )
             self.__inventario.vms[nome_vm].extrair_dados_ansible_dict(
                 maquina_virtual.get('ansible'))
@@ -115,7 +118,7 @@ class ParserLocal:
                 # discos
                 self.__inventario.vms[nome_vm].add_discos_adicionais(
                     ParserLocal.__get_discos_adicionais(nome_vm,
-                                                        maquina_virtual.get('discos_adicionais')))
+                                                        maquina_virtual.get('additional_disks')))
 
     def __carregar_yaml(self):
         return yamale.make_data(self.__arquivo_inventario,
