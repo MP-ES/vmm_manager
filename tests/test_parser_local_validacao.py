@@ -64,7 +64,7 @@ class TestParserLocalValidacao(Base):
 
         assert status is False
         assert qtde_vms == sum(1 for _ in re.finditer(
-            re.escape('is not a alphanumeric characters (máx 15)'), msg))
+            re.escape('is not a alphanumeric characters (max 15)'), msg))
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
