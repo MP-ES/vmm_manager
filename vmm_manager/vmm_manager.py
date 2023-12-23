@@ -1,6 +1,6 @@
 """
-Script que gerencia um inventário de máquinas no SCVMM, com base
-em um file YAML.
+Manages resources in the System Center Virtual Machine Manager (SCVMM),
+in a declarative way, based on a YAML configuration file.
 """
 import re
 import string
