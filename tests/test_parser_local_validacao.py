@@ -27,10 +27,10 @@ class TestParserLocalValidacao(Base):
     def test_parser_inventario_vms_sem_imagem(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico()
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -41,7 +41,7 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['nome']} não definida."
+        assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['name']} não definida."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -49,10 +49,10 @@ class TestParserLocalValidacao(Base):
         dados_teste = DadosTeste()
         qtde_vms = randrange(1, Base.VMS_POR_TESTE_MAX)
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_random_nome_vm_incorreto()
+                 'name': dados_teste.get_random_nome_vm_incorreto()
              } for _ in range(qtde_vms)]
              },
             'inventario.yaml')]
@@ -64,20 +64,20 @@ class TestParserLocalValidacao(Base):
 
         assert status is False
         assert qtde_vms == sum(1 for _ in re.finditer(
-            re.escape('is not a caracteres alfanuméricos (máx 15)'), msg))
+            re.escape('is not a alphanumeric characters (máx 15)'), msg))
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vm_sem_rede(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico()
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -88,24 +88,24 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
-            ' deve ter exatamente uma rede principal.'
+        assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
+            ' deve ter exatamente uma network default.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vm_sem_rede_principal(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_nome_unico()
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'networks_default': [{
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico()
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -116,8 +116,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
-            ' deve ter exatamente uma rede principal.'
+        assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
+            ' deve ter exatamente uma network default.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -125,17 +125,17 @@ class TestParserLocalValidacao(Base):
         dados_teste = DadosTeste()
         nome_rede = dados_teste.get_nome_unico()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'redes_padrao': [{
-                 'nome': nome_rede,
-                 'principal': num_iter == 0,
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'networks_default': [{
+                 'name': nome_rede,
+                 'default': num_iter == 0,
              } for num_iter in range(randrange(2, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico()
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -147,25 +147,25 @@ class TestParserLocalValidacao(Base):
 
         assert status is False
         assert msg == f"Rede '{nome_rede}' referenciada mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
+            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vms_com_regiao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'principal': num_iter == 0,
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'networks_default': [{
+                 'name': dados_teste.get_nome_unico(),
+                 'default': num_iter == 0,
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'regiao': DadosTeste.get_regiao_vm_por_iteracao(num_iter)
+                 'name': dados_teste.get_nome_unico(),
+                 'region': DadosTeste.get_regiao_vm_por_iteracao(num_iter)
              } for num_iter in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -182,17 +182,17 @@ class TestParserLocalValidacao(Base):
     def test_parser_inventario_ansible_sem_grupo(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
+                 'name': dados_teste.get_nome_unico(),
                  'ansible': [
                      {
-                         'grupo': '',
+                         'group': '',
                          'vars': [
                              {
-                                 'nome': dados_teste.get_random_word(),
-                                 'valor': dados_teste.get_random_word()
+                                 'name': dados_teste.get_random_word(),
+                                 'value': dados_teste.get_random_word()
                              }
                          ]
                      }
@@ -207,7 +207,7 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert "vms.0.ansible.0.grupo: '' is not a caracteres alfabéticos." in msg
+        assert "vms.0.ansible.0.group: '' is not a alphanumeric characters." in msg
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -215,22 +215,22 @@ class TestParserLocalValidacao(Base):
         dados_teste = DadosTeste()
         nome_grupo = dados_teste.get_nome_unico()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
+                 'name': dados_teste.get_nome_unico(),
                  'ansible': [
                      {
-                         'grupo': nome_grupo,
+                         'group': nome_grupo,
                          'vars': [
                              {
-                                 'nome': dados_teste.get_random_word(),
-                                 'valor': dados_teste.get_random_word()
+                                 'name': dados_teste.get_random_word(),
+                                 'value': dados_teste.get_random_word()
                              }
                          ]
                      },
                      {
-                         'grupo': nome_grupo
+                         'group': nome_grupo
                      }
                  ]
              }]
@@ -244,7 +244,7 @@ class TestParserLocalValidacao(Base):
 
         assert status is False
         assert msg == f"Grupo ansible '{nome_grupo}' referenciado mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
+            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -253,21 +253,21 @@ class TestParserLocalValidacao(Base):
         nome_grupo = dados_teste.get_nome_unico()
         nome_var = dados_teste.get_nome_unico()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
+                 'name': dados_teste.get_nome_unico(),
                  'ansible': [
                      {
-                         'grupo': nome_grupo,
+                         'group': nome_grupo,
                          'vars': [
                              {
-                                 'nome': nome_var,
-                                 'valor': dados_teste.get_random_word()
+                                 'name': nome_var,
+                                 'value': dados_teste.get_random_word()
                              },
                              {
-                                 'nome': nome_var,
-                                 'valor': dados_teste.get_random_word()
+                                 'name': nome_var,
+                                 'value': dados_teste.get_random_word()
                              }
                          ]
                      }
@@ -282,24 +282,24 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Variável '{nome_var}' do grupo ansible '{nome_grupo}' " \
-            f"referenciada mais de uma vez na VM '{inventario[0][0]['vms'][0]['nome']}'."
+        assert msg == f"Variável '{nome_var}' do group ansible '{nome_grupo}' " \
+            f"referenciada mais de uma vez na VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_ansible_var_invalida(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
+                 'name': dados_teste.get_nome_unico(),
                  'ansible': [
                      {
-                         'grupo': dados_teste.get_random_word(),
+                         'group': dados_teste.get_random_word(),
                          'vars': [
                              {
-                                 'nome': ''
+                                 'name': ''
                              }
                          ]
                      }
@@ -314,31 +314,31 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert "vms.0.ansible.0.vars.0.nome: '' is not a caracteres alfabéticos" in msg
-        assert 'vms.0.ansible.0.vars.0.valor: Required field missing' in msg
+        assert "vms.0.ansible.0.vars.0.name: '' is not a alphanumeric characters" in msg
+        assert 'vms.0.ansible.0.vars.0.value: Required field missing' in msg
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_disco_adicional_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
-        arquivo = dados_teste.get_nome_unico()
+        file = dados_teste.get_nome_unico()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'discos_adicionais': [
+                 'name': dados_teste.get_nome_unico(),
+                 'additional_disks': [
                      {
-                         'arquivo': arquivo,
-                         'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
-                         'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
+                         'file': file,
+                         'bus_type': choice([enum.value for enum in SCDiskBusType]),
+                         'size_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
+                         'size_type': choice([enum.value for enum in SCDiskSizeType]),
                      },
                      {
-                         'arquivo': arquivo,
-                         'tipo': choice([enum.value for enum in SCDiskBusType]),
-                         'tamanho_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
-                         'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
+                         'file': file,
+                         'bus_type': choice([enum.value for enum in SCDiskBusType]),
+                         'size_mb': randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
+                         'size_type': choice([enum.value for enum in SCDiskSizeType]),
                      }
                  ]
              }]
@@ -351,8 +351,8 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Disco '{arquivo}' referenciado mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['nome']}'."
+        assert msg == f"Disco '{file}' referenciado mais de uma vez " \
+            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -360,16 +360,16 @@ class TestParserLocalValidacao(Base):
         dados_teste = DadosTeste()
         nome_vm = dados_teste.get_nome_unico()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_random_word()
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'networks_default': [{
+                 'name': dados_teste.get_random_word()
              } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': nome_vm
+                 'name': nome_vm
              } for _ in range(randrange(2, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -380,5 +380,5 @@ class TestParserLocalValidacao(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"VM {inventario[0][0]['vms'][0]['nome']}" \
+        assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
             ' referenciada mais de uma vez no inventário.'

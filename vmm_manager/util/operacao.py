@@ -14,8 +14,8 @@ from vmm_manager.infra.comando import Comando
 
 def __confirmar_acao_usuario(
     servidor_acesso=None,
-    agrupamento=None,
-    nuvem=None,
+    group=None,
+    cloud=None,
     ocultar_progresso=False
 ):
     resposta = None
@@ -23,9 +23,9 @@ def __confirmar_acao_usuario(
         resposta = input('Deseja executar? (s/n): ')
 
         if resposta == 'n':
-            if servidor_acesso and agrupamento and nuvem:
-                liberar_lock(servidor_acesso, agrupamento,
-                             nuvem, ocultar_progresso)
+            if servidor_acesso and group and cloud:
+                liberar_lock(servidor_acesso, group,
+                             cloud, ocultar_progresso)
 
             if not ocultar_progresso:
                 print(formatar_msg_aviso('Operação cancelada pelo usuário.'))
@@ -37,9 +37,9 @@ def confirmar_acao_usuario_sem_lock():
     __confirmar_acao_usuario()
 
 
-def confirmar_acao_usuario_com_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+def confirmar_acao_usuario_com_lock(servidor_acesso, group, cloud, ocultar_progresso):
     __confirmar_acao_usuario(
-        servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+        servidor_acesso, group, cloud, ocultar_progresso)
 
 
 def validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso):
@@ -54,29 +54,29 @@ def validar_retorno_operacao_com_lock(
     status,
     msg,
     servidor_acesso,
-    agrupamento,
-    nuvem,
+    group,
+    cloud,
     ocultar_progresso
 ):
     if status:
         imprimir_ok(ocultar_progresso)
     else:
         imprimir_erro(ocultar_progresso)
-        liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
         finalizar_com_erro(msg)
 
 
-def adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Adquirindo lock', ocultar_progresso)
 
     cmd = Comando('adquirir_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
-                      agrupamento,
-                      nuvem),
+                      group,
+                      cloud),
                   pid=os.getpid(),
                   host=platform.node(),
-                  agrupamento=agrupamento,
-                  nuvem=nuvem,
+                  group=group,
+                  cloud=cloud,
                   data=get_str_data_formatada('%d/%m/%Y às %H:%M:%S.%f'))
 
     status, retorno_cmd = cmd.executar(servidor_acesso)
@@ -87,19 +87,19 @@ def adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
             retorno_cmd = f"O processo {dados_lock.get('PIDProcesso')}, " \
                 f"iniciado em { dados_lock.get('DataLock')} " \
                 f"no servidor {dados_lock.get('HostLock')}, " \
-                f"já está manipulando o agrupamento {dados_lock.get('Agrupamento')} " \
-                f"na nuvem {dados_lock.get('Nuvem')}."
+                f"já está manipulando o group {dados_lock.get('Agrupamento')} " \
+                f"na cloud {dados_lock.get('Nuvem')}."
 
     validar_retorno_operacao_sem_lock(status, retorno_cmd, ocultar_progresso)
 
 
-def liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
+def liberar_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Liberando lock', ocultar_progresso)
 
     cmd = Comando('liberar_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
-                      agrupamento,
-                      nuvem))
+                      group,
+                      cloud))
 
     status, _ = cmd.executar(servidor_acesso)
     if status:
@@ -107,4 +107,4 @@ def liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso):
     else:
         imprimir_erro(ocultar_progresso)
         print(formatar_msg_erro(
-            'Erro ao liberar o lock: você terá que excluir o arquivo manualmente.'))
+            'Erro ao liberar o lock: você terá que excluir o file manualmente.'))

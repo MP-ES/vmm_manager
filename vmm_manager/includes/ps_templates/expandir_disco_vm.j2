@@ -1,7 +1,7 @@
 $VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
 $Drive = $VM | Get-SCVirtualDiskDrive | where {$_.ID -eq "{{ id_drive }}"}
 
-$TamanhoGB = {{ tamanho_mb }}/1024
+$TamanhoGB = {{ size_mb }}/1024
 Expand-SCVirtualDiskDrive -VirtualDiskDrive $Drive -VirtualHardDiskSizeGB $TamanhoGB | Out-Null
 
 $Resultado = [PSCustomObject]@{

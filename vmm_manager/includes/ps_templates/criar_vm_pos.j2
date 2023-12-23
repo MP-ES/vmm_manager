@@ -5,8 +5,8 @@ $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ 
 $custom_rede_principal = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_rede_principal }}"
 $vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Name "{{ nome_vm }}"
 
-Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento -Value "{{ agrupamento }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento -Value "{{ group }}"
 Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id -Value "{{ nome_vm }}"
-Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem -Value "{{ imagem }}"
-Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao -Value "{{ regiao }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem -Value "{{ image }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao -Value "{{ region }}"
 Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal -Value "{{ rede_principal }}"

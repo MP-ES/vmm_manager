@@ -16,19 +16,19 @@ class TestParserLocal(Base):
     def test_parser_inventario_min_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'memoria_dinamica_padrao': bool(getrandbits(1)),
-             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_random_word(),
-                 'principal': num_iter == 0,
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'dynamic_memory_default': bool(getrandbits(1)),
+             'nested_virtualization_default': bool(getrandbits(1)),
+             'networks_default': [{
+                 'name': dados_teste.get_random_word(),
+                 'default': num_iter == 0,
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico()
+                 'name': dados_teste.get_nome_unico()
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -47,24 +47,24 @@ class TestParserLocal(Base):
     def test_parser_inventario_com_ansible(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'memoria_dinamica_padrao': bool(getrandbits(1)),
-             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'principal': num_iter == 0,
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'dynamic_memory_default': bool(getrandbits(1)),
+             'nested_virtualization_default': bool(getrandbits(1)),
+             'networks_default': [{
+                 'name': dados_teste.get_nome_unico(),
+                 'default': num_iter == 0,
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
+                 'name': dados_teste.get_nome_unico(),
                  'ansible': [{
-                     'grupo': dados_teste.get_nome_unico(),
+                     'group': dados_teste.get_nome_unico(),
                      'vars': [{
-                         'nome': dados_teste.get_nome_unico(),
-                         'valor': dados_teste.get_random_word()
+                         'name': dados_teste.get_nome_unico(),
+                         'value': dados_teste.get_random_word()
                      } for _ in range(randrange(0, Base.ANSIBLE_ITERACAO_MAX))],
                  } for _ in range(randrange(1, Base.ANSIBLE_ITERACAO_MAX))],
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
@@ -95,24 +95,24 @@ class TestParserLocal(Base):
     def test_parser_inventario_com_discos_adicionais(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
-             'imagem_padrao': dados_teste.get_random_word(),
-             'qtde_cpu_padrao': randint(Base.CPU_MIN, Base.CPU_MAX),
-             'qtde_ram_mb_padrao': randint(Base.RAM_MIN, Base.RAM_MAX),
-             'memoria_dinamica_padrao': bool(getrandbits(1)),
-             'virtualizacao_aninhada_padrao': bool(getrandbits(1)),
-             'redes_padrao': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'principal': num_iter == 0,
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
+             'image_default': dados_teste.get_random_word(),
+             'cpu_default': randint(Base.CPU_MIN, Base.CPU_MAX),
+             'memory_default': randint(Base.RAM_MIN, Base.RAM_MAX),
+             'dynamic_memory_default': bool(getrandbits(1)),
+             'nested_virtualization_default': bool(getrandbits(1)),
+             'networks_default': [{
+                 'name': dados_teste.get_nome_unico(),
+                 'default': num_iter == 0,
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'discos_adicionais': [{
-                     'arquivo': dados_teste.get_nome_unico(),
-                     'tipo': choice([enum.value for enum in SCDiskBusType]),
-                     'tamanho_mb': randint(1, 1073741824),
-                     'tamanho_tipo': choice([enum.value for enum in SCDiskSizeType]),
+                 'name': dados_teste.get_nome_unico(),
+                 'additional_disks': [{
+                     'file': dados_teste.get_nome_unico(),
+                     'bus_type': choice([enum.value for enum in SCDiskBusType]),
+                     'size_mb': randint(1, 1073741824),
+                     'size_type': choice([enum.value for enum in SCDiskSizeType]),
                  } for _ in range(randrange(1, Base.DISCOS_POR_VM_MAX))],
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
@@ -130,32 +130,32 @@ class TestParserLocal(Base):
 
         # Assert discos adicionais
         for nome_vm, data_vm in inventario_resposta.vms.items():
-            discos_adicionais_vm = data_vm.discos_adicionais
+            discos_adicionais_vm = data_vm.additional_disks
             discos_adicionais_ok = self.get_discos_adicionais_vm(
                 inventario, nome_vm)
 
             assert not discos_adicionais_vm.keys() - discos_adicionais_ok.keys()
-            for arquivo in discos_adicionais_vm:
-                assert discos_adicionais_vm[arquivo] == discos_adicionais_ok[arquivo]
+            for file in discos_adicionais_vm:
+                assert discos_adicionais_vm[file] == discos_adicionais_ok[file]
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_min_sem_padrao(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'descricao': dados_teste.get_random_word(),
-                 'imagem': dados_teste.get_random_word(),
-                 'qtde_cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
-                 'qtde_ram_mb': randint(Base.RAM_MIN, Base.RAM_MAX),
-                 'memoria_dinamica': bool(getrandbits(1)),
-                 'virtualizacao_aninhada': bool(getrandbits(1)),
-                 'redes': [{
-                     'nome': dados_teste.get_nome_unico(),
-                     'principal': num_iter == 0
+                 'name': dados_teste.get_nome_unico(),
+                 'description': dados_teste.get_random_word(),
+                 'image': dados_teste.get_random_word(),
+                 'cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
+                 'memory': randint(Base.RAM_MIN, Base.RAM_MAX),
+                 'dynamic_memory': bool(getrandbits(1)),
+                 'nested_virtualization': bool(getrandbits(1)),
+                 'networks': [{
+                     'name': dados_teste.get_nome_unico(),
+                     'default': num_iter == 0
                  } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
@@ -180,17 +180,17 @@ class TestParserLocal(Base):
     ):
         dados_teste = DadosTeste()
         inventario = [(
-            {'agrupamento': dados_teste.get_random_word(),
-             'nuvem': dados_teste.get_random_word(),
+            {'group': dados_teste.get_random_word(),
+             'cloud': dados_teste.get_random_word(),
              'vms': [{
-                 'nome': dados_teste.get_nome_unico(),
-                 'descricao': dados_teste.get_random_word(),
-                 'imagem': dados_teste.get_random_word(),
-                 'qtde_cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
-                 'qtde_ram_mb': randint(Base.RAM_MIN, Base.RAM_MAX),
-                 'redes': [{
-                     'nome': dados_teste.get_nome_unico(),
-                     'principal': num_iter == 0
+                 'name': dados_teste.get_nome_unico(),
+                 'description': dados_teste.get_random_word(),
+                 'image': dados_teste.get_random_word(),
+                 'cpu': randint(Base.CPU_MIN, Base.CPU_MAX),
+                 'memory': randint(Base.RAM_MIN, Base.RAM_MAX),
+                 'networks': [{
+                     'name': dados_teste.get_nome_unico(),
+                     'default': num_iter == 0
                  } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              } for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },

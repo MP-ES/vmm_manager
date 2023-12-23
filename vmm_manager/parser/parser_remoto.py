@@ -33,21 +33,21 @@ class ParserRemoto:
 
         regioes_remoto = json.loads(regioes)
         regioes_disponiveis = []
-        for regiao in regioes_remoto:
+        for region in regioes_remoto:
             regiao_obj = SCRegion(
-                regiao.get('IDNo'),
-                regiao.get('NomeNo'),
-                regiao.get('Grupo'),
-                regiao.get('Cluster')
+                region.get('IDNo'),
+                region.get('NomeNo'),
+                region.get('Grupo'),
+                region.get('Cluster')
             )
 
             regioes_disponiveis.append(regiao_obj)
 
         return regioes_disponiveis
 
-    def __init__(self, agrupamento, nuvem):
-        self.agrupamento = agrupamento
-        self.nuvem = nuvem
+    def __init__(self, group, cloud):
+        self.group = group
+        self.cloud = cloud
         self.__inventario = None
 
     def __get_vms_servidor(self, servidor_acesso, filtro_nome_vm=None):
@@ -58,13 +58,13 @@ class ParserRemoto:
                       campo_imagem=CAMPO_IMAGEM[0],
                       campo_regiao=CAMPO_REGIAO[0],
                       campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
-                      agrupamento=self.agrupamento,
+                      group=self.group,
                       filtro_nome_vm=filtro_nome_vm,
-                      nuvem=self.nuvem)
+                      cloud=self.cloud)
         status, vms = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f"Erro ao recuperar VM's do agrupamento: {vms}")
+                f"Erro ao recuperar VM's do group: {vms}")
         return vms
 
     def __get_discos_adicionais(self, servidor_acesso):
@@ -72,15 +72,15 @@ class ParserRemoto:
                       servidor_vmm=servidor_acesso.servidor_vmm,
                       campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                       campo_id=CAMPO_ID[0],
-                      agrupamento=self.agrupamento,
-                      nuvem=self.nuvem,
+                      group=self.group,
+                      cloud=self.cloud,
                       vm_nomes=','.join([f'"{nome_vm}"' for nome_vm in self.__inventario.vms]))
-        status, discos_adicionais = cmd.executar(servidor_acesso)
+        status, additional_disks = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f'Erro ao recuperar discos adicionais: {discos_adicionais}')
+                f'Erro ao recuperar discos adicionais: {additional_disks}')
 
-        discos_vms_remoto = json.loads(discos_adicionais)
+        discos_vms_remoto = json.loads(additional_disks)
         discos_vms = {}
         for maquina_virtual in discos_vms_remoto:
             nome_vm = maquina_virtual.get('Nome')
@@ -111,16 +111,16 @@ class ParserRemoto:
         filtro_nome_vm=None,
         filtro_dados_completos=True
     ):
-        self.__inventario = Inventario(self.agrupamento, self.nuvem)
+        self.__inventario = Inventario(self.group, self.cloud)
 
         vms_servidor = json.loads(
             self.__get_vms_servidor(servidor_acesso, filtro_nome_vm) or '{}')
 
         for maquina_virtual in vms_servidor:
             vms_rede = []
-            for rede in maquina_virtual.get('Redes'):
-                vm_rede = VMRede(rede.get('Nome'), rede.get('Principal'))
-                vm_rede.ips = rede.get('IPS', '').split(' ')
+            for network in maquina_virtual.get('Redes'):
+                vm_rede = VMRede(network.get('Nome'), network.get('Principal'))
+                vm_rede.ips = network.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 
             self.__inventario.vms[maquina_virtual.get('Nome')] = VM(

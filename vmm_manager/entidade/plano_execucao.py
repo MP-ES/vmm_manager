@@ -22,8 +22,8 @@ class PlanoExecucao(YamlAble):
     @staticmethod
     def carregar_plano_execucao(execution_plan_file):
         try:
-            with open(execution_plan_file, 'r', encoding='utf8') as arquivo:
-                plano_execucao = yaml.safe_load(arquivo)
+            with open(execution_plan_file, 'r', encoding='utf8') as file:
+                plano_execucao = yaml.safe_load(file)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
             return False, f"Erro ao carregar plano de execução '{execution_plan_file}'.\n{erro}"
@@ -38,9 +38,9 @@ class PlanoExecucao(YamlAble):
         if os.path.exists(PlanoExecucao.ARQUIVO_LOG_ERROS):
             os.remove(PlanoExecucao.ARQUIVO_LOG_ERROS)
 
-    def __init__(self, agrupamento, nuvem):
-        self.agrupamento = agrupamento
-        self.nuvem = nuvem
+    def __init__(self, group, cloud):
+        self.group = group
+        self.cloud = cloud
         self.acoes = []
         self.__jobs_em_execucao = {}
         self.__guids_a_limpar = []
@@ -55,7 +55,7 @@ class PlanoExecucao(YamlAble):
             with open(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
-            return False, f'Erro ao gerar arquivo {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
+            return False, f'Erro ao gerar file {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
 
         return True, conteudo
 
@@ -78,7 +78,7 @@ class PlanoExecucao(YamlAble):
             if acao.is_criacao_vm():
                 self.__guids_a_limpar.append(guid)
 
-            acao.executar(self.agrupamento, self.nuvem,
+            acao.executar(self.group, self.cloud,
                           servidor_acesso, guid)
 
             # Tratando resultado
@@ -144,9 +144,9 @@ class PlanoExecucao(YamlAble):
         for acao in acoes:
             if acao.was_executada_com_sucesso() and acao.has_cmd_pos_execucao():
                 cmd = acao.get_cmd_pos_execucao(
-                    self.agrupamento, servidor_acesso)
+                    self.group, servidor_acesso)
 
-                imprimir_acao_corrente(cmd.descricao, ocultar_progresso)
+                imprimir_acao_corrente(cmd.description, ocultar_progresso)
 
                 status, resultado = cmd.executar(servidor_acesso)
 
@@ -154,7 +154,7 @@ class PlanoExecucao(YamlAble):
                     imprimir_ok(ocultar_progresso)
                 else:
                     imprimir_erro(ocultar_progresso)
-                    self.__logar_erros_comando(cmd.descricao, resultado)
+                    self.__logar_erros_comando(cmd.description, resultado)
 
     def __limpar_guids(self, servidor_acesso, ocultar_progresso):
         if self.__guids_a_limpar:
@@ -213,7 +213,7 @@ class PlanoExecucao(YamlAble):
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
             print(
-                f'Não foi possível gerar arquivo de erros ({PlanoExecucao.ARQUIVO_LOG_ERROS}): '
+                f'Não foi possível gerar file de erros ({PlanoExecucao.ARQUIVO_LOG_ERROS}): '
                 f'{erro}')
 
     def imprimir_acoes(self):
@@ -221,25 +221,25 @@ class PlanoExecucao(YamlAble):
             print(acao.get_str_impressao_inline())
 
     def __eq__(self, other):
-        return isinstance(other, PlanoExecucao) and (self.agrupamento == other.agrupamento
-                                                     and self.nuvem == other.nuvem
+        return isinstance(other, PlanoExecucao) and (self.group == other.group
+                                                     and self.cloud == other.cloud
                                                      and self.acoes == other.acoes)
 
     def __str__(self):
         return f'''
-            agrupamento: {self.agrupamento}
-            nuvem: {self.nuvem}
+            group: {self.group}
+            cloud: {self.cloud}
             acoes: {','.join(str(acao) for acao in self.acoes)}
             '''
 
     def __to_yaml_dict__(self):
-        return {'agrupamento': self.agrupamento,
-                'nuvem': self.nuvem,
+        return {'group': self.group,
+                'cloud': self.cloud,
                 'acoes': self.acoes}
 
     @classmethod
     def __from_yaml_dict__(cls, dct, yaml_tag):
-        plano_execucao = PlanoExecucao(dct['agrupamento'], dct['nuvem'])
+        plano_execucao = PlanoExecucao(dct['group'], dct['cloud'])
 
         for acao_str in dct['acoes']:
             acao = Acao(acao_str.nome_comando, **acao_str.args['args'])

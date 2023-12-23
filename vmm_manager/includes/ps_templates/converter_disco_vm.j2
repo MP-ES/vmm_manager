@@ -5,7 +5,7 @@ if ($VM.Status -eq 'Running' ){
     Stop-SCVirtualMachine -VM $VM | Out-Null
 }
 
-Convert-SCVirtualDiskDrive -VirtualDiskDrive $Drive -{{ tamanho_tipo }} | Out-Null
+Convert-SCVirtualDiskDrive -VirtualDiskDrive $Drive -{{ size_type }} | Out-Null
 
 Start-SCVirtualMachine -VM $VM | Out-Null
 

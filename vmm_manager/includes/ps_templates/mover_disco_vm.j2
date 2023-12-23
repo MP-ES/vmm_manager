@@ -2,7 +2,7 @@ $VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
 $Disk = $VM | Get-SCVirtualHardDisk | where {$_.ID -eq "{{ id_disco }}"}
 
 $JobGroupID = "{{ guid }}"
-Move-SCVirtualHardDisk -VirtualHardDisk $Disk -Path "{{ caminho }}" -JobGroup $JobGroupID
+Move-SCVirtualHardDisk -VirtualHardDisk $Disk -Path "{{ path }}" -JobGroup $JobGroupID
 Set-SCVirtualMachine -VM $VM -JobGroup $JobGroupID -RunAsynchronously -JobVariable "job" | Out-Null
 
 $Resultado = [PSCustomObject]@{

@@ -17,74 +17,74 @@ class TestComparacaoInvVm(Base):
         for vm_obj in inventario.vms.values():
             foi_alterada = False
             if random.getrandbits(1):
-                vm_obj.descricao = DadosTeste.get_random_string_com_excecao(
-                    vm_obj.descricao)
+                vm_obj.description = DadosTeste.get_random_string_com_excecao(
+                    vm_obj.description)
                 foi_alterada = True
             if random.getrandbits(1):
                 nova_qtde = random.randint(Base.CPU_MIN, Base.CPU_MAX)
-                if nova_qtde != vm_obj.qtde_cpu:
+                if nova_qtde != vm_obj.cpu:
                     foi_alterada = True
-                vm_obj.qtde_cpu = nova_qtde
+                vm_obj.cpu = nova_qtde
             if random.getrandbits(1):
                 nova_qtde = random.randint(Base.RAM_MIN, Base.RAM_MAX)
-                if nova_qtde != vm_obj.qtde_ram_mb:
+                if nova_qtde != vm_obj.memory:
                     foi_alterada = True
-                vm_obj.qtde_ram_mb = nova_qtde
+                vm_obj.memory = nova_qtde
 
             if not foi_alterada:
                 # forçando uma alteração
-                vm_obj.descricao = DadosTeste.get_random_string_com_excecao(
-                    vm_obj.descricao)
+                vm_obj.description = DadosTeste.get_random_string_com_excecao(
+                    vm_obj.description)
 
     @staticmethod
     def alterar_imagem_vms_inventario(inventario):
         for vm_obj in inventario.vms.values():
-            vm_obj.imagem = DadosTeste.get_random_string_com_excecao(
-                vm_obj.imagem)
+            vm_obj.image = DadosTeste.get_random_string_com_excecao(
+                vm_obj.image)
 
     @staticmethod
     def alterar_redes_vms_inventario(inventario):
         for vm_obj in inventario.vms.values():
             if random.getrandbits(1):
-                vm_obj.redes = []
+                vm_obj.networks = []
             else:
-                for rede in vm_obj.redes:
-                    rede.nome = DadosTeste.get_random_string_com_excecao(
-                        rede.nome)
+                for network in vm_obj.networks:
+                    network.name = DadosTeste.get_random_string_com_excecao(
+                        network.name)
 
     @staticmethod
     def alterar_virtualizacao_aninhada_vms_inventario(inventario, novo_valor):
         for vm_obj in inventario.vms.values():
-            vm_obj.virtualizacao_aninhada = novo_valor
+            vm_obj.nested_virtualization = novo_valor
 
     @staticmethod
     def alterar_memoria_dinamica_vms_inventario(inventario, novo_valor):
         for vm_obj in inventario.vms.values():
-            vm_obj.memoria_dinamica = novo_valor
+            vm_obj.dynamic_memory = novo_valor
 
     @staticmethod
     def get_plano_execucao_criar_inventario(inventario):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
                 inventario.vms[nome_vm].get_acao_criar_vm())
 
         for nome_vm in inventario.vms:
-            for disco_adicional in inventario.vms[nome_vm].discos_adicionais:
+            for additional_disk in inventario.vms[nome_vm].additional_disks:
                 plano_execucao.acoes.append(
                     inventario.vms[nome_vm]
-                    .discos_adicionais[disco_adicional]
+                    .additional_disks[additional_disk]
                     .get_acao_criar_disco(nome_vm))
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
                 inventario.vms[nome_vm].get_acao_mover_vm_regiao(
-                    inventario.get_id_no_regiao(inventario.vms[nome_vm].regiao)))
+                    inventario.get_id_no_regiao(inventario.vms[nome_vm].region)))
 
         for nome_vm in inventario.vms:
-            if inventario.vms[nome_vm].virtualizacao_aninhada:
+            if inventario.vms[nome_vm].nested_virtualization:
                 plano_execucao.acoes.append(
                     inventario.vms[nome_vm].get_acao_atualizar_virtualizacao_aninhada())
 
@@ -93,7 +93,7 @@ class TestComparacaoInvVm(Base):
     @staticmethod
     def get_plano_execucao_excluir_inventario(inventario):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
@@ -104,7 +104,7 @@ class TestComparacaoInvVm(Base):
     @staticmethod
     def get_plano_execucao_atualizar_vm(inventario):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
@@ -115,7 +115,7 @@ class TestComparacaoInvVm(Base):
     @staticmethod
     def get_plano_execucao_resetar_vm(inventario):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in inventario.vms:
             plano_execucao.acoes.append(
@@ -132,10 +132,10 @@ class TestComparacaoInvVm(Base):
         novo_valor
     ):
         plano_execucao = PlanoExecucao(
-            inventario_local.agrupamento, inventario_local.nuvem)
+            inventario_local.group, inventario_local.cloud)
 
         for nome_vm in inventario_local.vms:
-            if inventario_remoto.vms[nome_vm].virtualizacao_aninhada != novo_valor:
+            if inventario_remoto.vms[nome_vm].nested_virtualization != novo_valor:
                 plano_execucao.acoes.append(
                     inventario_local.vms[nome_vm].get_acao_atualizar_virtualizacao_aninhada())
 
@@ -148,10 +148,10 @@ class TestComparacaoInvVm(Base):
         novo_valor
     ):
         plano_execucao = PlanoExecucao(
-            inventario_local.agrupamento, inventario_local.nuvem)
+            inventario_local.group, inventario_local.cloud)
 
         for nome_vm in inventario_local.vms:
-            if inventario_remoto.vms[nome_vm].memoria_dinamica != novo_valor:
+            if inventario_remoto.vms[nome_vm].dynamic_memory != novo_valor:
                 plano_execucao.acoes.append(
                     inventario_local.vms[nome_vm].get_acao_atualizar_memoria_dinamica())
 
@@ -180,7 +180,7 @@ class TestComparacaoInvVm(Base):
     def test_inventario_remoto_sem_local(self):
         inventario_remoto = Base.get_inventario_completo()
         inventario_local = Inventario(
-            inventario_remoto.agrupamento, inventario_remoto.nuvem)
+            inventario_remoto.group, inventario_remoto.cloud)
 
         status, plano_execucao = inventario_local.calcular_plano_execucao(
             inventario_remoto)
@@ -225,30 +225,30 @@ class TestComparacaoInvVm(Base):
         assert plano_execucao == self.get_plano_execucao_resetar_vm(
             inventario_local)
 
-    @pytest.mark.parametrize('virtualizacao_aninhada', [True, False])
-    def test_inventario_local_vms_virtualizacao_aninhada_alterada(self, virtualizacao_aninhada):
+    @pytest.mark.parametrize('nested_virtualization', [True, False])
+    def test_inventario_local_vms_virtualizacao_aninhada_alterada(self, nested_virtualization):
         inventario_local = Base.get_inventario_completo()
         inventario_remoto = copy.deepcopy(inventario_local)
         self.alterar_virtualizacao_aninhada_vms_inventario(
-            inventario_local, virtualizacao_aninhada)
+            inventario_local, nested_virtualization)
 
         status, plano_execucao = inventario_local.calcular_plano_execucao(
             inventario_remoto)
 
         assert status is True
         assert plano_execucao == self.get_plano_execucao_alterar_virtualizacao_aninhada(
-            inventario_local, inventario_remoto, virtualizacao_aninhada)
+            inventario_local, inventario_remoto, nested_virtualization)
 
-    @pytest.mark.parametrize('memoria_dinamica', [True, False])
-    def test_inventario_local_vms_memoria_dinamica_alterada(self, memoria_dinamica):
+    @pytest.mark.parametrize('dynamic_memory', [True, False])
+    def test_inventario_local_vms_memoria_dinamica_alterada(self, dynamic_memory):
         inventario_local = Base.get_inventario_completo()
         inventario_remoto = copy.deepcopy(inventario_local)
         self.alterar_memoria_dinamica_vms_inventario(
-            inventario_local, memoria_dinamica)
+            inventario_local, dynamic_memory)
 
         status, plano_execucao = inventario_local.calcular_plano_execucao(
             inventario_remoto)
 
         assert status is True
         assert plano_execucao == self.get_plano_execucao_alterar_memoria_dinamica(
-            inventario_local, inventario_remoto, memoria_dinamica)
+            inventario_local, inventario_remoto, dynamic_memory)

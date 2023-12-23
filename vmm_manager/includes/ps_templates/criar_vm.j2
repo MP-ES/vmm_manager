@@ -1,40 +1,40 @@
 # Parâmetros do script
 $VMMServer="{{ servidor_vmm }}"
 $VMName = "{{ nome_vm }}"
-$Description = "{{ descricao }}"
-$TemplateName = "{{ imagem }}"
-$CPUCount = "{{ qtde_cpu }}"
-$MemoryMB = "{{ qtde_ram_mb }}"
-$DynamicMemory = {{ "$true" if memoria_dinamica else "$false" }}
-$CloudName = "{{ nuvem }}"
+$Description = "{{ description }}"
+$TemplateName = "{{ image }}"
+$CPUCount = "{{ cpu }}"
+$MemoryMB = "{{ memory }}"
+$DynamicMemory = {{ "$true" if dynamic_memory else "$false" }}
+$CloudName = "{{ cloud }}"
 
 # Validações
 $MsgsErro = ''
 
-$nuvem = Get-SCCloud -VMMServer $VMMServer -Name $CloudName
-if (!$nuvem ) {
+$cloud = Get-SCCloud -VMMServer $VMMServer -Name $CloudName
+if (!$cloud ) {
   $MsgsErro += "Nuvem (Cloud) $CloudName não encontrada.`n"
 }
 
-$imagem = Get-SCVMTemplate -VMMServer $VMMServer | Where {$_.Name -eq $TemplateName }
-if (!$imagem ) {
+$image = Get-SCVMTemplate -VMMServer $VMMServer | Where {$_.Name -eq $TemplateName }
+if (!$image ) {
   $MsgsErro += "Imagem (Template) $TemplateName não encontrada.`n"
 }
 
-{% for rede in redes %}
-$rede = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ rede }}"
-if (!$rede ) {
-  $MsgsErro += "Rede {{ rede }} não encontrada.`n"
+{% for network in networks %}
+$network = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ network }}"
+if (!$network ) {
+  $MsgsErro += "Rede {{ network }} não encontrada.`n"
 }
 {% endfor %}
 
-if ($nuvem){
+if ($cloud){
   $custom_agrupamento = Get-SCCustomProperty -VMMServer $VMMServer -Name "{{ campo_agrupamento }}"
-  $vms_nuvem = Get-SCVirtualMachine -VMMServer $VMMServer -Cloud $nuvem
+  $vms_nuvem = Get-SCVirtualMachine -VMMServer $VMMServer -Cloud $cloud
   foreach($vm in $vms_nuvem) {
-    $agrupamento = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
-    if ($agrupamento.Value -ne "{{ agrupamento }}" -and $vm.Name -eq $VMName) {
-      $MsgsErro += "O nome '$vm' já está sendo usado por uma VM na nuvem '$nuvem'.`n"
+    $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+    if ($group.Value -ne "{{ group }}" -and $vm.Name -eq $VMName) {
+      $MsgsErro += "O name '$vm' já está sendo usado por uma VM na cloud '$cloud'.`n"
     }
   }
 }
@@ -58,12 +58,12 @@ if ($MsgsErro){
   New-SCVirtualScsiAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
   New-SCVirtualDVDDrive -VMMServer $VMMServer -JobGroup $JobGroupID -Bus 0 -LUN 1
 
-  {% for rede in redes %}
-  $VMNetwork{{ loop.index }} = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ rede }}"
+  {% for network in networks %}
+  $VMNetwork{{ loop.index }} = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ network }}"
   New-SCVirtualNetworkAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -VMNetwork $VMNetwork{{ loop.index }} -MACAddress "00:00:00:00:00:00" -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -DevicePropertiesAdapterNameMode Disabled 
   {% endfor %}
 
-  {% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if memoria_dinamica else "" %}
+  {% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if dynamic_memory else "" %}
 
   $HardwareProfile = New-SCHardwareProfile -VMMServer $VMMServer -JobGroup $JobGroupID -Name $TemporaryName -CPUType $CPUType -CapabilityProfile $CapabilityProfile -Description "Perfil temporário do vmm_manager" -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $DynamicMemory {{ memoria_dinamica_params_adic }} -MemoryWeight 5000 -CPUExpectedUtilizationPercent 20 -DiskIops 0 -CPUMaximumPercent 100 -CPUReserve 0 -NumaIsolationRequired $false -NetworkUtilizationMbps 0 -CPURelativeWeight 100 -HighlyAvailable $true -HAVMPriority 2000 -DRProtectionRequired $false -SecureBootEnabled $false -CPULimitFunctionality $false -CPULimitForMigration $false -CheckpointType Production -Generation 2
   $Template = New-SCVMTemplate -JobGroup $JobGroupID -Name $TemporaryName -ComputerName $VMName -Template $TemplateBase -HardwareProfile $HardwareProfile

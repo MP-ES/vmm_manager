@@ -1,15 +1,15 @@
 # Recuperar VM com segurança
-# Pelo ID gera dependência cíclica e, só pelo nome, pode gerar conflito
-# O SCVMM permite mais de uma VM com o mesmo nome!
+# Pelo ID gera dependência cíclica e, só pelo name, pode gerar conflito
+# O SCVMM permite mais de uma VM com o mesmo name!
 $VM = $null
 $custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
 $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
-$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$cloud = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ cloud }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $cloud
 
 foreach($vm_obj in $vms_nuvem) {
-  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
-  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+  $group = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
+  if ($group.Value -eq "{{ group }}") {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_nome_id
 
     # Recuperando VM correta
@@ -20,7 +20,7 @@ foreach($vm_obj in $vms_nuvem) {
 }
 
 $BusNumber = 0
-$BusType = "{{ tipo }}"
+$BusType = "{{ bus_type }}"
 
 # Definindo próximo LUN livre
 $RangeLun = 0..1000
@@ -31,7 +31,7 @@ $LunsOcupados = $LunsOcupados | Sort Lun
 $LunLivre = $RangeLun | Where-Object {$LunsOcupados -notcontains $_} | select -First 1
 
 # Criando disco
-New-SCVirtualDiskDrive -VMMServer "{{ servidor_vmm }}" -VM $VM -{{ tipo }} -Bus $BusNumber -LUN $LunLivre -VirtualHardDiskSizeMB {{ tamanho_mb }} -{{ tamanho_tipo }} -Filename "{{ arquivo }}" -VolumeType None {{ '-Path "' + caminho + '"' if caminho else '' }} -JobVariable "job" -RunAsynchronously | Out-Null
+New-SCVirtualDiskDrive -VMMServer "{{ servidor_vmm }}" -VM $VM -{{ bus_type }} -Bus $BusNumber -LUN $LunLivre -VirtualHardDiskSizeMB {{ size_mb }} -{{ size_type }} -Filename "{{ file }}" -VolumeType None {{ '-Path "' + path + '"' if path else '' }} -JobVariable "job" -RunAsynchronously | Out-Null
 
 $Resultado = [PSCustomObject]@{
     Status = 'OK'

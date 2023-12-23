@@ -1,6 +1,6 @@
 """
 Script que gerencia um inventário de máquinas no SCVMM, com base
-em um arquivo YAML.
+em um file YAML.
 """
 import re
 import string
@@ -50,14 +50,14 @@ def parametro_arquivo_yaml(nome_arquivo):
             f'Invalid YAML: {exc}')
 
 
-def parametro_alfanumerico_limitado(valor):
+def parametro_alfanumerico_limitado(value):
     regex_alfa_num = re.compile(r'^[a-z]{1}[a-z0-9_]{2,39}$', re.IGNORECASE)
 
-    if valor and not regex_alfa_num.match(valor):
+    if value and not regex_alfa_num.match(value):
         raise argparse.ArgumentTypeError(
-            f"Invalid parameter: '{valor}'")
+            f"Invalid parameter: '{value}'")
 
-    return valor
+    return value
 
 
 def get_parser():
@@ -146,20 +146,20 @@ def get_parser():
 
 def obter_inventario_remoto(
     servidor_acesso,
-    agrupamento,
-    nuvem,
+    group,
+    cloud,
     ocultar_progresso,
     filtro_nome_vm=None,
     filtro_dados_completos=True
 ):
     imprimir_acao_corrente('Obtendo inventário remoto', ocultar_progresso)
 
-    parser_remoto = ParserRemoto(agrupamento, nuvem)
+    parser_remoto = ParserRemoto(group, cloud)
     status, inventario_remoto = parser_remoto.get_inventario(
         servidor_acesso, filtro_nome_vm, filtro_dados_completos)
     validar_retorno_operacao_com_lock(status, inventario_remoto,
-                                      servidor_acesso, agrupamento,
-                                      nuvem, ocultar_progresso)
+                                      servidor_acesso, group,
+                                      cloud, ocultar_progresso)
 
     return inventario_remoto
 
@@ -184,15 +184,15 @@ def obter_inventario_local(
 
 def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
     inventario_remoto = obter_inventario_remoto(
-        servidor_acesso, inventario_local.agrupamento,
-        inventario_local.nuvem, ocultar_progresso)
+        servidor_acesso, inventario_local.group,
+        inventario_local.cloud, ocultar_progresso)
 
     imprimir_acao_corrente('Calculando plano de execução', ocultar_progresso)
     status, plano_execucao = inventario_local.calcular_plano_execucao(
         inventario_remoto)
     validar_retorno_operacao_com_lock(status, plano_execucao, servidor_acesso,
-                                      inventario_local.agrupamento,
-                                      inventario_local.nuvem, ocultar_progresso)
+                                      inventario_local.group,
+                                      inventario_local.cloud, ocultar_progresso)
     return plano_execucao
 
 
@@ -241,16 +241,16 @@ def imprimir_json_inventario(
         servidor_acesso, inventory_file, ocultar_progresso,
         filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
 
-    adquirir_lock(servidor_acesso, inventario_local.agrupamento,
-                  inventario_local.nuvem, ocultar_progresso)
+    adquirir_lock(servidor_acesso, inventario_local.group,
+                  inventario_local.cloud, ocultar_progresso)
 
     inventario_remoto = obter_inventario_remoto(
-        servidor_acesso, inventario_local.agrupamento,
-        inventario_local.nuvem, ocultar_progresso,
+        servidor_acesso, inventario_local.group,
+        inventario_local.cloud, ocultar_progresso,
         filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
 
-    liberar_lock(servidor_acesso, inventario_local.agrupamento,
-                 inventario_local.nuvem, ocultar_progresso)
+    liberar_lock(servidor_acesso, inventario_local.group,
+                 inventario_local.cloud, ocultar_progresso)
 
     imprimir_acao_corrente('Gerando JSON', ocultar_progresso)
     status, json_inventario = Inventario.get_json(
@@ -266,8 +266,8 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
         servidor_acesso, inventory_file, ocultar_progresso)
 
     adquirir_lock(servidor_acesso,
-                  inventario_local.agrupamento,
-                  inventario_local.nuvem, ocultar_progresso)
+                  inventario_local.group,
+                  inventario_local.cloud, ocultar_progresso)
 
     conteudo_arquivo = None
     plano_execucao = obter_plano_execucao(
@@ -275,14 +275,14 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
 
     if not plano_execucao.is_vazio():
         imprimir_acao_corrente(
-            f'Gerando arquivo {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}',
+            f'Gerando file {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}',
             ocultar_progresso)
         status, conteudo_arquivo = plano_execucao.gerar_arquivo()
         validar_retorno_operacao_sem_lock(
             status, conteudo_arquivo, ocultar_progresso)
 
-    liberar_lock(servidor_acesso, inventario_local.agrupamento,
-                 inventario_local.nuvem, ocultar_progresso)
+    liberar_lock(servidor_acesso, inventario_local.group,
+                 inventario_local.cloud, ocultar_progresso)
 
     if conteudo_arquivo:
         print(f'\nAlterações a serem realizadas:\n{conteudo_arquivo}')
@@ -312,7 +312,7 @@ def executar_sincronizacao(
             execution_plan_file or PlanoExecucao.ARQUIVO_PLANO_EXECUCAO)
         validar_retorno_operacao_sem_lock(
             status, plano_execucao, ocultar_progresso)
-    # Caso de ter informado o arquivo de inventário
+    # Caso de ter informado o file de inventário
     elif inventory_file:
         print(formatar_msg_aviso(
             'plano de execução será calculado à partir do inventário.'),
@@ -320,8 +320,8 @@ def executar_sincronizacao(
         inventario_local = obter_inventario_local(
             servidor_acesso, inventory_file, ocultar_progresso)
 
-        adquirir_lock(servidor_acesso, inventario_local.agrupamento,
-                      inventario_local.nuvem, ocultar_progresso)
+        adquirir_lock(servidor_acesso, inventario_local.group,
+                      inventario_local.cloud, ocultar_progresso)
         adquiriu_lock = True
 
         plano_execucao = obter_plano_execucao(
@@ -329,15 +329,15 @@ def executar_sincronizacao(
     # Se não informou nem o plano nem o inventário, então informar erro
     else:
         finalizar_com_erro(
-            'É necessário informar o plano de execução ou o arquivo de inventário.')
+            'É necessário informar o plano de execução ou o file de inventário.')
 
     if not adquiriu_lock:
-        adquirir_lock(servidor_acesso, plano_execucao.agrupamento,
-                      plano_execucao.nuvem, ocultar_progresso)
+        adquirir_lock(servidor_acesso, plano_execucao.group,
+                      plano_execucao.cloud, ocultar_progresso)
 
     if plano_execucao.is_vazio():
-        liberar_lock(servidor_acesso, plano_execucao.agrupamento,
-                     plano_execucao.nuvem, ocultar_progresso)
+        liberar_lock(servidor_acesso, plano_execucao.group,
+                     plano_execucao.cloud, ocultar_progresso)
         print(
             '\nPlano de execução vazio: nada a alterar.')
     else:
@@ -346,29 +346,29 @@ def executar_sincronizacao(
             print('\nAs seguintes operações serão executadas:')
             plano_execucao.imprimir_acoes()
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, plano_execucao.agrupamento,
-                plano_execucao.nuvem, ocultar_progresso)
+                servidor_acesso, plano_execucao.group,
+                plano_execucao.cloud, ocultar_progresso)
 
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
-        liberar_lock(servidor_acesso, plano_execucao.agrupamento,
-                     plano_execucao.nuvem, ocultar_progresso)
+        liberar_lock(servidor_acesso, plano_execucao.group,
+                     plano_execucao.cloud, ocultar_progresso)
         plano_execucao.imprimir_resultado_execucao()
 
 
 def remover_agrupamento_da_nuvem(
     servidor_acesso,
-    agrupamento,
-    nuvem,
+    group,
+    cloud,
     skip_confirmation,
     ocultar_progresso
 ):
     configurar_vmm(servidor_acesso, ocultar_progresso)
 
-    adquirir_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+    adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso)
 
     inventario_remoto = obter_inventario_remoto(
-        servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+        servidor_acesso, group, cloud, ocultar_progresso)
 
     if not inventario_remoto.is_vazio():
         # Exibindo confirmação
@@ -377,20 +377,20 @@ def remover_agrupamento_da_nuvem(
             for maquina_virtual in inventario_remoto.vms.values():
                 print(
                     f'ID_VMM: {maquina_virtual.id_vmm}\t'
-                    f'Nome: {maquina_virtual.nome}\t'
+                    f'Nome: {maquina_virtual.name}\t'
                     f'Status: { maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
-                servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+                servidor_acesso, group, cloud, ocultar_progresso)
 
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
-        liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
         plano_execucao.imprimir_resultado_execucao()
     else:
-        liberar_lock(servidor_acesso, agrupamento, nuvem, ocultar_progresso)
+        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
         print(
-            f'\nNão há máquinas do agrupamento {agrupamento} na nuvem {nuvem}: nada a fazer.')
+            f'\nNão há máquinas do group {group} na cloud {cloud}: nada a fazer.')
 
 
 def main():

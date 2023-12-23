@@ -46,7 +46,7 @@ class Base():
         for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
             nome_vm = dados_teste.get_nome_unico()
 
-            # redes
+            # networks
             redes_vm = []
             for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX)):
                 redes_vm.append(
@@ -78,8 +78,8 @@ class Base():
                         randint(Base.CPU_MIN, Base.CPU_MAX),
                         randint(Base.RAM_MIN, Base.RAM_MAX),
                         redes_vm,
-                        virtualizacao_aninhada=bool(getrandbits(1)),
-                        memoria_dinamica=bool(getrandbits(1)),
+                        nested_virtualization=bool(getrandbits(1)),
+                        dynamic_memory=bool(getrandbits(1)),
                         no_regiao=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[nome_vm] = vm_obj
@@ -88,30 +88,34 @@ class Base():
 
     def get_obj_inventario(self, array_yaml):
         inventario = Inventario(
-            array_yaml[0][0]['agrupamento'], array_yaml[0][0]['nuvem'])
+            array_yaml[0][0]['group'], array_yaml[0][0]['cloud'])
 
         for maquina_virtual in array_yaml[0][0]['vms']:
             vm_redes = []
-            for rede_vm in maquina_virtual.get('redes', array_yaml[0][0].get('redes_padrao', [])):
-                vm_redes.append(
-                    VMRede(rede_vm.get('nome'), rede_vm.get('principal', False)))
 
-            inventario.vms[maquina_virtual.get('nome')] = VM(
-                maquina_virtual.get('nome'),
-                maquina_virtual.get('descricao'),
+            for rede_vm in maquina_virtual.get(
+                'networks',
+                array_yaml[0][0].get('networks_default', [])
+            ):
+                vm_redes.append(
+                    VMRede(rede_vm.get('name'), rede_vm.get('default', False)))
+
+            inventario.vms[maquina_virtual.get('name')] = VM(
+                maquina_virtual.get('name'),
+                maquina_virtual.get('description'),
                 maquina_virtual.get(
-                    'imagem', array_yaml[0][0].get('imagem_padrao', None)),
-                maquina_virtual.get('regiao', SCRegion.REGIAO_PADRAO),
+                    'image', array_yaml[0][0].get('image_default', None)),
+                maquina_virtual.get('region', SCRegion.REGIAO_PADRAO),
                 maquina_virtual.get(
-                    'qtde_cpu', array_yaml[0][0].get('qtde_cpu_padrao', None)),
+                    'cpu', array_yaml[0][0].get('cpu_default', None)),
                 maquina_virtual.get(
-                    'qtde_ram_mb', array_yaml[0][0].get('qtde_ram_mb_padrao', None)),
+                    'memory', array_yaml[0][0].get('memory_default', None)),
                 vm_redes,
-                virtualizacao_aninhada=maquina_virtual.
-                get('virtualizacao_aninhada', array_yaml[0][0].get(
-                    'virtualizacao_aninhada_padrao', False)),
-                memoria_dinamica=maquina_virtual.get(
-                    'memoria_dinamica', array_yaml[0][0].get('memoria_dinamica_padrao', True)),
+                nested_virtualization=maquina_virtual.
+                get('nested_virtualization', array_yaml[0][0].get(
+                    'nested_virtualization_default', False)),
+                dynamic_memory=maquina_virtual.get(
+                    'dynamic_memory', array_yaml[0][0].get('dynamic_memory_default', True)),
             )
         return inventario
 
@@ -119,18 +123,18 @@ class Base():
         lista_dados_ansible = {}
 
         for maquina_virtual in array_yaml[0][0]['vms']:
-            if maquina_virtual.get('nome') != nome_vm:
+            if maquina_virtual.get('name') != nome_vm:
                 continue
 
             for item in maquina_virtual.get('ansible', {}):
-                grupo = item.get('grupo')
-                dados_ansible = VMAnsible(grupo)
+                group = item.get('group')
+                dados_ansible = VMAnsible(group)
 
                 for variavel in item.get('vars', {}):
                     dados_ansible.variaveis.append(VMAnsibleVars(
-                        variavel.get('nome'), variavel.get('valor')))
+                        variavel.get('name'), variavel.get('value')))
 
-                lista_dados_ansible[grupo] = dados_ansible
+                lista_dados_ansible[group] = dados_ansible
 
         return lista_dados_ansible
 
@@ -138,19 +142,19 @@ class Base():
         lista_discos_adicionais = {}
 
         for maquina_virtual in array_yaml[0][0]['vms']:
-            if maquina_virtual.get('nome') != nome_vm:
+            if maquina_virtual.get('name') != nome_vm:
                 continue
 
-            for item in maquina_virtual.get('discos_adicionais', {}):
-                arquivo = item.get('arquivo')
-                disco_adicional = VMDisco(
-                    SCDiskBusType(item.get('tipo')),
-                    arquivo,
-                    item.get('tamanho_mb'),
-                    SCDiskSizeType(item.get('tamanho_tipo')),
-                    item.get('caminho')
+            for item in maquina_virtual.get('additional_disks', {}):
+                file = item.get('file')
+                additional_disk = VMDisco(
+                    SCDiskBusType(item.get('bus_type')),
+                    file,
+                    item.get('size_mb'),
+                    SCDiskSizeType(item.get('size_type')),
+                    item.get('path')
                 )
 
-                lista_discos_adicionais[arquivo] = disco_adicional
+                lista_discos_adicionais[file] = additional_disk
 
         return lista_discos_adicionais

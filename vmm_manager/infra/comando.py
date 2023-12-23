@@ -11,10 +11,10 @@ class Comando:
     __TEMPLATES_DIR = '../includes/ps_templates'
     __TEMPLATES_EXTENSAO = '.j2'
 
-    def __init__(self, command, descricao=None, **kwargs):
+    def __init__(self, command, description=None, **kwargs):
         try:
             self.command = command
-            self.descricao = descricao if descricao else self.command
+            self.description = description if description else self.command
             self.args = kwargs
             j2_env = Environment(
                 loader=FileSystemLoader(os.path.join(

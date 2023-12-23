@@ -20,39 +20,39 @@ class TestComparacaoInvDisco(Base):
     def remover_discos_inventario(inventario):
         discos_removidos = {}
         for nome_vm in inventario.vms:
-            discos_removidos[nome_vm] = inventario.vms[nome_vm].discos_adicionais
-            inventario.vms[nome_vm].discos_adicionais = {}
+            discos_removidos[nome_vm] = inventario.vms[nome_vm].additional_disks
+            inventario.vms[nome_vm].additional_disks = {}
         return discos_removidos
 
     @staticmethod
     def alterar_discos_inventario(inventario, tipo_alteracao):
         discos_alterados = {}
         for nome_vm in inventario.vms:
-            discos_alterados[nome_vm] = inventario.vms[nome_vm].discos_adicionais
+            discos_alterados[nome_vm] = inventario.vms[nome_vm].additional_disks
 
-            for disco in inventario.vms[nome_vm].discos_adicionais.values():
+            for disco in inventario.vms[nome_vm].additional_disks.values():
                 if tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_TP_BUS:
-                    disco.tipo = DadosTeste.get_random_lista_com_excecao(
-                        list(SCDiskBusType), disco.tipo)
+                    disco.bus_type = DadosTeste.get_random_lista_com_excecao(
+                        list(SCDiskBusType), disco.bus_type)
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_REDUCAO:
-                    disco.tamanho_mb = randint(
-                        Base.TAMANHO_DISCO_MIN, disco.tamanho_mb - 1)
+                    disco.size_mb = randint(
+                        Base.TAMANHO_DISCO_MIN, disco.size_mb - 1)
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_EXPANSAO:
-                    disco.tamanho_mb = randint(
-                        disco.tamanho_mb - 1, Base.TAMANHO_DISCO_MAX)
+                    disco.size_mb = randint(
+                        disco.size_mb - 1, Base.TAMANHO_DISCO_MAX)
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_CAMINHO:
-                    disco.caminho = DadosTeste.get_random_string_com_excecao(
-                        disco.caminho)
+                    disco.path = DadosTeste.get_random_string_com_excecao(
+                        disco.path)
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_TP_TAMANHO:
-                    disco.tamanho_tipo = DadosTeste.get_random_lista_com_excecao(
-                        list(SCDiskSizeType), disco.tamanho_tipo)
+                    disco.size_type = DadosTeste.get_random_lista_com_excecao(
+                        list(SCDiskSizeType), disco.size_type)
 
         return discos_alterados
 
     @staticmethod
     def get_plano_execucao_criar_discos(inventario, discos_removidos):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in discos_removidos:
             for disco in discos_removidos[nome_vm].values():
@@ -64,7 +64,7 @@ class TestComparacaoInvDisco(Base):
     @staticmethod
     def get_plano_execucao_excluir_discos(inventario, discos_removidos):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in discos_removidos:
             for disco in discos_removidos[nome_vm].values():
@@ -76,7 +76,7 @@ class TestComparacaoInvDisco(Base):
     @staticmethod
     def get_plano_execucao_alterar_discos(inventario, discos_alterados, tipo_alteracao):
         plano_execucao = PlanoExecucao(
-            inventario.agrupamento, inventario.nuvem)
+            inventario.group, inventario.cloud)
 
         for nome_vm in discos_alterados:
             for disco in discos_alterados[nome_vm].values():

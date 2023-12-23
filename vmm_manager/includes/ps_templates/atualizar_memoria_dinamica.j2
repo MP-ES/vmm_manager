@@ -1,15 +1,15 @@
 # Recuperar VM com segurança
-# Pelo ID gera dependência cíclica e, só pelo nome, pode gerar conflito
-# O SCVMM permite mais de uma VM com o mesmo nome!
+# Pelo ID gera dependência cíclica e, só pelo name, pode gerar conflito
+# O SCVMM permite mais de uma VM com o mesmo name!
 $VM = $null
 $custom_agrupamento = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_agrupamento }}"
 $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_id }}"
-$nuvem = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ nuvem }}"
-$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $nuvem
+$cloud = Get-SCCloud -VMMServer "{{ servidor_vmm }}" -Name "{{ cloud }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Cloud $cloud
 
 foreach($vm_obj in $vms_nuvem) {
-  $agrupamento = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
-  if ($agrupamento.Value -eq "{{ agrupamento }}") {
+  $group = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_agrupamento
+  if ($group.Value -eq "{{ group }}") {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_nome_id
 
     # Recuperando VM correta
@@ -21,8 +21,8 @@ foreach($vm_obj in $vms_nuvem) {
 
 $MemoryMB = $VM.Memory
 $MemoryMBMin = [math]::min( 512 , $MemoryMB )
-$DynamicMemory = {{ "$true" if memoria_dinamica else "$false" }}
-{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if memoria_dinamica else "" %}
+$DynamicMemory = {{ "$true" if dynamic_memory else "$false" }}
+{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if dynamic_memory else "" %}
 
 # Máquina deve estar desligada
 if ($VM.Status -ne "Poweroff"){
