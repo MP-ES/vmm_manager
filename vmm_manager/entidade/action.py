@@ -1,35 +1,40 @@
 """
-Representação de uma ação (um item do plano de execução)
+Action entity.
 """
 import json
 from yamlable import yaml_info, YamlAble
 from vmm_manager.infra.comando import Comando
-from vmm_manager.util.config import (CAMPO_AGRUPAMENTO, CAMPO_ID,
-                                     CAMPO_IMAGEM, CAMPO_REGIAO, CAMPO_REDE_PRINCIPAL)
+from vmm_manager.util.config import (
+    CAMPO_AGRUPAMENTO,
+    CAMPO_ID,
+    CAMPO_IMAGEM,
+    CAMPO_REGIAO,
+    CAMPO_REDE_PRINCIPAL
+)
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
-class Acao(YamlAble):
+class Action(YamlAble):
     ACAO_CRIAR_VM = 'criar_vm'
     ACAO_EXCLUIR_VM = 'excluir_vm'
     ACAO_EXCLUIR_DISCO_VM = 'excluir_disco_vm'
 
-    RESOURCE_IDENTIFIER_NAME = 'nome_vm'
+    RESOURCE_IDENTIFIER_NAME = 'vm_name'
     RESOURCE_IDENTIFIER_ID = 'id_vm'
 
-    def __init__(self, nome_comando, **kwargs):
+    def __init__(self, command, **kwargs):
         # Validate if the args contain the resource identifier
         if (
             'args' not in kwargs  # passed by Yamlable
-            and Acao.RESOURCE_IDENTIFIER_NAME not in kwargs
-            and Acao.RESOURCE_IDENTIFIER_ID not in kwargs
+            and Action.RESOURCE_IDENTIFIER_NAME not in kwargs
+            and Action.RESOURCE_IDENTIFIER_ID not in kwargs
         ):
             raise ValueError(
                 f'Os argumentos devem conter o identificador do recurso: '
-                f'{Acao.RESOURCE_IDENTIFIER_NAME} ou {Acao.RESOURCE_IDENTIFIER_ID}.'
+                f'{Action.RESOURCE_IDENTIFIER_NAME} ou {Action.RESOURCE_IDENTIFIER_ID}.'
             )
 
-        self.nome_comando = nome_comando
+        self.command = command
         self.args = kwargs
 
         self.__status_execucao = None
@@ -37,14 +42,15 @@ class Acao(YamlAble):
         self.__status_execucao_job = None
 
     def executar(self, group, cloud, servidor_acesso, guid):
-        cmd = Comando(self.nome_comando,
+        cmd = Comando(self.command,
                       group=group,
                       campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                       campo_id=CAMPO_ID[0],
                       campo_regiao=CAMPO_REGIAO[0],
                       cloud=cloud,
                       guid=guid,
-                      servidor_vmm=servidor_acesso.servidor_vmm)
+                      servidor_vmm=servidor_acesso.servidor_vmm
+                      )
         cmd.args.update(self.args)
 
         status, retorno = cmd.executar(servidor_acesso)
@@ -59,12 +65,12 @@ class Acao(YamlAble):
         self.__status_execucao_job = status
 
     def is_criacao_vm(self):
-        return self.nome_comando == Acao.ACAO_CRIAR_VM
+        return self.command == Action.ACAO_CRIAR_VM
 
     def is_bloqueante(self):
         return (self.is_criacao_vm()
-                or self.nome_comando == Acao.ACAO_EXCLUIR_VM
-                or self.nome_comando == Acao.ACAO_EXCLUIR_DISCO_VM)
+                or self.command == Action.ACAO_EXCLUIR_VM
+                or self.command == Action.ACAO_EXCLUIR_DISCO_VM)
 
     def is_same_resource(self, other):
         if (self.RESOURCE_IDENTIFIER_NAME in self.args
@@ -89,7 +95,7 @@ class Acao(YamlAble):
 
     def get_resultado_execucao(self):
         if self.__status_execucao is None:
-            raise AttributeError('Ação não executada.')
+            raise AttributeError('Action not executed.')
 
         if self.__status_execucao:
             return self.__retorno_execucao
@@ -100,7 +106,7 @@ class Acao(YamlAble):
         if self.is_criacao_vm():
             cmd = Comando(
                 'criar_vm_pos',
-                description=f"Taguear VM { self.args['nome_vm']}",
+                description=f"Taguear VM { self.args['vm_name']}",
                 servidor_vmm=servidor_acesso.servidor_vmm,
                 campo_agrupamento=CAMPO_AGRUPAMENTO[0],
                 campo_id=CAMPO_ID[0],
@@ -114,24 +120,26 @@ class Acao(YamlAble):
             return cmd
 
         raise AttributeError(
-            f'Ação "{self.nome_comando}" não possui command de pós-execução.')
+            f'Action "{self.command}" does not have a post execution command.')
 
     def get_str_impressao_inline(self):
         cmd_args = ', '.join([f'{arg}={value}'
                               for arg, value in self.args.items()])
 
-        return f'{self.nome_comando} - [{cmd_args}]'
+        return f'{self.command} - [{cmd_args}]'
 
     def __eq__(self, other):
-        return isinstance(other, Acao) and (self.nome_comando == other.nome_comando
-                                            and self.args == other.args)
+        return isinstance(other, Action) and (self.command == other.command
+                                              and self.args == other.args)
 
     def __str__(self):
         return f'''
-            nome_comando: {self.nome_comando}
+            command: {self.command}
             args: {self.args}
             '''
 
     def __to_yaml_dict__(self):
-        return {'nome_comando': self.nome_comando,
-                'args': self.args}
+        return {
+            'command': self.command,
+            'args': self.args
+        }

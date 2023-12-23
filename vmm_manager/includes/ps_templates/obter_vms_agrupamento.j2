@@ -19,14 +19,14 @@ foreach($vm in $vms_nuvem) {
     
     $image = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem
     $region = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao
-    $rede_principal = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal
+    $network_default = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal
 
     $networks = @()
     foreach($interface in $vm.VirtualNetworkAdapters) {
       $network = [PSCustomObject]@{
         Nome = $interface.VMNetwork.Name
         IPS = $interface.IPv4Addresses
-        Principal = $interface.VMNetwork.Name -eq $rede_principal.Value
+        Principal = $interface.VMNetwork.Name -eq $network_default.Value
       }
       $networks += $network
     }

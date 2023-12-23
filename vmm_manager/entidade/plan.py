@@ -1,5 +1,5 @@
 """
-Representação de um plano de execução
+Execution plan entity.
 """
 import os
 import time
@@ -11,11 +11,11 @@ from vmm_manager.infra.comando import Comando
 from vmm_manager.util.msgs import imprimir_acao_corrente, formatar_msg_erro
 from vmm_manager.util.msgs import imprimir_erro, imprimir_ok
 from vmm_manager.scvmm.scjob import SCJob
-from vmm_manager.entidade.acao import Acao
+from vmm_manager.entidade.action import Action
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
-class PlanoExecucao(YamlAble):
+class Plan(YamlAble):
     ARQUIVO_PLANO_EXECUCAO = 'plan.yaml'
     ARQUIVO_LOG_ERROS = 'erros.log'
 
@@ -30,45 +30,45 @@ class PlanoExecucao(YamlAble):
 
     @staticmethod
     def excluir_arquivo():
-        if os.path.exists(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO):
-            os.remove(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO)
+        if os.path.exists(Plan.ARQUIVO_PLANO_EXECUCAO):
+            os.remove(Plan.ARQUIVO_PLANO_EXECUCAO)
 
     @staticmethod
     def __excluir_arquivo_log_erros():
-        if os.path.exists(PlanoExecucao.ARQUIVO_LOG_ERROS):
-            os.remove(PlanoExecucao.ARQUIVO_LOG_ERROS)
+        if os.path.exists(Plan.ARQUIVO_LOG_ERROS):
+            os.remove(Plan.ARQUIVO_LOG_ERROS)
 
     def __init__(self, group, cloud):
         self.group = group
         self.cloud = cloud
-        self.acoes = []
+        self.actions = []
         self.__jobs_em_execucao = {}
         self.__guids_a_limpar = []
         self.__msgs_erros = ''
 
     def is_vazio(self):
-        return not self.acoes
+        return not self.actions
 
     def gerar_arquivo(self):
         try:
             conteudo = yaml.safe_dump(self, default_flow_style=False)
-            with open(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
+            with open(Plan.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
-            return False, f'Erro ao gerar file {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
+            return False, f'Erro ao gerar file {Plan.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
 
         return True, conteudo
 
-    def __executar_acoes(self, acoes, servidor_acesso, ocultar_progresso):
-        if not acoes:
+    def __executar_acoes(self, actions, servidor_acesso, ocultar_progresso):
+        if not actions:
             return  # retornando caso não haja ações
 
         # zerando jobs em execução
         self.__jobs_em_execucao = {}
 
-        total_acoes = len(acoes)
+        total_acoes = len(actions)
         for i in range(total_acoes):
-            acao = acoes[i]
+            acao = actions[i]
 
             print(f'{textwrap.shorten(acao.get_str_impressao_inline(), 100)} => ',
                   end='', flush=True)
@@ -99,7 +99,7 @@ class PlanoExecucao(YamlAble):
 
             # If the action is not the last, check if we need to wait
             if i < total_acoes - 1:
-                proxima_acao = acoes[i + 1]
+                proxima_acao = actions[i + 1]
 
                 if not acao.is_same_resource(proxima_acao):
                     interval = 10
@@ -116,32 +116,32 @@ class PlanoExecucao(YamlAble):
         # Ações pós execução
         print()
         self.__executar_cmds_finalizacao(
-            acoes, servidor_acesso, ocultar_progresso)
+            actions, servidor_acesso, ocultar_progresso)
 
     def executar(self, servidor_acesso, ocultar_progresso):
         if not self.is_vazio():
             print('\nOperações executadas:')
 
-            # acoes bloqueantes primeiro
+            # actions bloqueantes primeiro
             acoes_bloqueantes = [
-                acao for acao in self.acoes if acao.is_bloqueante()]
+                acao for acao in self.actions if acao.is_bloqueante()]
             self.__executar_acoes(
                 acoes_bloqueantes, servidor_acesso, ocultar_progresso)
 
             # demais ações, se não houve erro
             if not self.has_erro_execucao():
                 acoes_nao_bloqueantes = [acao
-                                         for acao in self.acoes if not acao.is_bloqueante()]
+                                         for acao in self.actions if not acao.is_bloqueante()]
                 self.__executar_acoes(
                     acoes_nao_bloqueantes, servidor_acesso, ocultar_progresso)
 
             # Ações de finalização
             self.__limpar_guids(servidor_acesso, ocultar_progresso)
             self.__processa_resultado_execucao()
-            PlanoExecucao.excluir_arquivo()
+            Plan.excluir_arquivo()
 
-    def __executar_cmds_finalizacao(self, acoes, servidor_acesso, ocultar_progresso):
-        for acao in acoes:
+    def __executar_cmds_finalizacao(self, actions, servidor_acesso, ocultar_progresso):
+        for acao in actions:
             if acao.was_executada_com_sucesso() and acao.has_cmd_pos_execucao():
                 cmd = acao.get_cmd_pos_execucao(
                     self.group, servidor_acesso)
@@ -179,13 +179,13 @@ class PlanoExecucao(YamlAble):
         if self.has_erro_execucao():
             self.__gerar_arquivo_erros()
         else:
-            PlanoExecucao.__excluir_arquivo_log_erros()
+            Plan.__excluir_arquivo_log_erros()
 
     def imprimir_resultado_execucao(self):
         if self.has_erro_execucao():
             print(formatar_msg_erro(
                 '\nErro ao executar algumas operações. '
-                f'Mais detalhes em {PlanoExecucao.ARQUIVO_LOG_ERROS}.'))
+                f'Mais detalhes em {Plan.ARQUIVO_LOG_ERROS}.'))
         else:
             print('\nSincronização executada com sucesso.')
 
@@ -209,40 +209,40 @@ class PlanoExecucao(YamlAble):
 
     def __gerar_arquivo_erros(self):
         try:
-            with open(PlanoExecucao.ARQUIVO_LOG_ERROS, 'w', encoding='utf8') as arquivo_erros:
+            with open(Plan.ARQUIVO_LOG_ERROS, 'w', encoding='utf8') as arquivo_erros:
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
             print(
-                f'Não foi possível gerar file de erros ({PlanoExecucao.ARQUIVO_LOG_ERROS}): '
+                f'Não foi possível gerar file de erros ({Plan.ARQUIVO_LOG_ERROS}): '
                 f'{erro}')
 
     def imprimir_acoes(self):
-        for acao in self.acoes:
+        for acao in self.actions:
             print(acao.get_str_impressao_inline())
 
     def __eq__(self, other):
-        return isinstance(other, PlanoExecucao) and (self.group == other.group
-                                                     and self.cloud == other.cloud
-                                                     and self.acoes == other.acoes)
+        return isinstance(other, Plan) and (self.group == other.group
+                                            and self.cloud == other.cloud
+                                            and self.actions == other.actions)
 
     def __str__(self):
         return f'''
             group: {self.group}
             cloud: {self.cloud}
-            acoes: {','.join(str(acao) for acao in self.acoes)}
+            actions: {','.join(str(acao) for acao in self.actions)}
             '''
 
     def __to_yaml_dict__(self):
         return {'group': self.group,
                 'cloud': self.cloud,
-                'acoes': self.acoes}
+                'actions': self.actions}
 
     @classmethod
     def __from_yaml_dict__(cls, dct, yaml_tag):
-        plano_execucao = PlanoExecucao(dct['group'], dct['cloud'])
+        plano_execucao = Plan(dct['group'], dct['cloud'])
 
-        for acao_str in dct['acoes']:
-            acao = Acao(acao_str.nome_comando, **acao_str.args['args'])
-            plano_execucao.acoes.append(acao)
+        for acao_str in dct['actions']:
+            acao = Action(acao_str.command, **acao_str.args['args'])
+            plano_execucao.actions.append(acao)
 
         return plano_execucao

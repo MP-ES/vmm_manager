@@ -3,10 +3,10 @@ $custom_nome_id = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{
 $custom_imagem = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_imagem }}"
 $custom_regiao = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_regiao }}"
 $custom_rede_principal = Get-SCCustomProperty -VMMServer "{{ servidor_vmm }}" -Name "{{ campo_rede_principal }}"
-$vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Name "{{ nome_vm }}"
+$vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -Name "{{ vm_name }}"
 
 Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento -Value "{{ group }}"
-Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id -Value "{{ nome_vm }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_nome_id -Value "{{ vm_name }}"
 Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_imagem -Value "{{ image }}"
 Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_regiao -Value "{{ region }}"
-Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal -Value "{{ rede_principal }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_rede_principal -Value "{{ network_default }}"

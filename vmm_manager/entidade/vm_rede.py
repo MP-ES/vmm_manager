@@ -1,5 +1,5 @@
 """
-Representação de uma interface de network de uma máquina virtual
+VM network entity.
 """
 
 

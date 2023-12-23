@@ -12,7 +12,7 @@ from vmm_manager.infra.servidor_acesso import ServidorAcesso
 from vmm_manager.infra.comando import Comando
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
-from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.plan import Plan
 from vmm_manager.util.config import (
     CAMPO_AGRUPAMENTO,
     CAMPO_ID,
@@ -232,14 +232,14 @@ def listar_opcoes(servidor_acesso, ocultar_progresso):
 def imprimir_json_inventario(
     servidor_acesso,
     inventory_file,
-    nome_vm,
+    vm_name,
     all_data,
     ocultar_progresso
 ):
     configurar_vmm(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
         servidor_acesso, inventory_file, ocultar_progresso,
-        filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
+        filtro_nome_vm=vm_name, filtro_dados_completos=all_data)
 
     adquirir_lock(servidor_acesso, inventario_local.group,
                   inventario_local.cloud, ocultar_progresso)
@@ -247,7 +247,7 @@ def imprimir_json_inventario(
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, inventario_local.group,
         inventario_local.cloud, ocultar_progresso,
-        filtro_nome_vm=nome_vm, filtro_dados_completos=all_data)
+        filtro_nome_vm=vm_name, filtro_dados_completos=all_data)
 
     liberar_lock(servidor_acesso, inventario_local.group,
                  inventario_local.cloud, ocultar_progresso)
@@ -275,7 +275,7 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
 
     if not plano_execucao.is_vazio():
         imprimir_acao_corrente(
-            f'Gerando file {PlanoExecucao.ARQUIVO_PLANO_EXECUCAO}',
+            f'Gerando file {Plan.ARQUIVO_PLANO_EXECUCAO}',
             ocultar_progresso)
         status, conteudo_arquivo = plano_execucao.gerar_arquivo()
         validar_retorno_operacao_sem_lock(
@@ -287,7 +287,7 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
     if conteudo_arquivo:
         print(f'\nAlterações a serem realizadas:\n{conteudo_arquivo}')
     else:
-        PlanoExecucao.excluir_arquivo()
+        Plan.excluir_arquivo()
         print(
             '\nNenhuma diferença encontrada entre o inventário local e o remoto.')
 
@@ -305,11 +305,11 @@ def executar_sincronizacao(
     #
     # Caso de ter informado o plano de execução
     adquiriu_lock = False
-    if execution_plan_file or os.path.isfile(PlanoExecucao.ARQUIVO_PLANO_EXECUCAO):
+    if execution_plan_file or os.path.isfile(Plan.ARQUIVO_PLANO_EXECUCAO):
         imprimir_acao_corrente(
             'Carregando plano de execução', ocultar_progresso)
-        status, plano_execucao = PlanoExecucao.carregar_plano_execucao(
-            execution_plan_file or PlanoExecucao.ARQUIVO_PLANO_EXECUCAO)
+        status, plano_execucao = Plan.carregar_plano_execucao(
+            execution_plan_file or Plan.ARQUIVO_PLANO_EXECUCAO)
         validar_retorno_operacao_sem_lock(
             status, plano_execucao, ocultar_progresso)
     # Caso de ter informado o file de inventário

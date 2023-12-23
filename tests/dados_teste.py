@@ -33,12 +33,12 @@ class DadosTeste():
         self.__nomes_unicos = []
 
     def get_nome_unico(self):
-        nome_vm = self.get_random_word().upper()
-        while nome_vm in self.__nomes_unicos:
-            nome_vm = self.get_random_word().upper()
+        vm_name = self.get_random_word().upper()
+        while vm_name in self.__nomes_unicos:
+            vm_name = self.get_random_word().upper()
 
-        self.__nomes_unicos.append(nome_vm)
-        return nome_vm
+        self.__nomes_unicos.append(vm_name)
+        return vm_name
 
     def get_random_word(self):
         word = self.__faker.format('word')

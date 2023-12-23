@@ -4,15 +4,15 @@ Testes de comparação de inventários e geração de ações, focado em regiõe
 import copy
 from tests.base import Base
 from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.plan import Plan
 from vmm_manager.scvmm.scregion import SCRegion
 
 
 class TestComparacaoInvRegiao(Base):
     @staticmethod
     def alterar_regiao_vms_para_default(inventario):
-        for nome_vm in inventario.vms:
-            inventario.vms[nome_vm].region = SCRegion.REGIAO_PADRAO
+        for vm_name in inventario.vms:
+            inventario.vms[vm_name].region = SCRegion.REGIAO_PADRAO
 
     @staticmethod
     def alterar_nome_nos_regiao(inventario):
@@ -29,11 +29,11 @@ class TestComparacaoInvRegiao(Base):
 
     @staticmethod
     def get_plano_execucao_mover_vms_regiao(inventario):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
         for vm_obj in inventario.vms.values():
-            plano_execucao.acoes.append(
+            plano_execucao.actions.append(
                 vm_obj.get_acao_mover_vm_regiao(inventario.get_id_no_regiao(vm_obj.region)))
 
         return plano_execucao
@@ -44,7 +44,7 @@ class TestComparacaoInvRegiao(Base):
         status, plano_execucao = inventario.calcular_plano_execucao(inventario)
 
         assert status is True
-        assert not plano_execucao.acoes
+        assert not plano_execucao.actions
 
     def test_regiao_local_default(self):
         inventario_local = Base.get_inventario_completo()
@@ -55,7 +55,7 @@ class TestComparacaoInvRegiao(Base):
             inventario_remoto)
 
         assert status is True
-        assert not plano_execucao.acoes
+        assert not plano_execucao.actions
 
     def test_regiao_remota_default(self):
         inventario_local = Base.get_inventario_completo()

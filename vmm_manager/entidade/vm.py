@@ -1,9 +1,9 @@
 """
-Representação de uma máquina virtual
+VM entity.
 """
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_ansible import VMAnsible
-from vmm_manager.entidade.acao import Acao
+from vmm_manager.entidade.action import Action
 from vmm_manager.scvmm.scregion import SCRegion
 
 
@@ -67,7 +67,7 @@ class VM:
                 if nome_disco_remoto not in self.additional_disks
             ]
             for nome_disco in discos_excluir:
-                plano_execucao.acoes.append(
+                plano_execucao.actions.append(
                     vm_remota.additional_disks[nome_disco].get_acao_excluir_disco(
                         vm_remota.id_vmm))
 
@@ -75,11 +75,11 @@ class VM:
         for nome_disco, data_disco in self.additional_disks.items():
             # discos a criar
             if not vm_remota or not nome_disco in vm_remota.additional_disks:
-                plano_execucao.acoes.append(
+                plano_execucao.actions.append(
                     data_disco.get_acao_criar_disco(self.name))
             else:
                 # discos a alterar
-                plano_execucao.acoes.extend(
+                plano_execucao.actions.extend(
                     data_disco.get_acoes_diferenca_disco(
                         vm_remota.additional_disks[nome_disco], vm_remota.id_vmm, self.name))
 
@@ -95,40 +95,40 @@ class VM:
         if (not vm_remota
             or (self.region != vm_remota.region or
                 inv_remoto.get_nome_no_regiao(self.region) != vm_remota.no_regiao)):
-            plano_execucao.acoes.append(self.get_acao_mover_vm_regiao(
+            plano_execucao.actions.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.region)))
 
     def add_acoes_virtualizacao_aninhada(self, vm_remota,
                                          plano_execucao):
         if ((not vm_remota and self.nested_virtualization)
                 or (vm_remota and vm_remota.nested_virtualization != self.nested_virtualization)):
-            plano_execucao.acoes.append(
+            plano_execucao.actions.append(
                 self.get_acao_atualizar_virtualizacao_aninhada())
 
     def add_acoes_memoria_dinamica(self, vm_remota,
                                    plano_execucao):
         if (vm_remota and vm_remota.dynamic_memory != self.dynamic_memory):
-            plano_execucao.acoes.append(
+            plano_execucao.actions.append(
                 self.get_acao_atualizar_memoria_dinamica())
 
     def add_acoes_diferenca_vm(self, vm_remota, plano_execucao):
         # alteração da image é irreversível
         if self.image != vm_remota.image:
-            plano_execucao.acoes.append(vm_remota.get_acao_excluir_vm())
-            plano_execucao.acoes.append(self.get_acao_criar_vm())
+            plano_execucao.actions.append(vm_remota.get_acao_excluir_vm())
+            plano_execucao.actions.append(self.get_acao_criar_vm())
             return
 
         # Alteração de network é possível recuperar TODO #18
         if self.networks != vm_remota.networks:
-            plano_execucao.acoes.append(vm_remota.get_acao_excluir_vm())
-            plano_execucao.acoes.append(self.get_acao_criar_vm())
+            plano_execucao.actions.append(vm_remota.get_acao_excluir_vm())
+            plano_execucao.actions.append(self.get_acao_criar_vm())
             return
 
         # alteração de descrição, cpu ou ram
         if (self.description != vm_remota.description
                 or self.cpu != vm_remota.cpu
                 or self.memory != vm_remota.memory):
-            plano_execucao.acoes.append(
+            plano_execucao.actions.append(
                 self.get_acao_atualizar_vm(vm_remota.id_vmm))
 
     def get_qtde_rede_principal(self):
@@ -138,9 +138,9 @@ class VM:
         return next((network.name for network in self.networks if network.default), None)
 
     def get_acao_criar_vm(self):
-        return Acao(
-            Acao.ACAO_CRIAR_VM,
-            nome_vm=self.name,
+        return Action(
+            Action.ACAO_CRIAR_VM,
+            vm_name=self.name,
             description=self.description,
             image=self.image,
             region=self.region,
@@ -148,39 +148,39 @@ class VM:
             memory=self.memory,
             dynamic_memory=self.dynamic_memory,
             networks=[network.name for network in self.networks],
-            rede_principal=self.get_rede_principal()
+            network_default=self.get_rede_principal()
         )
 
     def get_acao_excluir_vm(self):
-        return Acao(
-            Acao.ACAO_EXCLUIR_VM,
+        return Action(
+            Action.ACAO_EXCLUIR_VM,
             id_vm=self.id_vmm
         )
 
     def get_acao_mover_vm_regiao(self, id_no_regiao):
-        return Acao(
+        return Action(
             'mover_vm_regiao',
-            nome_vm=self.name,
+            vm_name=self.name,
             id_no_regiao=id_no_regiao,
             region=self.region
         )
 
     def get_acao_atualizar_virtualizacao_aninhada(self):
-        return Acao(
+        return Action(
             'atualizar_virtualizacao_aninhada',
-            nome_vm=self.name,
+            vm_name=self.name,
             nested_virtualization=self.nested_virtualization
         )
 
     def get_acao_atualizar_memoria_dinamica(self):
-        return Acao(
+        return Action(
             'atualizar_memoria_dinamica',
-            nome_vm=self.name,
+            vm_name=self.name,
             dynamic_memory=self.dynamic_memory
         )
 
     def get_acao_atualizar_vm(self, id_vm_remota):
-        return Acao(
+        return Action(
             'atualizar_vm',
             id_vm=id_vm_remota,
             description=self.description,

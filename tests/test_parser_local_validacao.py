@@ -358,7 +358,7 @@ class TestParserLocalValidacao(Base):
                 return_value=None)
     def test_parser_inventario_nome_vm_duplicado(self, _, servidor_acesso, monkeypatch):
         dados_teste = DadosTeste()
-        nome_vm = dados_teste.get_nome_unico()
+        vm_name = dados_teste.get_nome_unico()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -369,7 +369,7 @@ class TestParserLocalValidacao(Base):
                  'name': dados_teste.get_random_word()
              } for _ in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
-                 'name': nome_vm
+                 'name': vm_name
              } for _ in range(randrange(2, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]

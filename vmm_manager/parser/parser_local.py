@@ -24,7 +24,7 @@ class ParserLocal:
             parser=ParserLocal.__YAML_PARSER)
 
     @staticmethod
-    def __get_discos_adicionais(nome_vm, dict_discos_adicionais):
+    def __get_discos_adicionais(vm_name, dict_discos_adicionais):
         additional_disks = []
         for item in dict_discos_adicionais or {}:
             file = item.get('file')
@@ -32,7 +32,7 @@ class ParserLocal:
             if file in [additional_disk.file for additional_disk in additional_disks]:
                 raise ValueError(
                     f"Disco '{file}' referenciado mais de uma vez "
-                    f"para a VM '{nome_vm}'.")
+                    f"para a VM '{vm_name}'.")
 
             additional_disk = VMDisco(
                 SCDiskBusType(item.get('bus_type')),
@@ -66,14 +66,14 @@ class ParserLocal:
             dados_inventario['group'], dados_inventario['cloud'])
 
         for maquina_virtual in dados_inventario['vms']:
-            nome_vm = maquina_virtual.get('name').upper()
-            if nome_vm in nomes_vm:
+            vm_name = maquina_virtual.get('name').upper()
+            if vm_name in nomes_vm:
                 raise ValueError(
-                    f'VM {nome_vm} referenciada mais de uma vez no inventário.')
-            nomes_vm.append(nome_vm)
+                    f'VM {vm_name} referenciada mais de uma vez no inventário.')
+            nomes_vm.append(vm_name)
 
             # filtrando vms: melhoria no desempenho
-            if filtro_nome_vm and nome_vm != filtro_nome_vm:
+            if filtro_nome_vm and vm_name != filtro_nome_vm:
                 continue
 
             vm_redes = []
@@ -86,14 +86,14 @@ class ParserLocal:
 
                 if nome_rede in nomes_redes:
                     raise ValueError(
-                        f"Rede '{nome_rede}' referenciada mais de uma vez para a VM '{nome_vm}'.")
+                        f"Rede '{nome_rede}' referenciada mais de uma vez para a VM '{vm_name}'.")
 
                 nomes_redes.append(nome_rede)
                 vm_redes.append(
                     VMRede(nome_rede, rede_vm.get('default', False)))
 
-            self.__inventario.vms[nome_vm] = VM(
-                nome_vm,
+            self.__inventario.vms[vm_name] = VM(
+                vm_name,
                 maquina_virtual.get('description'),
                 maquina_virtual.get(
                     'image', dados_inventario.get('image_default', None)),
@@ -110,14 +110,14 @@ class ParserLocal:
                     'dynamic_memory',
                     dados_inventario.get('dynamic_memory_default', True)),
             )
-            self.__inventario.vms[nome_vm].extrair_dados_ansible_dict(
+            self.__inventario.vms[vm_name].extrair_dados_ansible_dict(
                 maquina_virtual.get('ansible'))
 
             # Obtendo dados adicionais
             if filtro_dados_completos:
                 # discos
-                self.__inventario.vms[nome_vm].add_discos_adicionais(
-                    ParserLocal.__get_discos_adicionais(nome_vm,
+                self.__inventario.vms[vm_name].add_discos_adicionais(
+                    ParserLocal.__get_discos_adicionais(vm_name,
                                                         maquina_virtual.get('additional_disks')))
 
     def __carregar_yaml(self):

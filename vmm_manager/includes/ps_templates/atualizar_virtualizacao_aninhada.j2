@@ -13,7 +13,7 @@ foreach($vm_obj in $vms_nuvem) {
     $nome_id = Get-SCCustomPropertyValue -InputObject $vm_obj -CustomProperty $custom_nome_id
 
     # Recuperando VM correta
-    if ("{{ nome_vm }}" -eq $nome_id.Value){
+    if ("{{ vm_name }}" -eq $nome_id.Value){
         $VM = $vm_obj
     }
   }

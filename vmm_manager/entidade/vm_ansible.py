@@ -1,5 +1,5 @@
 """
-Representação dos dados ansible de uma máquina virtual
+VM Ansible entity.
 """
 
 
@@ -8,7 +8,7 @@ class VMAnsible:
         self.group = group
         self.variaveis = []
 
-    def extrair_dados_vars_dict(self, dict_vars, nome_vm):
+    def extrair_dados_vars_dict(self, dict_vars, vm_name):
         lista_nomes_var = []
         for item in dict_vars or {}:
             nome_var = item.get('name')
@@ -16,7 +16,7 @@ class VMAnsible:
             if nome_var in lista_nomes_var:
                 raise ValueError(
                     (f"Variável '{nome_var}' do group ansible '{self.group}' "
-                     f"referenciada mais de uma vez na VM '{nome_vm}'."))
+                     f"referenciada mais de uma vez na VM '{vm_name}'."))
 
             lista_nomes_var.append(nome_var)
             ansible_var = VMAnsibleVars(

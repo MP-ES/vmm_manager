@@ -1,7 +1,7 @@
 """
-Representação de um disco adicional uma máquina virtual
+VM additional disk entity.
 """
-from vmm_manager.entidade.acao import Acao
+from vmm_manager.entidade.action import Action
 
 
 class VMDisco:
@@ -38,10 +38,10 @@ class VMDisco:
     def get_tamanho_tipo_create(self):
         return self.size_type.name
 
-    def get_acao_criar_disco(self, nome_vm):
-        return Acao(
+    def get_acao_criar_disco(self, vm_name):
+        return Action(
             'criar_disco_vm',
-            nome_vm=nome_vm,
+            vm_name=vm_name,
             bus_type=self.bus_type.value,
             size_mb=self.size_mb,
             size_type=self.get_tamanho_tipo_create(),
@@ -50,14 +50,14 @@ class VMDisco:
         )
 
     def get_acao_excluir_disco(self, id_vm):
-        return Acao(
-            Acao.ACAO_EXCLUIR_DISCO_VM,
+        return Action(
+            Action.ACAO_EXCLUIR_DISCO_VM,
             id_vm=id_vm,
             id_drive=self.get_id_drive()
         )
 
     def get_acao_expandir_disco(self, id_vm, id_drive):
-        return Acao(
+        return Action(
             'expandir_disco_vm',
             id_vm=id_vm,
             id_drive=id_drive,
@@ -65,7 +65,7 @@ class VMDisco:
         )
 
     def get_acao_mover_disco(self, id_vm, id_disco):
-        return Acao(
+        return Action(
             'mover_disco_vm',
             id_vm=id_vm,
             id_disco=id_disco,
@@ -73,38 +73,38 @@ class VMDisco:
         )
 
     def get_acao_converter_disco(self, id_vm, id_drive):
-        return Acao(
+        return Action(
             'converter_disco_vm',
             id_vm=id_vm,
             id_drive=id_drive,
             size_type=self.get_tamanho_tipo_create()
         )
 
-    def get_acoes_diferenca_disco(self, disco_remoto, id_vm, nome_vm):
-        acoes = []
+    def get_acoes_diferenca_disco(self, disco_remoto, id_vm, vm_name):
+        actions = []
 
         # Alteração de tipo ou redução de disco exige a recriação
         if ((self.bus_type != disco_remoto.bus_type) or
                 (self.size_mb < disco_remoto.size_mb)):
-            acoes.append(disco_remoto.get_acao_excluir_disco(id_vm))
-            acoes.append(self.get_acao_criar_disco(nome_vm))
+            actions.append(disco_remoto.get_acao_excluir_disco(id_vm))
+            actions.append(self.get_acao_criar_disco(vm_name))
         else:
             # Tipo de tamanho alterado: converter disco
             if self.size_type != disco_remoto.size_type:
-                acoes.append(self.get_acao_converter_disco(
+                actions.append(self.get_acao_converter_disco(
                     id_vm, disco_remoto.get_id_drive()))
 
             # Tamanho alterado: expansão
             if self.size_mb > disco_remoto.size_mb:
-                acoes.append(self.get_acao_expandir_disco(
+                actions.append(self.get_acao_expandir_disco(
                     id_vm, disco_remoto.get_id_drive()))
 
             # Caminho alterado: mover disco
             if self.path and self.path != disco_remoto.path:
-                acoes.append(self.get_acao_mover_disco(
+                actions.append(self.get_acao_mover_disco(
                     id_vm, disco_remoto.get_id_disco()))
 
-        return acoes
+        return actions
 
     def __hash__(self):
         return hash(self.file)

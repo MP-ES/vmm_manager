@@ -74,7 +74,7 @@ class ParserRemoto:
                       campo_id=CAMPO_ID[0],
                       group=self.group,
                       cloud=self.cloud,
-                      vm_nomes=','.join([f'"{nome_vm}"' for nome_vm in self.__inventario.vms]))
+                      vm_nomes=','.join([f'"{vm_name}"' for vm_name in self.__inventario.vms]))
         status, additional_disks = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
@@ -83,8 +83,8 @@ class ParserRemoto:
         discos_vms_remoto = json.loads(additional_disks)
         discos_vms = {}
         for maquina_virtual in discos_vms_remoto:
-            nome_vm = maquina_virtual.get('Nome')
-            discos_vms[nome_vm] = []
+            vm_name = maquina_virtual.get('Nome')
+            discos_vms[vm_name] = []
 
             for disco_remoto in maquina_virtual.get('Discos'):
                 disco = VMDisco(
@@ -101,7 +101,7 @@ class ParserRemoto:
                     disco_remoto.get('Lun'),
                 )
 
-                discos_vms[nome_vm].append(disco)
+                discos_vms[vm_name].append(disco)
 
         return discos_vms
 

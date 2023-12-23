@@ -6,7 +6,7 @@ import copy
 import pytest
 from tests.base import Base
 from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.plan import Plan
 from vmm_manager.entidade.inventario import Inventario
 
 
@@ -64,64 +64,64 @@ class TestComparacaoInvVm(Base):
 
     @staticmethod
     def get_plano_execucao_criar_inventario(inventario):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in inventario.vms:
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_criar_vm())
+        for vm_name in inventario.vms:
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_criar_vm())
 
-        for nome_vm in inventario.vms:
-            for additional_disk in inventario.vms[nome_vm].additional_disks:
-                plano_execucao.acoes.append(
-                    inventario.vms[nome_vm]
+        for vm_name in inventario.vms:
+            for additional_disk in inventario.vms[vm_name].additional_disks:
+                plano_execucao.actions.append(
+                    inventario.vms[vm_name]
                     .additional_disks[additional_disk]
-                    .get_acao_criar_disco(nome_vm))
+                    .get_acao_criar_disco(vm_name))
 
-        for nome_vm in inventario.vms:
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_mover_vm_regiao(
-                    inventario.get_id_no_regiao(inventario.vms[nome_vm].region)))
+        for vm_name in inventario.vms:
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_mover_vm_regiao(
+                    inventario.get_id_no_regiao(inventario.vms[vm_name].region)))
 
-        for nome_vm in inventario.vms:
-            if inventario.vms[nome_vm].nested_virtualization:
-                plano_execucao.acoes.append(
-                    inventario.vms[nome_vm].get_acao_atualizar_virtualizacao_aninhada())
+        for vm_name in inventario.vms:
+            if inventario.vms[vm_name].nested_virtualization:
+                plano_execucao.actions.append(
+                    inventario.vms[vm_name].get_acao_atualizar_virtualizacao_aninhada())
 
         return plano_execucao
 
     @staticmethod
     def get_plano_execucao_excluir_inventario(inventario):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in inventario.vms:
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_excluir_vm())
+        for vm_name in inventario.vms:
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_excluir_vm())
 
         return plano_execucao
 
     @staticmethod
     def get_plano_execucao_atualizar_vm(inventario):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in inventario.vms:
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_atualizar_vm(inventario.vms[nome_vm].id_vmm))
+        for vm_name in inventario.vms:
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_atualizar_vm(inventario.vms[vm_name].id_vmm))
 
         return plano_execucao
 
     @staticmethod
     def get_plano_execucao_resetar_vm(inventario):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in inventario.vms:
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_excluir_vm())
-            plano_execucao.acoes.append(
-                inventario.vms[nome_vm].get_acao_criar_vm())
+        for vm_name in inventario.vms:
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_excluir_vm())
+            plano_execucao.actions.append(
+                inventario.vms[vm_name].get_acao_criar_vm())
 
         return plano_execucao
 
@@ -131,13 +131,13 @@ class TestComparacaoInvVm(Base):
         inventario_remoto,
         novo_valor
     ):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario_local.group, inventario_local.cloud)
 
-        for nome_vm in inventario_local.vms:
-            if inventario_remoto.vms[nome_vm].nested_virtualization != novo_valor:
-                plano_execucao.acoes.append(
-                    inventario_local.vms[nome_vm].get_acao_atualizar_virtualizacao_aninhada())
+        for vm_name in inventario_local.vms:
+            if inventario_remoto.vms[vm_name].nested_virtualization != novo_valor:
+                plano_execucao.actions.append(
+                    inventario_local.vms[vm_name].get_acao_atualizar_virtualizacao_aninhada())
 
         return plano_execucao
 
@@ -147,13 +147,13 @@ class TestComparacaoInvVm(Base):
         inventario_remoto,
         novo_valor
     ):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario_local.group, inventario_local.cloud)
 
-        for nome_vm in inventario_local.vms:
-            if inventario_remoto.vms[nome_vm].dynamic_memory != novo_valor:
-                plano_execucao.acoes.append(
-                    inventario_local.vms[nome_vm].get_acao_atualizar_memoria_dinamica())
+        for vm_name in inventario_local.vms:
+            if inventario_remoto.vms[vm_name].dynamic_memory != novo_valor:
+                plano_execucao.actions.append(
+                    inventario_local.vms[vm_name].get_acao_atualizar_memoria_dinamica())
 
         return plano_execucao
 
@@ -163,7 +163,7 @@ class TestComparacaoInvVm(Base):
         status, plano_execucao = inventario.calcular_plano_execucao(inventario)
 
         assert status is True
-        assert not plano_execucao.acoes
+        assert not plano_execucao.actions
 
     def test_inventario_local_sem_remoto(self):
         inventario_local = Base.get_inventario_completo()

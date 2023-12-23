@@ -1,8 +1,8 @@
 """
-Representação de um inventário
+Inventory entity.
 """
 import json
-from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.plan import Plan
 from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
 from vmm_manager.scvmm.scregion import SCRegion
@@ -18,16 +18,16 @@ class Inventario:
 
     @staticmethod
     def get_json(inventario_local, inventario_remoto, all_data=True):
-        for nome_vm in inventario_remoto.vms:
-            if nome_vm not in inventario_local.vms:
+        for vm_name in inventario_remoto.vms:
+            if vm_name not in inventario_local.vms:
                 # máquina órfã: não exibir
                 continue
 
-            inventario_remoto.vms[nome_vm].dados_ansible = \
-                inventario_local.vms[nome_vm].dados_ansible
+            inventario_remoto.vms[vm_name].dados_ansible = \
+                inventario_local.vms[vm_name].dados_ansible
 
             # definindo tipo de impressão
-            inventario_remoto.vms[nome_vm].to_json_dados_completos = all_data
+            inventario_remoto.vms[vm_name].to_json_dados_completos = all_data
 
         return True, json.dumps(inventario_remoto,
                                 default=json_handle_inventario,
@@ -88,7 +88,7 @@ class Inventario:
             return False, 'Não é possível calcular o plano de execução \
                 para inventários de group ou cloud distintos.'
 
-        plano_execucao = PlanoExecucao(self.group, self.cloud)
+        plano_execucao = Plan(self.group, self.cloud)
 
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(
@@ -108,10 +108,11 @@ class Inventario:
         return True, plano_execucao
 
     def gerar_plano_exclusao(self):
-        plano_execucao = PlanoExecucao(self.group, self.cloud)
+        plano_execucao = Plan(self.group, self.cloud)
 
         for maquina_virtual in self.vms.values():
-            plano_execucao.acoes.append(maquina_virtual.get_acao_excluir_vm())
+            plano_execucao.actions.append(
+                maquina_virtual.get_acao_excluir_vm())
 
         return plano_execucao
 
@@ -119,7 +120,7 @@ class Inventario:
         return not self.vms
 
     def lista_nome_vms_str(self):
-        return ','.join([f'"{nome_vm}"' for nome_vm in self.vms])
+        return ','.join([f'"{vm_name}"' for vm_name in self.vms])
 
     def __validar_regras_locais(self):
         regioes = set()
@@ -175,55 +176,56 @@ class Inventario:
             raise ValueError(msg)
 
     def set_discos_vms(self, additional_disks):
-        for nome_vm in additional_disks:
-            self.vms[nome_vm].add_discos_adicionais(additional_disks[nome_vm])
+        for vm_name in additional_disks:
+            self.vms[vm_name].add_discos_adicionais(additional_disks[vm_name])
 
     def __add_acoes_criar_vms(self, inventario_remoto, plano_execucao):
         vms_inserir = [
             nome_vm_local for nome_vm_local in self.vms
             if nome_vm_local not in inventario_remoto.vms
         ]
-        for nome_vm in vms_inserir:
-            plano_execucao.acoes.append(self.vms[nome_vm].get_acao_criar_vm())
+        for vm_name in vms_inserir:
+            plano_execucao.actions.append(
+                self.vms[vm_name].get_acao_criar_vm())
 
     def __add_acoes_execucao_excluir_vms(self, inventario_remoto, plano_execucao):
         vms_excluir = [
             nome_vm_remoto for nome_vm_remoto in inventario_remoto.vms
             if nome_vm_remoto not in self.vms
         ]
-        for nome_vm in vms_excluir:
-            plano_execucao.acoes.append(
-                inventario_remoto.vms[nome_vm].get_acao_excluir_vm())
+        for vm_name in vms_excluir:
+            plano_execucao.actions.append(
+                inventario_remoto.vms[vm_name].get_acao_excluir_vm())
 
     def __add_acoes_diferenca_discos_adicionais(self, inventario_remoto, plano_execucao):
-        for nome_vm, data_vm in self.vms.items():
+        for vm_name, data_vm in self.vms.items():
             data_vm.add_acoes_diferenca_discos_adicionais(
-                inventario_remoto.vms.get(nome_vm, None),
+                inventario_remoto.vms.get(vm_name, None),
                 plano_execucao)
 
     def __add_acoes_diferenca_regiao(self, inventario_remoto, plano_execucao):
-        for nome_vm, data_vm in self.vms.items():
+        for vm_name, data_vm in self.vms.items():
             data_vm.add_acoes_diferenca_regiao(
-                inventario_remoto.vms.get(nome_vm, None),
+                inventario_remoto.vms.get(vm_name, None),
                 plano_execucao, inventario_remoto)
 
     def __add_acoes_virtualizacao_aninhada(self, inventario_remoto, plano_execucao):
-        for nome_vm, data_vm in self.vms.items():
+        for vm_name, data_vm in self.vms.items():
             data_vm.add_acoes_virtualizacao_aninhada(
-                inventario_remoto.vms.get(nome_vm, None),
+                inventario_remoto.vms.get(vm_name, None),
                 plano_execucao)
 
     def __add_acoes_memoria_dinamica(self, inventario_remoto, plano_execucao):
-        for nome_vm, data_vm in self.vms.items():
+        for vm_name, data_vm in self.vms.items():
             data_vm.add_acoes_memoria_dinamica(
-                inventario_remoto.vms.get(nome_vm, None),
+                inventario_remoto.vms.get(vm_name, None),
                 plano_execucao)
 
     def __add_acoes_diferenca_vm(self, inventario_remoto, plano_execucao):
-        for nome_vm, data_vm in self.vms.items():
-            if nome_vm in inventario_remoto.vms:
+        for vm_name, data_vm in self.vms.items():
+            if vm_name in inventario_remoto.vms:
                 data_vm.add_acoes_diferenca_vm(
-                    inventario_remoto.vms[nome_vm], plano_execucao)
+                    inventario_remoto.vms[vm_name], plano_execucao)
 
     def __eq__(self, other):
         return isinstance(other, Inventario) and (self.group == other.group

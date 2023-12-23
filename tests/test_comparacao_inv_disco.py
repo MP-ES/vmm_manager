@@ -4,7 +4,7 @@ Testes de comparação de inventários e geração de ações, focado em discos
 from random import randint
 import copy
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.entidade.plano_execucao import PlanoExecucao
+from vmm_manager.entidade.plan import Plan
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 
@@ -19,18 +19,18 @@ class TestComparacaoInvDisco(Base):
     @staticmethod
     def remover_discos_inventario(inventario):
         discos_removidos = {}
-        for nome_vm in inventario.vms:
-            discos_removidos[nome_vm] = inventario.vms[nome_vm].additional_disks
-            inventario.vms[nome_vm].additional_disks = {}
+        for vm_name in inventario.vms:
+            discos_removidos[vm_name] = inventario.vms[vm_name].additional_disks
+            inventario.vms[vm_name].additional_disks = {}
         return discos_removidos
 
     @staticmethod
     def alterar_discos_inventario(inventario, tipo_alteracao):
         discos_alterados = {}
-        for nome_vm in inventario.vms:
-            discos_alterados[nome_vm] = inventario.vms[nome_vm].additional_disks
+        for vm_name in inventario.vms:
+            discos_alterados[vm_name] = inventario.vms[vm_name].additional_disks
 
-            for disco in inventario.vms[nome_vm].additional_disks.values():
+            for disco in inventario.vms[vm_name].additional_disks.values():
                 if tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_TP_BUS:
                     disco.bus_type = DadosTeste.get_random_lista_com_excecao(
                         list(SCDiskBusType), disco.bus_type)
@@ -51,53 +51,53 @@ class TestComparacaoInvDisco(Base):
 
     @staticmethod
     def get_plano_execucao_criar_discos(inventario, discos_removidos):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in discos_removidos:
-            for disco in discos_removidos[nome_vm].values():
-                plano_execucao.acoes.append(
-                    disco.get_acao_criar_disco(nome_vm))
+        for vm_name in discos_removidos:
+            for disco in discos_removidos[vm_name].values():
+                plano_execucao.actions.append(
+                    disco.get_acao_criar_disco(vm_name))
 
         return plano_execucao
 
     @staticmethod
     def get_plano_execucao_excluir_discos(inventario, discos_removidos):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in discos_removidos:
-            for disco in discos_removidos[nome_vm].values():
-                plano_execucao.acoes.append(
-                    disco.get_acao_excluir_disco(inventario.vms[nome_vm].id_vmm))
+        for vm_name in discos_removidos:
+            for disco in discos_removidos[vm_name].values():
+                plano_execucao.actions.append(
+                    disco.get_acao_excluir_disco(inventario.vms[vm_name].id_vmm))
 
         return plano_execucao
 
     @staticmethod
     def get_plano_execucao_alterar_discos(inventario, discos_alterados, tipo_alteracao):
-        plano_execucao = PlanoExecucao(
+        plano_execucao = Plan(
             inventario.group, inventario.cloud)
 
-        for nome_vm in discos_alterados:
-            for disco in discos_alterados[nome_vm].values():
+        for vm_name in discos_alterados:
+            for disco in discos_alterados[vm_name].values():
                 if (tipo_alteracao in
                         [TestComparacaoInvDisco.TP_ALTERACAO_TP_BUS,
                          TestComparacaoInvDisco.TP_ALTERACAO_REDUCAO]):
-                    plano_execucao.acoes.append(
-                        disco.get_acao_excluir_disco(inventario.vms[nome_vm].id_vmm))
-                    plano_execucao.acoes.append(
-                        disco.get_acao_criar_disco(nome_vm))
+                    plano_execucao.actions.append(
+                        disco.get_acao_excluir_disco(inventario.vms[vm_name].id_vmm))
+                    plano_execucao.actions.append(
+                        disco.get_acao_criar_disco(vm_name))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_EXPANSAO:
-                    plano_execucao.acoes.append(
-                        disco.get_acao_expandir_disco(inventario.vms[nome_vm].id_vmm,
+                    plano_execucao.actions.append(
+                        disco.get_acao_expandir_disco(inventario.vms[vm_name].id_vmm,
                                                       disco.get_id_drive()))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_CAMINHO:
-                    plano_execucao.acoes.append(
-                        disco.get_acao_mover_disco(inventario.vms[nome_vm].id_vmm,
+                    plano_execucao.actions.append(
+                        disco.get_acao_mover_disco(inventario.vms[vm_name].id_vmm,
                                                    disco.get_id_disco()))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_TP_TAMANHO:
-                    plano_execucao.acoes.append(
-                        disco.get_acao_converter_disco(inventario.vms[nome_vm].id_vmm,
+                    plano_execucao.actions.append(
+                        disco.get_acao_converter_disco(inventario.vms[vm_name].id_vmm,
                                                        disco.get_id_drive()))
 
         return plano_execucao
@@ -109,7 +109,7 @@ class TestComparacaoInvDisco(Base):
         status, plano_execucao = inventario.calcular_plano_execucao(inventario)
 
         assert status is True
-        assert not plano_execucao.acoes
+        assert not plano_execucao.actions
 
     def test_disco_local_sem_remoto(self):
         inventario_local = Base.get_inventario_completo(

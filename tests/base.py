@@ -44,7 +44,7 @@ class Base():
         inventario.set_regioes_disponiveis(regioes)
 
         for _ in range(randrange(1, Base.VMS_POR_TESTE_MAX)):
-            nome_vm = dados_teste.get_nome_unico()
+            vm_name = dados_teste.get_nome_unico()
 
             # networks
             redes_vm = []
@@ -71,7 +71,7 @@ class Base():
                 discos_vm.append(disco)
 
             regiao_vm = DadosTeste.get_random_regiao_vm(Base.REGIOES_QTDE)
-            vm_obj = VM(nome_vm,
+            vm_obj = VM(vm_name,
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),
                         regiao_vm,
@@ -82,7 +82,7 @@ class Base():
                         dynamic_memory=bool(getrandbits(1)),
                         no_regiao=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
-            inventario.vms[nome_vm] = vm_obj
+            inventario.vms[vm_name] = vm_obj
 
         return inventario
 
@@ -119,11 +119,11 @@ class Base():
             )
         return inventario
 
-    def get_dados_ansible_vm(self, array_yaml, nome_vm):
+    def get_dados_ansible_vm(self, array_yaml, vm_name):
         lista_dados_ansible = {}
 
         for maquina_virtual in array_yaml[0][0]['vms']:
-            if maquina_virtual.get('name') != nome_vm:
+            if maquina_virtual.get('name') != vm_name:
                 continue
 
             for item in maquina_virtual.get('ansible', {}):
@@ -138,11 +138,11 @@ class Base():
 
         return lista_dados_ansible
 
-    def get_discos_adicionais_vm(self, array_yaml, nome_vm):
+    def get_discos_adicionais_vm(self, array_yaml, vm_name):
         lista_discos_adicionais = {}
 
         for maquina_virtual in array_yaml[0][0]['vms']:
-            if maquina_virtual.get('name') != nome_vm:
+            if maquina_virtual.get('name') != vm_name:
                 continue
 
             for item in maquina_virtual.get('additional_disks', {}):
