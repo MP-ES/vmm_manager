@@ -1,19 +1,19 @@
 """
-Módulo com configurações gerais
+General configuration file for the vmm_manager.
 """
 
-# Campos customizado no VMM
-CAMPO_AGRUPAMENTO = ('VMM_MANAGER_AGRUPAMENTO',
-                     'Agrupamento da máquina (script vmm_manager).')
+# VMM custom fields
+FIELD_GROUP = ('VMM_MANAGER_AGRUPAMENTO',
+               'Resource group (script vmm_manager).')
 
-CAMPO_ID = ('VMM_MANAGER_ID',
-            'Nome da VM informada no inventário (script vmm_manager).')
+FIELD_ID = ('VMM_MANAGER_ID',
+            'Resource name in the inventory file (script vmm_manager).')
 
-CAMPO_IMAGEM = ('VMM_MANAGER_IMAGEM',
-                'Imagem utilizada para criar a VM (script vmm_manager).')
+FIELD_IMAGE = ('VMM_MANAGER_IMAGEM',
+               'Resource template (script vmm_manager).')
 
-CAMPO_REGIAO = ('VMM_MANAGER_REGIAO',
-                'Região na qual a VM foi criada (script vmm_manager).')
+FIELD_REGION = ('VMM_MANAGER_REGIAO',
+                'Resource region (script vmm_manager).')
 
-CAMPO_REDE_PRINCIPAL = ('VMM_MANAGER_REDE_PRINCIPAL',
-                        'Nome da network default da VM (script vmm_manager).')
+FIELD_NETWORK_DEFAULT = ('VMM_MANAGER_REDE_PRINCIPAL',
+                         'Default network (script vmm_manager).')

@@ -1,6 +1,7 @@
 """
-Enums do VMM
+VMM Manager enums.
 """
+
 from enum import Enum
 
 

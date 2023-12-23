@@ -5,11 +5,11 @@ import json
 from yamlable import yaml_info, YamlAble
 from vmm_manager.infra.comando import Comando
 from vmm_manager.util.config import (
-    CAMPO_AGRUPAMENTO,
-    CAMPO_ID,
-    CAMPO_IMAGEM,
-    CAMPO_REGIAO,
-    CAMPO_REDE_PRINCIPAL
+    FIELD_GROUP,
+    FIELD_ID,
+    FIELD_IMAGE,
+    FIELD_REGION,
+    FIELD_NETWORK_DEFAULT
 )
 
 
@@ -44,9 +44,9 @@ class Action(YamlAble):
     def executar(self, group, cloud, servidor_acesso, guid):
         cmd = Comando(self.command,
                       group=group,
-                      campo_agrupamento=CAMPO_AGRUPAMENTO[0],
-                      campo_id=CAMPO_ID[0],
-                      campo_regiao=CAMPO_REGIAO[0],
+                      campo_agrupamento=FIELD_GROUP[0],
+                      campo_id=FIELD_ID[0],
+                      campo_regiao=FIELD_REGION[0],
                       cloud=cloud,
                       guid=guid,
                       servidor_vmm=servidor_acesso.servidor_vmm
@@ -108,11 +108,11 @@ class Action(YamlAble):
                 'criar_vm_pos',
                 description=f"Taguear VM { self.args['vm_name']}",
                 servidor_vmm=servidor_acesso.servidor_vmm,
-                campo_agrupamento=CAMPO_AGRUPAMENTO[0],
-                campo_id=CAMPO_ID[0],
-                campo_imagem=CAMPO_IMAGEM[0],
-                campo_regiao=CAMPO_REGIAO[0],
-                campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
+                campo_agrupamento=FIELD_GROUP[0],
+                campo_id=FIELD_ID[0],
+                campo_imagem=FIELD_IMAGE[0],
+                campo_regiao=FIELD_REGION[0],
+                campo_rede_principal=FIELD_NETWORK_DEFAULT[0],
                 group=group
             )
             cmd.args.update(self.args)

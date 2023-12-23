@@ -105,7 +105,7 @@ class Base():
                 maquina_virtual.get('description'),
                 maquina_virtual.get(
                     'image', array_yaml[0][0].get('image_default', None)),
-                maquina_virtual.get('region', SCRegion.REGIAO_PADRAO),
+                maquina_virtual.get('region', SCRegion.REGION_DEFAULT),
                 maquina_virtual.get(
                     'cpu', array_yaml[0][0].get('cpu_default', None)),
                 maquina_virtual.get(

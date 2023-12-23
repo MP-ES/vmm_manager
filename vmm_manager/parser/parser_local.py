@@ -97,7 +97,7 @@ class ParserLocal:
                 maquina_virtual.get('description'),
                 maquina_virtual.get(
                     'image', dados_inventario.get('image_default', None)),
-                maquina_virtual.get('region', SCRegion.REGIAO_PADRAO),
+                maquina_virtual.get('region', SCRegion.REGION_DEFAULT),
                 maquina_virtual.get(
                     'cpu', dados_inventario.get('cpu_default', None)),
                 maquina_virtual.get(

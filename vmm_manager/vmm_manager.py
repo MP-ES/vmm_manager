@@ -2,6 +2,7 @@
 Manages resources in the System Center Virtual Machine Manager (SCVMM),
 in a declarative way, based on a YAML configuration file.
 """
+
 import re
 import string
 import os
@@ -14,11 +15,11 @@ from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
 from vmm_manager.entidade.plan import Plan
 from vmm_manager.util.config import (
-    CAMPO_AGRUPAMENTO,
-    CAMPO_ID,
-    CAMPO_IMAGEM,
-    CAMPO_REGIAO,
-    CAMPO_REDE_PRINCIPAL
+    FIELD_GROUP,
+    FIELD_ID,
+    FIELD_IMAGE,
+    FIELD_REGION,
+    FIELD_NETWORK_DEFAULT
 )
 from vmm_manager.util.msgs import (
     finalizar_com_erro,
@@ -26,9 +27,9 @@ from vmm_manager.util.msgs import (
     imprimir_acao_corrente,
     set_parametros_globais_escrita
 )
-from vmm_manager.util.operacao import validar_retorno_operacao_com_lock
-from vmm_manager.util.operacao import validar_retorno_operacao_sem_lock
-from vmm_manager.util.operacao import (
+from vmm_manager.util.operation import validar_retorno_operacao_com_lock
+from vmm_manager.util.operation import validar_retorno_operacao_sem_lock
+from vmm_manager.util.operation import (
     adquirir_lock,
     liberar_lock,
     confirmar_acao_usuario_com_lock
@@ -152,7 +153,7 @@ def obter_inventario_remoto(
     filtro_nome_vm=None,
     filtro_dados_completos=True
 ):
-    imprimir_acao_corrente('Obtendo inventário remoto', ocultar_progresso)
+    imprimir_acao_corrente('Loading remote inventory', ocultar_progresso)
 
     parser_remoto = ParserRemoto(group, cloud)
     status, inventario_remoto = parser_remoto.get_inventario(
@@ -171,7 +172,7 @@ def obter_inventario_local(
     filtro_nome_vm=None,
     filtro_dados_completos=True
 ):
-    imprimir_acao_corrente('Obtendo inventário local', ocultar_progresso)
+    imprimir_acao_corrente('Loading local inventory', ocultar_progresso)
 
     parser_local = ParserLocal(inventory_file)
     status, inventario_local = parser_local.get_inventario(
@@ -187,7 +188,7 @@ def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
         servidor_acesso, inventario_local.group,
         inventario_local.cloud, ocultar_progresso)
 
-    imprimir_acao_corrente('Calculando plano de execução', ocultar_progresso)
+    imprimir_acao_corrente('Calculation execution plan', ocultar_progresso)
     status, plano_execucao = inventario_local.calcular_plano_execucao(
         inventario_remoto)
     validar_retorno_operacao_com_lock(status, plano_execucao, servidor_acesso,
@@ -197,7 +198,7 @@ def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
 
 
 def validar_conexao(servidor_acesso, ocultar_progresso):
-    imprimir_acao_corrente('Validando conexão com o VMM', ocultar_progresso)
+    imprimir_acao_corrente('Checking VMM connection', ocultar_progresso)
     cmd = Comando('testar_conexao', servidor_vmm=servidor_acesso.servidor_vmm)
     status, msg = cmd.executar(servidor_acesso)
 
@@ -207,25 +208,25 @@ def validar_conexao(servidor_acesso, ocultar_progresso):
 
 
 def configurar_vmm(servidor_acesso, ocultar_progresso):
-    imprimir_acao_corrente('Configurando VMM', ocultar_progresso)
+    imprimir_acao_corrente('Setting up the VMM', ocultar_progresso)
     cmd = Comando('configurar_vmm', servidor_vmm=servidor_acesso.servidor_vmm,
-                  campos_customizados=[CAMPO_AGRUPAMENTO, CAMPO_ID,
-                                       CAMPO_IMAGEM, CAMPO_REGIAO,
-                                       CAMPO_REDE_PRINCIPAL])
+                  campos_customizados=[FIELD_GROUP, FIELD_ID,
+                                       FIELD_IMAGE, FIELD_REGION,
+                                       FIELD_NETWORK_DEFAULT])
     status, msg = cmd.executar(servidor_acesso)
 
     validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso)
 
 
 def listar_opcoes(servidor_acesso, ocultar_progresso):
-    imprimir_acao_corrente('Listando opções', ocultar_progresso)
+    imprimir_acao_corrente('Listing options', ocultar_progresso)
     cmd = Comando('listar_opcoes', servidor_vmm=servidor_acesso.servidor_vmm)
     status, opcoes = cmd.executar(servidor_acesso)
 
     validar_retorno_operacao_sem_lock(status, opcoes, ocultar_progresso)
     regioes = re.search(r'regioes: ([0-9]{1,})', opcoes).group(1)
     str_regioes = '\n'.join(string.ascii_uppercase[0:int(regioes)])
-    opcoes = opcoes.replace(f'regioes: {regioes}', str_regioes)
+    opcoes = opcoes.replace(f'regions: {regioes}', str_regioes)
     print('\n' + opcoes)
 
 
@@ -252,7 +253,7 @@ def imprimir_json_inventario(
     liberar_lock(servidor_acesso, inventario_local.group,
                  inventario_local.cloud, ocultar_progresso)
 
-    imprimir_acao_corrente('Gerando JSON', ocultar_progresso)
+    imprimir_acao_corrente('Generating JSON', ocultar_progresso)
     status, json_inventario = Inventario.get_json(
         inventario_local, inventario_remoto, all_data)
     validar_retorno_operacao_sem_lock(
@@ -275,7 +276,7 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
 
     if not plano_execucao.is_vazio():
         imprimir_acao_corrente(
-            f'Gerando file {Plan.ARQUIVO_PLANO_EXECUCAO}',
+            f'Saving file {Plan.ARQUIVO_PLANO_EXECUCAO}',
             ocultar_progresso)
         status, conteudo_arquivo = plano_execucao.gerar_arquivo()
         validar_retorno_operacao_sem_lock(
@@ -285,11 +286,11 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
                  inventario_local.cloud, ocultar_progresso)
 
     if conteudo_arquivo:
-        print(f'\nAlterações a serem realizadas:\n{conteudo_arquivo}')
+        print(f'\nChanges to apply:\n{conteudo_arquivo}')
     else:
         Plan.excluir_arquivo()
         print(
-            '\nNenhuma diferença encontrada entre o inventário local e o remoto.')
+            '\nNo differences between the local and remote inventory: nothing to do.')
 
 
 def executar_sincronizacao(
@@ -307,15 +308,15 @@ def executar_sincronizacao(
     adquiriu_lock = False
     if execution_plan_file or os.path.isfile(Plan.ARQUIVO_PLANO_EXECUCAO):
         imprimir_acao_corrente(
-            'Carregando plano de execução', ocultar_progresso)
+            'Loading execution plan', ocultar_progresso)
         status, plano_execucao = Plan.carregar_plano_execucao(
             execution_plan_file or Plan.ARQUIVO_PLANO_EXECUCAO)
         validar_retorno_operacao_sem_lock(
             status, plano_execucao, ocultar_progresso)
-    # Caso de ter informado o file de inventário
+    # Caso de ter informado o arquivo de inventário
     elif inventory_file:
         print(formatar_msg_aviso(
-            'plano de execução será calculado à partir do inventário.'),
+            'The execution plan will be generated based on the local inventory.'),
             flush=True)
         inventario_local = obter_inventario_local(
             servidor_acesso, inventory_file, ocultar_progresso)
@@ -329,7 +330,7 @@ def executar_sincronizacao(
     # Se não informou nem o plano nem o inventário, então informar erro
     else:
         finalizar_com_erro(
-            'É necessário informar o plano de execução ou o file de inventário.')
+            'You must pass the execution plan or the inventory file.')
 
     if not adquiriu_lock:
         adquirir_lock(servidor_acesso, plano_execucao.group,
@@ -339,11 +340,11 @@ def executar_sincronizacao(
         liberar_lock(servidor_acesso, plano_execucao.group,
                      plano_execucao.cloud, ocultar_progresso)
         print(
-            '\nPlano de execução vazio: nada a alterar.')
+            '\nThe execution plan is empty: nothing to do.')
     else:
         # Exibindo confirmação
         if not skip_confirmation:
-            print('\nAs seguintes operações serão executadas:')
+            print('\nThe following actions will be performed:')
             plano_execucao.imprimir_acoes()
             confirmar_acao_usuario_com_lock(
                 servidor_acesso, plano_execucao.group,
@@ -373,11 +374,11 @@ def remover_agrupamento_da_nuvem(
     if not inventario_remoto.is_vazio():
         # Exibindo confirmação
         if not skip_confirmation:
-            print('\nAs seguintes máquinas serão excluídas:')
+            print('\nThe following resources will be removed:')
             for maquina_virtual in inventario_remoto.vms.values():
                 print(
-                    f'ID_VMM: {maquina_virtual.id_vmm}\t'
-                    f'Nome: {maquina_virtual.name}\t'
+                    f'VMM ID: {maquina_virtual.vmm_id}\t'
+                    f'Name: {maquina_virtual.name}\t'
                     f'Status: { maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
                 servidor_acesso, group, cloud, ocultar_progresso)
@@ -390,7 +391,7 @@ def remover_agrupamento_da_nuvem(
     else:
         liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
         print(
-            f'\nNão há máquinas do group {group} na cloud {cloud}: nada a fazer.')
+            f'\nThere are no resources in the cloud {cloud} for the group {group}.')
 
 
 def main():
@@ -400,7 +401,7 @@ def main():
     set_parametros_globais_escrita(args.no_color)
 
     if not args.command:
-        finalizar_com_erro('Comando não informado. Use a opção -h para ajuda.')
+        finalizar_com_erro('No command. Use -h for help.')
 
     servidor_acesso = ServidorAcesso(
         args.access_point, args.username, args.password, args.server)

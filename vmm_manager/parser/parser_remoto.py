@@ -4,11 +4,11 @@ Módulo que realiza o parser de um inventário remoto (no SCVMM)
 import json
 from vmm_manager.infra.comando import Comando
 from vmm_manager.util.config import (
-    CAMPO_AGRUPAMENTO,
-    CAMPO_ID,
-    CAMPO_IMAGEM,
-    CAMPO_REGIAO,
-    CAMPO_REDE_PRINCIPAL
+    FIELD_GROUP,
+    FIELD_ID,
+    FIELD_IMAGE,
+    FIELD_REGION,
+    FIELD_NETWORK_DEFAULT
 )
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
@@ -53,11 +53,11 @@ class ParserRemoto:
     def __get_vms_servidor(self, servidor_acesso, filtro_nome_vm=None):
         cmd = Comando('obter_vms_agrupamento',
                       servidor_vmm=servidor_acesso.servidor_vmm,
-                      campo_agrupamento=CAMPO_AGRUPAMENTO[0],
-                      campo_id=CAMPO_ID[0],
-                      campo_imagem=CAMPO_IMAGEM[0],
-                      campo_regiao=CAMPO_REGIAO[0],
-                      campo_rede_principal=CAMPO_REDE_PRINCIPAL[0],
+                      campo_agrupamento=FIELD_GROUP[0],
+                      campo_id=FIELD_ID[0],
+                      campo_imagem=FIELD_IMAGE[0],
+                      campo_regiao=FIELD_REGION[0],
+                      campo_rede_principal=FIELD_NETWORK_DEFAULT[0],
                       group=self.group,
                       filtro_nome_vm=filtro_nome_vm,
                       cloud=self.cloud)
@@ -70,8 +70,8 @@ class ParserRemoto:
     def __get_discos_adicionais(self, servidor_acesso):
         cmd = Comando('obter_discos_adicionais',
                       servidor_vmm=servidor_acesso.servidor_vmm,
-                      campo_agrupamento=CAMPO_AGRUPAMENTO[0],
-                      campo_id=CAMPO_ID[0],
+                      campo_agrupamento=FIELD_GROUP[0],
+                      campo_id=FIELD_ID[0],
                       group=self.group,
                       cloud=self.cloud,
                       vm_nomes=','.join([f'"{vm_name}"' for vm_name in self.__inventario.vms]))

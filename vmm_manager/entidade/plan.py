@@ -197,7 +197,7 @@ class Plan(YamlAble):
             for job in self.__jobs_em_execucao.values():
                 if job.is_finalizado_com_erro():
                     print(formatar_msg_erro(
-                        f'Processo {job.id_vmm} finalizado com erro.'))
+                        f'Processo {job.vmm_id} finalizado com erro.'))
                     self.__logar_erros_acao(job.acao, job.resumo_erro)
 
     def __logar_erros_comando(self, command, erro):
