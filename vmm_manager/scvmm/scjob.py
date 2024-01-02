@@ -1,13 +1,15 @@
 """
-Representação de um Job do system center virtual machine manager
+System Center Virtual Machine Manager (SCVMM) job.
 """
 
 import json
 from time import sleep
+
 import tqdm
+
 from vmm_manager.infra.comando import Comando
-from vmm_manager.util.msgs import formatar_msg_aviso
 from vmm_manager.scvmm.enums import SCJobStatusEnum
+from vmm_manager.util.msgs import formatar_msg_aviso
 
 
 class SCJob():
@@ -15,12 +17,12 @@ class SCJob():
     @staticmethod
     def monitorar_jobs(jobs, servidor_acesso):
         if jobs:
-            print('\nStatus dos processos em execução:')
+            print('\nMonitoring jobs:')
             pbars = {}
             for job in jobs.values():
                 pbar = tqdm.tqdm(total=100)
-                pbar.set_description(job.id_vmm)
-                pbars[job.id_vmm] = pbar
+                pbar.set_description(job.vmm_id)
+                pbars[job.vmm_id] = pbar
 
             # Monitorando jobs do VMM
             tem_jobs_em_andamento = len(pbars) > 0
@@ -33,17 +35,17 @@ class SCJob():
                 if not status:
                     tqdm.tqdm.write(
                         formatar_msg_aviso(
-                            '\nNão foi possível monitorar os processos em execução.\n'))
+                            '\nError while monitoring jobs.\n'))
                     break
 
                 # Atualizando status
                 for job_vmm in json.loads(jobs_vmm):
-                    id_vmm = job_vmm.get('ID')
-                    jobs[id_vmm].atualizar(job_vmm)
-                    pbars[id_vmm].update(jobs[id_vmm].ultimo_progresso)
-                    pbars[id_vmm].refresh()
+                    vmm_id = job_vmm.get('ID')
+                    jobs[vmm_id].atualizar(job_vmm)
+                    pbars[vmm_id].update(jobs[vmm_id].ultimo_progresso)
+                    pbars[vmm_id].refresh()
 
-                    if not jobs[id_vmm].is_finalizado:
+                    if not jobs[vmm_id].is_finalizado:
                         tem_jobs_em_andamento = True
 
                 # Aguardando um tempo para próxima checagem
@@ -61,8 +63,8 @@ class SCJob():
                       jobs=jobs)
         return cmd.executar(servidor_acesso)
 
-    def __init__(self, id_vmm, acao):
-        self.id_vmm = id_vmm
+    def __init__(self, vmm_id, acao):
+        self.vmm_id = vmm_id
         self.acao = acao
 
         self.name = None
@@ -111,7 +113,7 @@ class SCJob():
 
     def __str__(self):
         return f'''
-            id_vmm: {self.id_vmm}
+            vmm_id: {self.vmm_id}
             acao: {self.acao}
             name: {self.name}
             status: {self.status}

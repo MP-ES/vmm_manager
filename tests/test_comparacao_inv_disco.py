@@ -1,12 +1,13 @@
 """
 Testes de comparação de inventários e geração de ações, focado em discos
 """
-from random import randint
 import copy
-from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.entidade.plan import Plan
+from random import randint
+
 from tests.base import Base
 from tests.dados_teste import DadosTeste
+from vmm_manager.entidade.plan import Plan
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class TestComparacaoInvDisco(Base):
@@ -69,7 +70,7 @@ class TestComparacaoInvDisco(Base):
         for vm_name in discos_removidos:
             for disco in discos_removidos[vm_name].values():
                 plano_execucao.actions.append(
-                    disco.get_acao_excluir_disco(inventario.vms[vm_name].id_vmm))
+                    disco.get_acao_excluir_disco(inventario.vms[vm_name].vmm_id))
 
         return plano_execucao
 
@@ -84,20 +85,20 @@ class TestComparacaoInvDisco(Base):
                         [TestComparacaoInvDisco.TP_ALTERACAO_TP_BUS,
                          TestComparacaoInvDisco.TP_ALTERACAO_REDUCAO]):
                     plano_execucao.actions.append(
-                        disco.get_acao_excluir_disco(inventario.vms[vm_name].id_vmm))
+                        disco.get_acao_excluir_disco(inventario.vms[vm_name].vmm_id))
                     plano_execucao.actions.append(
                         disco.get_acao_criar_disco(vm_name))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_EXPANSAO:
                     plano_execucao.actions.append(
-                        disco.get_acao_expandir_disco(inventario.vms[vm_name].id_vmm,
+                        disco.get_acao_expandir_disco(inventario.vms[vm_name].vmm_id,
                                                       disco.get_id_drive()))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_CAMINHO:
                     plano_execucao.actions.append(
-                        disco.get_acao_mover_disco(inventario.vms[vm_name].id_vmm,
+                        disco.get_acao_mover_disco(inventario.vms[vm_name].vmm_id,
                                                    disco.get_id_disco()))
                 elif tipo_alteracao == TestComparacaoInvDisco.TP_ALTERACAO_TP_TAMANHO:
                     plano_execucao.actions.append(
-                        disco.get_acao_converter_disco(inventario.vms[vm_name].id_vmm,
+                        disco.get_acao_converter_disco(inventario.vms[vm_name].vmm_id,
                                                        disco.get_id_drive()))
 
         return plano_execucao

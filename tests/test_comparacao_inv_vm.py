@@ -1,13 +1,15 @@
 """
 Testes de comparação de inventários e geração de ações, focado em vms
 """
-import random
 import copy
+import random
+
 import pytest
+
 from tests.base import Base
 from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.plan import Plan
 from vmm_manager.entidade.inventario import Inventario
+from vmm_manager.entidade.plan import Plan
 
 
 class TestComparacaoInvVm(Base):
@@ -108,7 +110,7 @@ class TestComparacaoInvVm(Base):
 
         for vm_name in inventario.vms:
             plano_execucao.actions.append(
-                inventario.vms[vm_name].get_acao_atualizar_vm(inventario.vms[vm_name].id_vmm))
+                inventario.vms[vm_name].get_acao_atualizar_vm(inventario.vms[vm_name].vmm_id))
 
         return plano_execucao
 

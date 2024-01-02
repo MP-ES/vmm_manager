@@ -1,13 +1,14 @@
 """
 Testes do ParserLocal (casos que precisam dar erro)
 """
-from unittest import mock
-from random import randrange, randint, choice
 import re
-from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.parser.parser_local import ParserLocal
+from random import choice, randint, randrange
+from unittest import mock
+
 from tests.base import Base
 from tests.dados_teste import DadosTeste
+from vmm_manager.parser.parser_local import ParserLocal
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class TestParserLocalValidacao(Base):

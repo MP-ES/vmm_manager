@@ -1,13 +1,16 @@
 """
-Módulo que realiza o parser de um inventário local
+Parser for local inventory file.
 """
+
 import os
+
 import yamale
+
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.scvmm.scregion import SCRegion
 
 
@@ -97,7 +100,7 @@ class ParserLocal:
                 maquina_virtual.get('description'),
                 maquina_virtual.get(
                     'image', dados_inventario.get('image_default', None)),
-                maquina_virtual.get('region', SCRegion.REGIAO_PADRAO),
+                maquina_virtual.get('region', SCRegion.REGION_DEFAULT),
                 maquina_virtual.get(
                     'cpu', dados_inventario.get('cpu_default', None)),
                 maquina_virtual.get(

@@ -1,9 +1,9 @@
 """
 VM entity.
 """
-from vmm_manager.scvmm.enums import VMStatusEnum
-from vmm_manager.entidade.vm_ansible import VMAnsible
 from vmm_manager.entidade.action import Action
+from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.scvmm.scregion import SCRegion
 
 
@@ -17,20 +17,20 @@ class VM:
         cpu,
         memory,
         networks,
-        id_vmm=None,
+        vmm_id=None,
         nested_virtualization=False,
         dynamic_memory=True,
         status=VMStatusEnum.EM_EXECUCAO,
         no_regiao=None
     ):
         self.name = name
-        self.description = description if not description is None else ''
+        self.description = description if description is not None else ''
         self.image = image
         self.region = region
         self.cpu = cpu
         self.memory = memory
         self.networks = networks
-        self.id_vmm = id_vmm
+        self.vmm_id = vmm_id
         self.status = status
         self.no_regiao = no_regiao
         self.nested_virtualization = nested_virtualization
@@ -69,19 +69,19 @@ class VM:
             for nome_disco in discos_excluir:
                 plano_execucao.actions.append(
                     vm_remota.additional_disks[nome_disco].get_acao_excluir_disco(
-                        vm_remota.id_vmm))
+                        vm_remota.vmm_id))
 
         # verificando discos atuais
         for nome_disco, data_disco in self.additional_disks.items():
             # discos a criar
-            if not vm_remota or not nome_disco in vm_remota.additional_disks:
+            if not vm_remota or nome_disco not in vm_remota.additional_disks:
                 plano_execucao.actions.append(
                     data_disco.get_acao_criar_disco(self.name))
             else:
                 # discos a alterar
                 plano_execucao.actions.extend(
                     data_disco.get_acoes_diferenca_disco(
-                        vm_remota.additional_disks[nome_disco], vm_remota.id_vmm, self.name))
+                        vm_remota.additional_disks[nome_disco], vm_remota.vmm_id, self.name))
 
     def add_acoes_diferenca_regiao(
         self,
@@ -89,7 +89,7 @@ class VM:
         plano_execucao,
         inv_remoto
     ):
-        if self.region == SCRegion.REGIAO_PADRAO:
+        if self.region == SCRegion.REGION_DEFAULT:
             return
 
         if (not vm_remota
@@ -129,7 +129,7 @@ class VM:
                 or self.cpu != vm_remota.cpu
                 or self.memory != vm_remota.memory):
             plano_execucao.actions.append(
-                self.get_acao_atualizar_vm(vm_remota.id_vmm))
+                self.get_acao_atualizar_vm(vm_remota.vmm_id))
 
     def get_qtde_rede_principal(self):
         return sum(1 for network in self.networks if network.default)
@@ -154,7 +154,7 @@ class VM:
     def get_acao_excluir_vm(self):
         return Action(
             Action.ACAO_EXCLUIR_VM,
-            id_vm=self.id_vmm
+            id_vm=self.vmm_id
         )
 
     def get_acao_mover_vm_regiao(self, id_no_regiao):
@@ -212,7 +212,7 @@ class VM:
                 cpu: {self.cpu}
                 memory: {self.memory}
                 networks: {self.networks}
-                id_vmm: {self.id_vmm}
+                vmm_id: {self.vmm_id}
                 status: {self.status}
                 no_regiao: {self.no_regiao}
                 ansible: {self.dados_ansible}
@@ -228,7 +228,7 @@ class VM:
             'cpu': self.cpu,
             'memory': self.memory,
             'networks': [network.to_dict() for network in self.networks],
-            'id_vmm': self.id_vmm,
+            'vmm_id': self.vmm_id,
             'status': self.status.value,
             'no_regiao': self.no_regiao,
             'ansible': [data_ansible.to_dict()

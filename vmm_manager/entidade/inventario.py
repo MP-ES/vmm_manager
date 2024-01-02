@@ -2,10 +2,11 @@
 Inventory entity.
 """
 import json
+
 from vmm_manager.entidade.plan import Plan
-from vmm_manager.util.config import CAMPO_AGRUPAMENTO
 from vmm_manager.infra.comando import Comando
 from vmm_manager.scvmm.scregion import SCRegion
+from vmm_manager.util.config import FIELD_GROUP
 
 
 def json_handle_inventario(obj):
@@ -126,7 +127,7 @@ class Inventario:
         regioes = set()
 
         for maquina_virtual in self.vms.values():
-            if maquina_virtual.region != SCRegion.REGIAO_PADRAO:
+            if maquina_virtual.region != SCRegion.REGION_DEFAULT:
                 regioes.add(maquina_virtual.region)
 
             if maquina_virtual.image is None:
@@ -155,7 +156,7 @@ class Inventario:
         for maquina_virtual in self.vms.values():
             imagens.add(maquina_virtual.image)
 
-            if maquina_virtual.region != SCRegion.REGIAO_PADRAO:
+            if maquina_virtual.region != SCRegion.REGION_DEFAULT:
                 regioes.add(maquina_virtual.region)
 
             networks.update(
@@ -169,7 +170,7 @@ class Inventario:
             qtde_minima_regioes=len(regioes),
             group=self.group,
             lista_nome_vms_str=self.lista_nome_vms_str(),
-            campo_agrupamento=CAMPO_AGRUPAMENTO[0]
+            campo_agrupamento=FIELD_GROUP[0]
         )
         _, msg = cmd.executar(servidor_acesso)
         if msg:
