@@ -120,8 +120,8 @@ class VMDisco:
         return f'''
                 bus_type: {self.bus_type}
                 file: {self.file}
-                size_mb: { self.size_mb}
-                size_type: { self.size_type}
+                size_mb: {self.size_mb}
+                size_type: {self.size_type}
                 path: {self.path}
                 id_drive: {self.__id_drive}
                 id_disco: {self.__id_disco}

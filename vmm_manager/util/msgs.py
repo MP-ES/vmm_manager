@@ -4,6 +4,7 @@ Output messages and formatting.
 
 import sys
 from datetime import datetime
+
 from pytz import timezone
 
 # Global variables

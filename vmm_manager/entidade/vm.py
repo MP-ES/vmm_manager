@@ -1,9 +1,9 @@
 """
 VM entity.
 """
-from vmm_manager.scvmm.enums import VMStatusEnum
-from vmm_manager.entidade.vm_ansible import VMAnsible
 from vmm_manager.entidade.action import Action
+from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.scvmm.scregion import SCRegion
 
 
@@ -24,7 +24,7 @@ class VM:
         no_regiao=None
     ):
         self.name = name
-        self.description = description if not description is None else ''
+        self.description = description if description is not None else ''
         self.image = image
         self.region = region
         self.cpu = cpu
@@ -74,7 +74,7 @@ class VM:
         # verificando discos atuais
         for nome_disco, data_disco in self.additional_disks.items():
             # discos a criar
-            if not vm_remota or not nome_disco in vm_remota.additional_disks:
+            if not vm_remota or nome_disco not in vm_remota.additional_disks:
                 plano_execucao.actions.append(
                     data_disco.get_acao_criar_disco(self.name))
             else:

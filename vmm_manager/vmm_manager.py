@@ -3,38 +3,30 @@ Manages resources in the System Center Virtual Machine Manager (SCVMM),
 in a declarative way, based on a YAML configuration file.
 """
 
+import argparse
+import os
 import re
 import string
-import os
-import argparse
+
 import configargparse
 from ruamel.yaml import YAML, scanner
-from vmm_manager.infra.servidor_acesso import ServidorAcesso
+
+from vmm_manager.entidade.inventario import Inventario
+from vmm_manager.entidade.plan import Plan
 from vmm_manager.infra.comando import Comando
+from vmm_manager.infra.servidor_acesso import ServidorAcesso
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.parser.parser_remoto import ParserRemoto
-from vmm_manager.entidade.plan import Plan
-from vmm_manager.util.config import (
-    FIELD_GROUP,
-    FIELD_ID,
-    FIELD_IMAGE,
-    FIELD_REGION,
-    FIELD_NETWORK_DEFAULT
-)
-from vmm_manager.util.msgs import (
-    finalizar_com_erro,
-    formatar_msg_aviso,
-    imprimir_acao_corrente,
-    set_parametros_globais_escrita
-)
-from vmm_manager.util.operation import validar_retorno_operacao_com_lock
-from vmm_manager.util.operation import validar_retorno_operacao_sem_lock
-from vmm_manager.util.operation import (
-    adquirir_lock,
-    liberar_lock,
-    confirmar_acao_usuario_com_lock
-)
-from vmm_manager.entidade.inventario import Inventario
+from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
+                                     FIELD_NETWORK_DEFAULT, FIELD_REGION)
+from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
+                                   imprimir_acao_corrente,
+                                   set_parametros_globais_escrita)
+from vmm_manager.util.operation import (adquirir_lock,
+                                        confirmar_acao_usuario_com_lock,
+                                        liberar_lock,
+                                        validar_retorno_operacao_com_lock,
+                                        validar_retorno_operacao_sem_lock)
 
 
 def parametro_arquivo_yaml(nome_arquivo):
@@ -202,7 +194,7 @@ def validar_conexao(servidor_acesso, ocultar_progresso):
     cmd = Comando('testar_conexao', servidor_vmm=servidor_acesso.servidor_vmm)
     status, msg = cmd.executar(servidor_acesso)
 
-    if status and not 'True' in msg:
+    if status and 'True' not in msg:
         status = False
     validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso)
 
@@ -379,7 +371,7 @@ def remover_agrupamento_da_nuvem(
                 print(
                     f'VMM ID: {maquina_virtual.vmm_id}\t'
                     f'Name: {maquina_virtual.name}\t'
-                    f'Status: { maquina_virtual.status}')
+                    f'Status: {maquina_virtual.status}')
             confirmar_acao_usuario_com_lock(
                 servidor_acesso, group, cloud, ocultar_progresso)
 

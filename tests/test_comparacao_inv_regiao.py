@@ -2,6 +2,7 @@
 Testes de comparação de inventários e geração de ações, focado em regiões
 """
 import copy
+
 from tests.base import Base
 from tests.dados_teste import DadosTeste
 from vmm_manager.entidade.plan import Plan

@@ -2,16 +2,18 @@
 Execution plan entity.
 """
 import os
+import textwrap
 import time
 import uuid
-import textwrap
-from yamlable import yaml_info, YamlAble
+
 import yaml
-from vmm_manager.infra.comando import Comando
-from vmm_manager.util.msgs import imprimir_acao_corrente, formatar_msg_erro
-from vmm_manager.util.msgs import imprimir_erro, imprimir_ok
-from vmm_manager.scvmm.scjob import SCJob
+from yamlable import YamlAble, yaml_info
+
 from vmm_manager.entidade.action import Action
+from vmm_manager.infra.comando import Comando
+from vmm_manager.scvmm.scjob import SCJob
+from vmm_manager.util.msgs import (formatar_msg_erro, imprimir_acao_corrente,
+                                   imprimir_erro, imprimir_ok)
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
@@ -104,8 +106,11 @@ class Plan(YamlAble):
                 if not acao.is_same_resource(proxima_acao):
                     interval = 10
 
-                    print(f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # pylint: disable=line-too-long
-                          end='', flush=True)
+                    print(
+                        f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # noqa: E501
+                        end='',
+                        flush=True
+                    )
                     time.sleep(interval)
                     imprimir_ok(ocultar_progresso)
 
@@ -204,7 +209,7 @@ class Plan(YamlAble):
         self.__msgs_erros += f'Erro no command "{command}":\n{erro}\n\n'
 
     def __logar_erros_acao(self, acao, erro):
-        self.__msgs_erros += f'Comando:\n{ acao.get_str_impressao_inline()}' \
+        self.__msgs_erros += f'Comando:\n{acao.get_str_impressao_inline()}' \
             f'\n\nErro capturado:\n{erro}\n\n'
 
     def __gerar_arquivo_erros(self):

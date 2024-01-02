@@ -2,10 +2,11 @@
 Inventory entity.
 """
 import json
+
 from vmm_manager.entidade.plan import Plan
-from vmm_manager.util.config import FIELD_GROUP
 from vmm_manager.infra.comando import Comando
 from vmm_manager.scvmm.scregion import SCRegion
+from vmm_manager.util.config import FIELD_GROUP
 
 
 def json_handle_inventario(obj):

@@ -2,15 +2,12 @@
 Action entity.
 """
 import json
-from yamlable import yaml_info, YamlAble
+
+from yamlable import YamlAble, yaml_info
+
 from vmm_manager.infra.comando import Comando
-from vmm_manager.util.config import (
-    FIELD_GROUP,
-    FIELD_ID,
-    FIELD_IMAGE,
-    FIELD_REGION,
-    FIELD_NETWORK_DEFAULT
-)
+from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
+                                     FIELD_NETWORK_DEFAULT, FIELD_REGION)
 
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
@@ -106,7 +103,7 @@ class Action(YamlAble):
         if self.is_criacao_vm():
             cmd = Comando(
                 'criar_vm_pos',
-                description=f"Taguear VM { self.args['vm_name']}",
+                description=f"Taguear VM {self.args['vm_name']}",
                 servidor_vmm=servidor_acesso.servidor_vmm,
                 campo_agrupamento=FIELD_GROUP[0],
                 campo_id=FIELD_ID[0],

@@ -2,6 +2,7 @@
 Classe de apoio e geração de dados para os testes
 """
 from random import choice, randint
+
 from faker import Faker
 
 

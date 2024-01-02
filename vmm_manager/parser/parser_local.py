@@ -3,12 +3,14 @@ Parser for local inventory file.
 """
 
 import os
+
 import yamale
+
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
+from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.entidade.vm_rede import VMRede
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.entidade.vm_disco import VMDisco
 from vmm_manager.scvmm.scregion import SCRegion
 
 

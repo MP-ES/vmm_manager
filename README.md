@@ -82,7 +82,7 @@ poetry add <pacote> [--dev]
 poetry update
 
 # Run linting
-pylint --load-plugins pylint_quotes tests/* vmm_manager/*
+flake8 . && isort --check-only --diff .
 
 # Run tests
 python -m pytest -vv

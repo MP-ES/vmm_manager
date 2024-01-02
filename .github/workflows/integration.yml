@@ -23,10 +23,10 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           poetry install --no-root
 
-      - name: Lint with pylint
+      - name: Linting
         run: |
-          poetry run pylint --load-plugins pylint_quotes tests/* vmm_manager/*
+          poetry run flake8 . && poetry run isort --check-only --diff .
 
-      - name: Test with pytest
+      - name: Tests
         run: |
           poetry run python -m pytest -v

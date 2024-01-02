@@ -2,14 +2,16 @@
 Operation helper functions.
 """
 
-import sys
+import json
 import os
 import platform
-import json
-from vmm_manager.util.msgs import formatar_msg_aviso, imprimir_ok, imprimir_erro
-from vmm_manager.util.msgs import formatar_msg_erro, finalizar_com_erro
-from vmm_manager.util.msgs import get_str_data_formatada, imprimir_acao_corrente
+import sys
+
 from vmm_manager.infra.comando import Comando
+from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
+                                   formatar_msg_erro, get_str_data_formatada,
+                                   imprimir_acao_corrente, imprimir_erro,
+                                   imprimir_ok)
 
 
 def __confirmar_acao_usuario(
@@ -85,7 +87,7 @@ def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
         if not dados_lock.get('Sucesso'):
             status = False
             retorno_cmd = f"The process {dados_lock.get('PIDProcesso')}, " \
-                f"started in { dados_lock.get('DataLock')} " \
+                f"started in {dados_lock.get('DataLock')} " \
                 f"on the server {dados_lock.get('HostLock')}, " \
                 f"is already working on the {dados_lock.get('Agrupamento')} group " \
                 f"in the {dados_lock.get('Nuvem')} cloud."

@@ -2,21 +2,16 @@
 Módulo que realiza o parser de um inventário remoto (no SCVMM)
 """
 import json
-from vmm_manager.infra.comando import Comando
-from vmm_manager.util.config import (
-    FIELD_GROUP,
-    FIELD_ID,
-    FIELD_IMAGE,
-    FIELD_REGION,
-    FIELD_NETWORK_DEFAULT
-)
+
 from vmm_manager.entidade.inventario import Inventario
 from vmm_manager.entidade.vm import VM
-from vmm_manager.entidade.vm_rede import VMRede
-from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.entidade.vm_disco import VMDisco
-from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
+from vmm_manager.entidade.vm_rede import VMRede
+from vmm_manager.infra.comando import Comando
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType, VMStatusEnum
 from vmm_manager.scvmm.scregion import SCRegion
+from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
+                                     FIELD_NETWORK_DEFAULT, FIELD_REGION)
 
 
 # pylint: disable=too-few-public-methods

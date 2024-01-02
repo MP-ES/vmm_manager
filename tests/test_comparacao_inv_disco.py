@@ -1,12 +1,13 @@
 """
 Testes de comparação de inventários e geração de ações, focado em discos
 """
-from random import randint
 import copy
-from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
-from vmm_manager.entidade.plan import Plan
+from random import randint
+
 from tests.base import Base
 from tests.dados_teste import DadosTeste
+from vmm_manager.entidade.plan import Plan
+from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
 class TestComparacaoInvDisco(Base):
