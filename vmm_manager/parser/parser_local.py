@@ -1,6 +1,7 @@
 """
-Módulo que realiza o parser de um inventário local
+Parser for local inventory file.
 """
+
 import os
 import yamale
 from vmm_manager.entidade.inventario import Inventario
