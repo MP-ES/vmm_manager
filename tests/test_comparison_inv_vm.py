@@ -7,19 +7,19 @@ import random
 import pytest
 
 from tests.base import Base
-from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.inventario import Inventario
-from vmm_manager.entidade.plan import Plan
+from tests.utils import Utils
+from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.plan import Plan
 
 
-class TestComparacaoInvVm(Base):
+class TestComparisonInvVm(Base):
 
     @staticmethod
     def alterar_desc_ram_cpu_vms_inventario(inventario):
         for vm_obj in inventario.vms.values():
             foi_alterada = False
             if random.getrandbits(1):
-                vm_obj.description = DadosTeste.get_random_string_com_excecao(
+                vm_obj.description = Utils.get_random_string_com_excecao(
                     vm_obj.description)
                 foi_alterada = True
             if random.getrandbits(1):
@@ -35,13 +35,13 @@ class TestComparacaoInvVm(Base):
 
             if not foi_alterada:
                 # forçando uma alteração
-                vm_obj.description = DadosTeste.get_random_string_com_excecao(
+                vm_obj.description = Utils.get_random_string_com_excecao(
                     vm_obj.description)
 
     @staticmethod
     def alterar_imagem_vms_inventario(inventario):
         for vm_obj in inventario.vms.values():
-            vm_obj.image = DadosTeste.get_random_string_com_excecao(
+            vm_obj.image = Utils.get_random_string_com_excecao(
                 vm_obj.image)
 
     @staticmethod
@@ -51,7 +51,7 @@ class TestComparacaoInvVm(Base):
                 vm_obj.networks = []
             else:
                 for network in vm_obj.networks:
-                    network.name = DadosTeste.get_random_string_com_excecao(
+                    network.name = Utils.get_random_string_com_excecao(
                         network.name)
 
     @staticmethod

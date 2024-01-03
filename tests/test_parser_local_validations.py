@@ -6,12 +6,12 @@ from random import choice, randint, randrange
 from unittest import mock
 
 from tests.base import Base
-from tests.dados_teste import DadosTeste
+from tests.utils import Utils
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
 
-class TestParserLocalValidacao(Base):
+class TestParserLocalValidations(Base):
 
     def test_parser_inventario_vazio(self, tmpdir, servidor_acesso):
         inventory_file = tmpdir.join('inventario_vazio.yaml')
@@ -26,7 +26,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vms_sem_imagem(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -47,7 +47,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vms_nome_invalido(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         qtde_vms = randrange(1, Base.VMS_POR_TESTE_MAX)
         inventario = [(
             {'group': dados_teste.get_random_word(),
@@ -70,7 +70,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vm_sem_rede(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -95,7 +95,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vm_sem_rede_principal(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -123,7 +123,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vm_rede_duplicada(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         nome_rede = dados_teste.get_nome_unico()
         inventario = [(
             {'group': dados_teste.get_random_word(),
@@ -153,7 +153,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_vms_com_regiao(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -166,7 +166,7 @@ class TestParserLocalValidacao(Base):
              } for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX))],
              'vms': [{
                  'name': dados_teste.get_nome_unico(),
-                 'region': DadosTeste.get_regiao_vm_por_iteracao(num_iter)
+                 'region': Utils.get_regiao_vm_por_iteracao(num_iter)
              } for num_iter in range(randrange(1, Base.VMS_POR_TESTE_MAX))]
              },
             'inventario.yaml')]
@@ -181,7 +181,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_ansible_sem_grupo(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -213,7 +213,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_ansible_grupo_duplicado(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         nome_grupo = dados_teste.get_nome_unico()
         inventario = [(
             {'group': dados_teste.get_random_word(),
@@ -250,7 +250,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_ansible_grupo_var_duplicada(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         nome_grupo = dados_teste.get_nome_unico()
         nome_var = dados_teste.get_nome_unico()
         inventario = [(
@@ -289,7 +289,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_ansible_var_invalida(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -321,7 +321,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_disco_adicional_duplicado(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         file = dados_teste.get_nome_unico()
         inventario = [(
             {'group': dados_teste.get_random_word(),
@@ -358,7 +358,7 @@ class TestParserLocalValidacao(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_nome_vm_duplicado(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         vm_name = dados_teste.get_nome_unico()
         inventario = [(
             {'group': dados_teste.get_random_word(),

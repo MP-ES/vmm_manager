@@ -1,8 +1,8 @@
 """
 VM entity.
 """
-from vmm_manager.entidade.action import Action
-from vmm_manager.entidade.vm_ansible import VMAnsible
+from vmm_manager.entity.action import Action
+from vmm_manager.entity.vm_ansible import VMAnsible
 from vmm_manager.scvmm.enums import VMStatusEnum
 from vmm_manager.scvmm.scregion import SCRegion
 

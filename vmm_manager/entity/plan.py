@@ -9,8 +9,8 @@ import uuid
 import yaml
 from yamlable import YamlAble, yaml_info
 
-from vmm_manager.entidade.action import Action
-from vmm_manager.infra.comando import Comando
+from vmm_manager.entity.action import Action
+from vmm_manager.infra.command import Comando
 from vmm_manager.scvmm.scjob import SCJob
 from vmm_manager.util.msgs import (formatar_msg_erro, imprimir_acao_corrente,
                                    imprimir_erro, imprimir_ok)

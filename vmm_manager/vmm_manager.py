@@ -11,12 +11,12 @@ import string
 import configargparse
 from ruamel.yaml import YAML, scanner
 
-from vmm_manager.entidade.inventario import Inventario
-from vmm_manager.entidade.plan import Plan
-from vmm_manager.infra.comando import Comando
-from vmm_manager.infra.servidor_acesso import ServidorAcesso
+from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.plan import Plan
+from vmm_manager.infra.access_server import ServidorAcesso
+from vmm_manager.infra.command import Comando
 from vmm_manager.parser.parser_local import ParserLocal
-from vmm_manager.parser.parser_remoto import ParserRemoto
+from vmm_manager.parser.parser_remote import ParserRemoto
 from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
                                      FIELD_NETWORK_DEFAULT, FIELD_REGION)
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,

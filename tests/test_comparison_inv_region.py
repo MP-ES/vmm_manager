@@ -4,12 +4,12 @@ Testes de comparação de inventários e geração de ações, focado em regiõe
 import copy
 
 from tests.base import Base
-from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.plan import Plan
+from tests.utils import Utils
+from vmm_manager.entity.plan import Plan
 from vmm_manager.scvmm.scregion import SCRegion
 
 
-class TestComparacaoInvRegiao(Base):
+class TestComparisonInvRegion(Base):
     @staticmethod
     def alterar_regiao_vms_para_default(inventario):
         for vm_name in inventario.vms:
@@ -18,14 +18,14 @@ class TestComparacaoInvRegiao(Base):
     @staticmethod
     def alterar_nome_nos_regiao(inventario):
         for region in inventario.get_mapeamento_regioes_to_test().values():
-            region.nome_no = DadosTeste.get_random_string_com_excecao(
+            region.nome_no = Utils.get_random_string_com_excecao(
                 region.nome_no)
 
     @staticmethod
     def alterar_regiao_vms(inventario):
         lista_regioes = inventario.get_mapeamento_regioes_to_test().keys()
         for vm_obj in inventario.vms.values():
-            vm_obj.region = DadosTeste.get_random_lista_com_excecao(
+            vm_obj.region = Utils.get_random_lista_com_excecao(
                 lista_regioes, vm_obj.region)
 
     @staticmethod

@@ -5,7 +5,7 @@ import json
 
 from yamlable import YamlAble, yaml_info
 
-from vmm_manager.infra.comando import Comando
+from vmm_manager.infra.command import Comando
 from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
                                      FIELD_NETWORK_DEFAULT, FIELD_REGION)
 

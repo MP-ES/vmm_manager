@@ -3,8 +3,8 @@ Inventory entity.
 """
 import json
 
-from vmm_manager.entidade.plan import Plan
-from vmm_manager.infra.comando import Comando
+from vmm_manager.entity.plan import Plan
+from vmm_manager.infra.command import Comando
 from vmm_manager.scvmm.scregion import SCRegion
 from vmm_manager.util.config import FIELD_GROUP
 

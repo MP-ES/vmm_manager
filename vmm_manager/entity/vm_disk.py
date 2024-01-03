@@ -1,7 +1,7 @@
 """
 VM additional disk entity.
 """
-from vmm_manager.entidade.action import Action
+from vmm_manager.entity.action import Action
 
 
 class VMDisco:

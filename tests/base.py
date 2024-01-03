@@ -4,12 +4,12 @@ Classe com funções básicas de teste
 import uuid
 from random import choice, getrandbits, randint, randrange
 
-from tests.dados_teste import DadosTeste
-from vmm_manager.entidade.inventario import Inventario
-from vmm_manager.entidade.vm import VM
-from vmm_manager.entidade.vm_ansible import VMAnsible, VMAnsibleVars
-from vmm_manager.entidade.vm_disco import VMDisco
-from vmm_manager.entidade.vm_rede import VMRede
+from tests.utils import Utils
+from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.vm import VM
+from vmm_manager.entity.vm_ansible import VMAnsible, VMAnsibleVars
+from vmm_manager.entity.vm_disk import VMDisco
+from vmm_manager.entity.vm_network import VMRede
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.scvmm.scregion import SCRegion
 
@@ -29,7 +29,7 @@ class Base():
 
     @staticmethod
     def get_inventario_completo(num_min_discos_por_vm=1):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = Inventario(
             dados_teste.get_random_word(), dados_teste.get_random_word())
 
@@ -71,7 +71,7 @@ class Base():
                 )
                 discos_vm.append(disco)
 
-            regiao_vm = DadosTeste.get_random_regiao_vm(Base.REGIOES_QTDE)
+            regiao_vm = Utils.get_random_regiao_vm(Base.REGIOES_QTDE)
             vm_obj = VM(vm_name,
                         dados_teste.get_random_word(),
                         dados_teste.get_random_word(),

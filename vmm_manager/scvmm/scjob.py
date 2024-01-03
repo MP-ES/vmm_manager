@@ -7,7 +7,7 @@ from time import sleep
 
 import tqdm
 
-from vmm_manager.infra.comando import Comando
+from vmm_manager.infra.command import Comando
 from vmm_manager.scvmm.enums import SCJobStatusEnum
 from vmm_manager.util.msgs import formatar_msg_aviso
 
