@@ -7,7 +7,7 @@ import os
 import platform
 import sys
 
-from vmm_manager.infra.comando import Comando
+from vmm_manager.infra.command import Comando
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
                                    formatar_msg_erro, get_str_data_formatada,
                                    imprimir_acao_corrente, imprimir_erro,

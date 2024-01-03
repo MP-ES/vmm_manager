@@ -6,7 +6,7 @@ from random import choice, randint
 from faker import Faker
 
 
-class DadosTeste():
+class Utils():
 
     @staticmethod
     def get_random_lista_com_excecao(lista, excecao):

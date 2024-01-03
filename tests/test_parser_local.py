@@ -5,7 +5,7 @@ from random import choice, getrandbits, randint, randrange
 from unittest import mock
 
 from tests.base import Base
-from tests.dados_teste import DadosTeste
+from tests.utils import Utils
 from vmm_manager.parser.parser_local import ParserLocal
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 
@@ -15,7 +15,7 @@ class TestParserLocal(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_min_padrao(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -46,7 +46,7 @@ class TestParserLocal(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_com_ansible(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -94,7 +94,7 @@ class TestParserLocal(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_com_discos_adicionais(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -142,7 +142,7 @@ class TestParserLocal(Base):
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
     def test_parser_inventario_min_sem_padrao(self, _, servidor_acesso, monkeypatch):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),
@@ -179,7 +179,7 @@ class TestParserLocal(Base):
         servidor_acesso,
         monkeypatch
     ):
-        dados_teste = DadosTeste()
+        dados_teste = Utils()
         inventario = [(
             {'group': dados_teste.get_random_word(),
              'cloud': dados_teste.get_random_word(),

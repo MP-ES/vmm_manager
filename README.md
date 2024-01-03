@@ -84,6 +84,9 @@ poetry update
 # Run linting
 flake8 . && isort --check-only --diff .
 
+# Fix dependencies sorting
+isort .
+
 # Run tests
 python -m pytest -vv
 
