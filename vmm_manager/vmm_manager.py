@@ -11,12 +11,12 @@ import string
 import configargparse
 from ruamel.yaml import YAML, scanner
 
-from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.inventory import Inventory
 from vmm_manager.entity.plan import Plan
-from vmm_manager.infra.access_server import ServidorAcesso
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.access_server import AccessServer
+from vmm_manager.infra.command import Command
 from vmm_manager.parser.parser_local import ParserLocal
-from vmm_manager.parser.parser_remote import ParserRemoto
+from vmm_manager.parser.parser_remote import ParserRemote
 from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
                                      FIELD_NETWORK_DEFAULT, FIELD_REGION)
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
@@ -147,7 +147,7 @@ def obter_inventario_remoto(
 ):
     imprimir_acao_corrente('Loading remote inventory', ocultar_progresso)
 
-    parser_remoto = ParserRemoto(group, cloud)
+    parser_remoto = ParserRemote(group, cloud)
     status, inventario_remoto = parser_remoto.get_inventario(
         servidor_acesso, filtro_nome_vm, filtro_dados_completos)
     validar_retorno_operacao_com_lock(status, inventario_remoto,
@@ -191,7 +191,7 @@ def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
 
 def validar_conexao(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Checking VMM connection', ocultar_progresso)
-    cmd = Comando('testar_conexao', servidor_vmm=servidor_acesso.servidor_vmm)
+    cmd = Command('testar_conexao', servidor_vmm=servidor_acesso.servidor_vmm)
     status, msg = cmd.executar(servidor_acesso)
 
     if status and 'True' not in msg:
@@ -201,7 +201,7 @@ def validar_conexao(servidor_acesso, ocultar_progresso):
 
 def configurar_vmm(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Setting up the VMM', ocultar_progresso)
-    cmd = Comando('configurar_vmm', servidor_vmm=servidor_acesso.servidor_vmm,
+    cmd = Command('configurar_vmm', servidor_vmm=servidor_acesso.servidor_vmm,
                   campos_customizados=[FIELD_GROUP, FIELD_ID,
                                        FIELD_IMAGE, FIELD_REGION,
                                        FIELD_NETWORK_DEFAULT])
@@ -212,7 +212,7 @@ def configurar_vmm(servidor_acesso, ocultar_progresso):
 
 def listar_opcoes(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Listing options', ocultar_progresso)
-    cmd = Comando('listar_opcoes', servidor_vmm=servidor_acesso.servidor_vmm)
+    cmd = Command('listar_opcoes', servidor_vmm=servidor_acesso.servidor_vmm)
     status, opcoes = cmd.executar(servidor_acesso)
 
     validar_retorno_operacao_sem_lock(status, opcoes, ocultar_progresso)
@@ -246,7 +246,7 @@ def imprimir_json_inventario(
                  inventario_local.cloud, ocultar_progresso)
 
     imprimir_acao_corrente('Generating JSON', ocultar_progresso)
-    status, json_inventario = Inventario.get_json(
+    status, json_inventario = Inventory.get_json(
         inventario_local, inventario_remoto, all_data)
     validar_retorno_operacao_sem_lock(
         status, json_inventario, ocultar_progresso)
@@ -395,7 +395,7 @@ def main():
     if not args.command:
         finalizar_com_erro('No command. Use -h for help.')
 
-    servidor_acesso = ServidorAcesso(
+    servidor_acesso = AccessServer(
         args.access_point, args.username, args.password, args.server)
     validar_conexao(servidor_acesso, args.hide_progress)
 

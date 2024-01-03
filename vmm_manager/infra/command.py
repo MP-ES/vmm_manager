@@ -7,7 +7,7 @@ import sys
 from jinja2 import Environment, FileSystemLoader, exceptions
 
 
-class Comando:
+class Command:
     __TEMPLATES_DIR = '../includes/ps_templates'
     __TEMPLATES_EXTENSAO = '.j2'
 
@@ -18,10 +18,10 @@ class Comando:
             self.args = kwargs
             j2_env = Environment(
                 loader=FileSystemLoader(os.path.join(
-                    os.path.dirname(__file__), Comando.__TEMPLATES_DIR)),
+                    os.path.dirname(__file__), Command.__TEMPLATES_DIR)),
                 trim_blocks=True)
             self.template = j2_env.get_template(
-                self.command + Comando.__TEMPLATES_EXTENSAO)
+                self.command + Command.__TEMPLATES_EXTENSAO)
         except exceptions.TemplateNotFound as ex:
             print(
                 f"Template '{ex}' não encontrado para o command '{self.command}'.")

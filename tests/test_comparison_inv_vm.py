@@ -8,7 +8,7 @@ import pytest
 
 from tests.base import Base
 from tests.utils import Utils
-from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.inventory import Inventory
 from vmm_manager.entity.plan import Plan
 
 
@@ -181,7 +181,7 @@ class TestComparisonInvVm(Base):
 
     def test_inventario_remoto_sem_local(self):
         inventario_remoto = Base.get_inventario_completo()
-        inventario_local = Inventario(
+        inventario_local = Inventory(
             inventario_remoto.group, inventario_remoto.cloud)
 
         status, plano_execucao = inventario_local.calcular_plano_execucao(

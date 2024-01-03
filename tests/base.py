@@ -5,11 +5,11 @@ import uuid
 from random import choice, getrandbits, randint, randrange
 
 from tests.utils import Utils
-from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.inventory import Inventory
 from vmm_manager.entity.vm import VM
 from vmm_manager.entity.vm_ansible import VMAnsible, VMAnsibleVars
-from vmm_manager.entity.vm_disk import VMDisco
-from vmm_manager.entity.vm_network import VMRede
+from vmm_manager.entity.vm_disk import VMDisk
+from vmm_manager.entity.vm_network import VMNetwork
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.scvmm.scregion import SCRegion
 
@@ -30,7 +30,7 @@ class Base():
     @staticmethod
     def get_inventario_completo(num_min_discos_por_vm=1):
         dados_teste = Utils()
-        inventario = Inventario(
+        inventario = Inventory(
             dados_teste.get_random_word(), dados_teste.get_random_word())
 
         # regiões
@@ -51,12 +51,12 @@ class Base():
             redes_vm = []
             for num_iter in range(randrange(1, Base.REDES_POR_VM_MAX)):
                 redes_vm.append(
-                    VMRede(dados_teste.get_random_word(), num_iter == 0))
+                    VMNetwork(dados_teste.get_random_word(), num_iter == 0))
 
             # discos adicionais
             discos_vm = []
             for num_iter in range(randrange(num_min_discos_por_vm, Base.DISCOS_POR_VM_MAX)):
-                disco = VMDisco(
+                disco = VMDisk(
                     choice(list(SCDiskBusType)),
                     dados_teste.get_nome_unico(),
                     randint(Base.TAMANHO_DISCO_MIN, Base.TAMANHO_DISCO_MAX),
@@ -88,7 +88,7 @@ class Base():
         return inventario
 
     def get_obj_inventario(self, array_yaml):
-        inventario = Inventario(
+        inventario = Inventory(
             array_yaml[0][0]['group'], array_yaml[0][0]['cloud'])
 
         for maquina_virtual in array_yaml[0][0]['vms']:
@@ -99,7 +99,7 @@ class Base():
                 array_yaml[0][0].get('networks_default', [])
             ):
                 vm_redes.append(
-                    VMRede(rede_vm.get('name'), rede_vm.get('default', False)))
+                    VMNetwork(rede_vm.get('name'), rede_vm.get('default', False)))
 
             inventario.vms[maquina_virtual.get('name')] = VM(
                 maquina_virtual.get('name'),
@@ -148,7 +148,7 @@ class Base():
 
             for item in maquina_virtual.get('additional_disks', {}):
                 file = item.get('file')
-                additional_disk = VMDisco(
+                additional_disk = VMDisk(
                     SCDiskBusType(item.get('bus_type')),
                     file,
                     item.get('size_mb'),

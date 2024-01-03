@@ -7,7 +7,7 @@ import os
 import platform
 import sys
 
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.command import Command
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
                                    formatar_msg_erro, get_str_data_formatada,
                                    imprimir_acao_corrente, imprimir_erro,
@@ -71,7 +71,7 @@ def validar_retorno_operacao_com_lock(
 def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Adding lock', ocultar_progresso)
 
-    cmd = Comando('adquirir_lock',
+    cmd = Command('adquirir_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
                       group,
                       cloud),
@@ -98,7 +98,7 @@ def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
 def liberar_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Removing lock', ocultar_progresso)
 
-    cmd = Comando('liberar_lock',
+    cmd = Command('liberar_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
                       group,
                       cloud))

@@ -4,7 +4,7 @@ VM additional disk entity.
 from vmm_manager.entity.action import Action
 
 
-class VMDisco:
+class VMDisk:
     def __init__(self, bus_type, file, size_mb, size_type, path=None):
         self.bus_type = bus_type
         self.file = file
@@ -110,11 +110,11 @@ class VMDisco:
         return hash(self.file)
 
     def __eq__(self, other):
-        return isinstance(other, VMDisco) and (self.bus_type == other.bus_type
-                                               and self.file == other.file
-                                               and self.size_mb == other.size_mb
-                                               and self.size_type == other.size_type
-                                               and self.path == other.path)
+        return isinstance(other, VMDisk) and (self.bus_type == other.bus_type
+                                              and self.file == other.file
+                                              and self.size_mb == other.size_mb
+                                              and self.size_type == other.size_type
+                                              and self.path == other.path)
 
     def __repr__(self):
         return f'''

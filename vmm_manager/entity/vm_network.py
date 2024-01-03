@@ -3,7 +3,7 @@ VM network entity.
 """
 
 
-class VMRede:
+class VMNetwork:
     def __init__(self, name, default=False):
         self.name = name
         self.default = default
@@ -14,8 +14,8 @@ class VMRede:
         return hash(self.name)
 
     def __eq__(self, other):
-        return isinstance(other, VMRede) and (self.name == other.name
-                                              and self.default == other.default)
+        return isinstance(other, VMNetwork) and (self.name == other.name
+                                                 and self.default == other.default)
 
     def __repr__(self):
         return f'''

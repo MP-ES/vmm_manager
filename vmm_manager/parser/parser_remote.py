@@ -3,11 +3,11 @@ Módulo que realiza o parser de um inventário remoto (no SCVMM)
 """
 import json
 
-from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.inventory import Inventory
 from vmm_manager.entity.vm import VM
-from vmm_manager.entity.vm_disk import VMDisco
-from vmm_manager.entity.vm_network import VMRede
-from vmm_manager.infra.command import Comando
+from vmm_manager.entity.vm_disk import VMDisk
+from vmm_manager.entity.vm_network import VMNetwork
+from vmm_manager.infra.command import Command
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType, VMStatusEnum
 from vmm_manager.scvmm.scregion import SCRegion
 from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
@@ -15,11 +15,11 @@ from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
 
 
 # pylint: disable=too-few-public-methods
-class ParserRemoto:
+class ParserRemote:
 
     @staticmethod
     def __get_regioes_disponiveis(servidor_acesso):
-        cmd = Comando('obter_regioes_disponiveis',
+        cmd = Command('obter_regioes_disponiveis',
                       servidor_vmm=servidor_acesso.servidor_vmm)
         status, regioes = cmd.executar(servidor_acesso)
         if not status:
@@ -46,7 +46,7 @@ class ParserRemoto:
         self.__inventario = None
 
     def __get_vms_servidor(self, servidor_acesso, filtro_nome_vm=None):
-        cmd = Comando('obter_vms_agrupamento',
+        cmd = Command('obter_vms_agrupamento',
                       servidor_vmm=servidor_acesso.servidor_vmm,
                       campo_agrupamento=FIELD_GROUP[0],
                       campo_id=FIELD_ID[0],
@@ -63,7 +63,7 @@ class ParserRemoto:
         return vms
 
     def __get_discos_adicionais(self, servidor_acesso):
-        cmd = Comando('obter_discos_adicionais',
+        cmd = Command('obter_discos_adicionais',
                       servidor_vmm=servidor_acesso.servidor_vmm,
                       campo_agrupamento=FIELD_GROUP[0],
                       campo_id=FIELD_ID[0],
@@ -82,7 +82,7 @@ class ParserRemoto:
             discos_vms[vm_name] = []
 
             for disco_remoto in maquina_virtual.get('Discos'):
-                disco = VMDisco(
+                disco = VMDisk(
                     SCDiskBusType(disco_remoto.get('Tipo')),
                     disco_remoto.get('Arquivo'),
                     disco_remoto.get('TamanhoMB'),
@@ -106,7 +106,7 @@ class ParserRemoto:
         filtro_nome_vm=None,
         filtro_dados_completos=True
     ):
-        self.__inventario = Inventario(self.group, self.cloud)
+        self.__inventario = Inventory(self.group, self.cloud)
 
         vms_servidor = json.loads(
             self.__get_vms_servidor(servidor_acesso, filtro_nome_vm) or '{}')
@@ -114,7 +114,7 @@ class ParserRemoto:
         for maquina_virtual in vms_servidor:
             vms_rede = []
             for network in maquina_virtual.get('Redes'):
-                vm_rede = VMRede(network.get('Nome'), network.get('Principal'))
+                vm_rede = VMNetwork(network.get('Nome'), network.get('Principal'))
                 vm_rede.ips = network.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 
@@ -141,7 +141,7 @@ class ParserRemoto:
 
             # regioes
             self.__inventario.set_regioes_disponiveis(
-                ParserRemoto.__get_regioes_disponiveis(servidor_acesso))
+                ParserRemote.__get_regioes_disponiveis(servidor_acesso))
 
     def get_inventario(self, servidor_acesso, filtro_nome_vm=None, filtro_dados_completos=True):
         if not self.__inventario:

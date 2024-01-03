@@ -7,7 +7,7 @@ from time import sleep
 
 import tqdm
 
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.command import Command
 from vmm_manager.scvmm.enums import SCJobStatusEnum
 from vmm_manager.util.msgs import formatar_msg_aviso
 
@@ -58,7 +58,7 @@ class SCJob():
 
     @staticmethod
     def __obter_status_jobs_vmm(jobs, servidor_acesso):
-        cmd = Comando('monitorar_jobs',
+        cmd = Command('monitorar_jobs',
                       servidor_vmm=servidor_acesso.servidor_vmm,
                       jobs=jobs)
         return cmd.executar(servidor_acesso)

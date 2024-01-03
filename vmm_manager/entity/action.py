@@ -5,7 +5,7 @@ import json
 
 from yamlable import YamlAble, yaml_info
 
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.command import Command
 from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
                                      FIELD_NETWORK_DEFAULT, FIELD_REGION)
 
@@ -39,7 +39,7 @@ class Action(YamlAble):
         self.__status_execucao_job = None
 
     def executar(self, group, cloud, servidor_acesso, guid):
-        cmd = Comando(self.command,
+        cmd = Command(self.command,
                       group=group,
                       campo_agrupamento=FIELD_GROUP[0],
                       campo_id=FIELD_ID[0],
@@ -101,7 +101,7 @@ class Action(YamlAble):
 
     def get_cmd_pos_execucao(self, group, servidor_acesso):
         if self.is_criacao_vm():
-            cmd = Comando(
+            cmd = Command(
                 'criar_vm_pos',
                 description=f"Taguear VM {self.args['vm_name']}",
                 servidor_vmm=servidor_acesso.servidor_vmm,

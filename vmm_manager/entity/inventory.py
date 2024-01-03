@@ -4,18 +4,18 @@ Inventory entity.
 import json
 
 from vmm_manager.entity.plan import Plan
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.command import Command
 from vmm_manager.scvmm.scregion import SCRegion
 from vmm_manager.util.config import FIELD_GROUP
 
 
 def json_handle_inventario(obj):
-    if isinstance(obj, Inventario):
+    if isinstance(obj, Inventory):
         return obj.to_dict()
     raise ValueError('Objeto precisa ser uma instância de inventário.')
 
 
-class Inventario:
+class Inventory:
 
     @staticmethod
     def get_json(inventario_local, inventario_remoto, all_data=True):
@@ -162,7 +162,7 @@ class Inventario:
             networks.update(
                 [network.name for network in maquina_virtual.networks])
 
-        cmd = Comando(
+        cmd = Command(
             'validar_inventario', imagens=imagens,
             cloud=self.cloud,
             networks=networks,
@@ -229,9 +229,9 @@ class Inventario:
                     inventario_remoto.vms[vm_name], plano_execucao)
 
     def __eq__(self, other):
-        return isinstance(other, Inventario) and (self.group == other.group
-                                                  and self.cloud == other.cloud
-                                                  and self.vms == other.vms)
+        return isinstance(other, Inventory) and (self.group == other.group
+                                                 and self.cloud == other.cloud
+                                                 and self.vms == other.vms)
 
     def __str__(self):
         return f'''

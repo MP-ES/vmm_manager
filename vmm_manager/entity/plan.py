@@ -10,7 +10,7 @@ import yaml
 from yamlable import YamlAble, yaml_info
 
 from vmm_manager.entity.action import Action
-from vmm_manager.infra.command import Comando
+from vmm_manager.infra.command import Command
 from vmm_manager.scvmm.scjob import SCJob
 from vmm_manager.util.msgs import (formatar_msg_erro, imprimir_acao_corrente,
                                    imprimir_erro, imprimir_ok)
@@ -166,7 +166,7 @@ class Plan(YamlAble):
             imprimir_acao_corrente(
                 'Limpando objetos temporários', ocultar_progresso)
 
-            cmd = Comando(
+            cmd = Command(
                 'limpar_objs_criacao_vm',
                 servidor_vmm=servidor_acesso.servidor_vmm,
                 guids=self.__guids_a_limpar

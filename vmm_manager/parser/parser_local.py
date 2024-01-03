@@ -6,10 +6,10 @@ import os
 
 import yamale
 
-from vmm_manager.entity.inventory import Inventario
+from vmm_manager.entity.inventory import Inventory
 from vmm_manager.entity.vm import VM
-from vmm_manager.entity.vm_disk import VMDisco
-from vmm_manager.entity.vm_network import VMRede
+from vmm_manager.entity.vm_disk import VMDisk
+from vmm_manager.entity.vm_network import VMNetwork
 from vmm_manager.scvmm.enums import SCDiskBusType, SCDiskSizeType
 from vmm_manager.scvmm.scregion import SCRegion
 
@@ -37,7 +37,7 @@ class ParserLocal:
                     f"Disco '{file}' referenciado mais de uma vez "
                     f"para a VM '{vm_name}'.")
 
-            additional_disk = VMDisco(
+            additional_disk = VMDisk(
                 SCDiskBusType(item.get('bus_type')),
                 item.get('file'),
                 item.get('size_mb'),
@@ -65,7 +65,7 @@ class ParserLocal:
         filtro_dados_completos=True
     ):
         nomes_vm = []
-        self.__inventario = Inventario(
+        self.__inventario = Inventory(
             dados_inventario['group'], dados_inventario['cloud'])
 
         for maquina_virtual in dados_inventario['vms']:
@@ -93,7 +93,7 @@ class ParserLocal:
 
                 nomes_redes.append(nome_rede)
                 vm_redes.append(
-                    VMRede(nome_rede, rede_vm.get('default', False)))
+                    VMNetwork(nome_rede, rede_vm.get('default', False)))
 
             self.__inventario.vms[vm_name] = VM(
                 vm_name,

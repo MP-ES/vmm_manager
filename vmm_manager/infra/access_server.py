@@ -16,7 +16,7 @@ def escapar_echo_cmd(conteudo):
     return conteudo_escapado
 
 
-class ServidorAcesso:
+class AccessServer:
     __PASTA_TEMPORARIA = 'vmm_temp'
     __ENCODE_CMD = 'cp850'
     __ENCODE_WINDOWS = 'iso-8859-1'
@@ -25,7 +25,7 @@ class ServidorAcesso:
 
     @staticmethod
     def __get_caminho_arquivo(name):
-        return f'{ServidorAcesso.__PASTA_TEMPORARIA}/{os.path.basename(name)}'
+        return f'{AccessServer.__PASTA_TEMPORARIA}/{os.path.basename(name)}'
 
     def __init__(self, servidor, usuario, senha, servidor_vmm):
         self.servidor = servidor
@@ -70,7 +70,7 @@ class ServidorAcesso:
                                  port=self.__DEFAULT_SSH_PORT,
                                  username=self.usuario,
                                  password=self.senha,
-                                 banner_timeout=ServidorAcesso.__TIMEOUT_CONEXAO)
+                                 banner_timeout=AccessServer.__TIMEOUT_CONEXAO)
         except paramiko.AuthenticationException:
             self.__msg_erro_conexao = 'Usuário ou senha inválidos.'
         except paramiko.SSHException as ex:
@@ -104,11 +104,11 @@ class ServidorAcesso:
         if self.__is_conexao_ok():
             try:
                 _, stdout, stderr = self.conexao.exec_command(cmd)
-                stderr_msg = stderr.read().decode(ServidorAcesso.__ENCODE_CMD)
+                stderr_msg = stderr.read().decode(AccessServer.__ENCODE_CMD)
                 if stdout.channel.recv_exit_status() != 0 or stderr_msg:
                     return False, stderr_msg
 
-                return True, stdout.read().decode(ServidorAcesso.__ENCODE_CMD)
+                return True, stdout.read().decode(AccessServer.__ENCODE_CMD)
             except paramiko.SSHException as ex:
                 return False, f"Erro ao executar command '{cmd}': {ex}"
             except socket.error as ex:
@@ -118,8 +118,8 @@ class ServidorAcesso:
 
     def __enviar_arquivo(self, nome_arquivo):
         resultado = self.__executar_comando(
-            f'if not exist "{ServidorAcesso.__PASTA_TEMPORARIA}" '
-            f'mkdir "{ServidorAcesso.__PASTA_TEMPORARIA}"')
+            f'if not exist "{AccessServer.__PASTA_TEMPORARIA}" '
+            f'mkdir "{AccessServer.__PASTA_TEMPORARIA}"')
 
         if not resultado[0]:
             return resultado
@@ -127,7 +127,7 @@ class ServidorAcesso:
         if self.__is_conexao_sftp_ok():
             file_attrs = self.conexao_sftp.put(
                 nome_arquivo,
-                ServidorAcesso.__get_caminho_arquivo(
+                AccessServer.__get_caminho_arquivo(
                     nome_arquivo
                 ),
                 confirm=True
@@ -138,7 +138,7 @@ class ServidorAcesso:
 
     def __excluir_arquivo(self, name):
         self.__executar_comando('del {}'.format(
-            ServidorAcesso.__get_caminho_arquivo(name).replace('/', '\\')))
+            AccessServer.__get_caminho_arquivo(name).replace('/', '\\')))
 
     def get_caminho_lockfile(self, group, cloud):
         return self.__get_caminho_arquivo(f'{group}-{cloud}.lock')
@@ -151,7 +151,7 @@ class ServidorAcesso:
                 with tempfile.NamedTemporaryFile(
                         prefix=name, suffix='.ps1', delete=True) as arquivo_script:
                     arquivo_script.file.write(conteudo.encode(
-                        ServidorAcesso.__ENCODE_WINDOWS))
+                        AccessServer.__ENCODE_WINDOWS))
                     arquivo_script.flush()
 
                     res_envio_arquivo = self.__enviar_arquivo(
@@ -159,7 +159,7 @@ class ServidorAcesso:
                     if not res_envio_arquivo[0]:
                         return res_envio_arquivo
 
-                    caminho_arquivo = ServidorAcesso.__get_caminho_arquivo(
+                    caminho_arquivo = AccessServer.__get_caminho_arquivo(
                         arquivo_script.name)
                     resultado = self.__executar_comando(
                         f'powershell.exe -file {caminho_arquivo}')
