@@ -20,8 +20,8 @@ class VM:
         vmm_id=None,
         nested_virtualization=False,
         dynamic_memory=True,
-        status=VMStatusEnum.EM_EXECUCAO,
-        no_regiao=None
+        status=VMStatusEnum.RUNNING,
+        region_host=None
     ):
         self.name = name
         self.description = description if description is not None else ''
@@ -32,7 +32,7 @@ class VM:
         self.networks = networks
         self.vmm_id = vmm_id
         self.status = status
-        self.no_regiao = no_regiao
+        self.region_host = region_host
         self.nested_virtualization = nested_virtualization
         self.dynamic_memory = dynamic_memory
 
@@ -46,7 +46,7 @@ class VM:
 
             if group in self.dados_ansible:
                 raise ValueError(
-                    f"Grupo ansible '{group}' "
+                    f"Group ansible '{group}' "
                     f"referenciado mais de uma vez para a VM '{self.name}'.")
 
             ansible_grupo = VMAnsible(group)
@@ -94,7 +94,7 @@ class VM:
 
         if (not vm_remota
             or (self.region != vm_remota.region or
-                inv_remoto.get_nome_no_regiao(self.region) != vm_remota.no_regiao)):
+                inv_remoto.get_nome_no_regiao(self.region) != vm_remota.region_host)):
             plano_execucao.actions.append(self.get_acao_mover_vm_regiao(
                 inv_remoto.get_id_no_regiao(self.region)))
 
@@ -154,35 +154,35 @@ class VM:
     def get_acao_excluir_vm(self):
         return Action(
             Action.ACAO_EXCLUIR_VM,
-            id_vm=self.vmm_id
+            vm_id=self.vmm_id
         )
 
-    def get_acao_mover_vm_regiao(self, id_no_regiao):
+    def get_acao_mover_vm_regiao(self, region_host_id):
         return Action(
-            'mover_vm_regiao',
+            'move_vm_region',
             vm_name=self.name,
-            id_no_regiao=id_no_regiao,
+            region_host_id=region_host_id,
             region=self.region
         )
 
     def get_acao_atualizar_virtualizacao_aninhada(self):
         return Action(
-            'atualizar_virtualizacao_aninhada',
+            'update_nested_virtualization',
             vm_name=self.name,
             nested_virtualization=self.nested_virtualization
         )
 
     def get_acao_atualizar_memoria_dinamica(self):
         return Action(
-            'atualizar_memoria_dinamica',
+            'update_dynamic_memory',
             vm_name=self.name,
             dynamic_memory=self.dynamic_memory
         )
 
     def get_acao_atualizar_vm(self, id_vm_remota):
         return Action(
-            'atualizar_vm',
-            id_vm=id_vm_remota,
+            'update_vm',
+            vm_id=id_vm_remota,
             description=self.description,
             cpu=self.cpu,
             memory=self.memory
@@ -214,7 +214,7 @@ class VM:
                 networks: {self.networks}
                 vmm_id: {self.vmm_id}
                 status: {self.status}
-                no_regiao: {self.no_regiao}
+                region_host: {self.region_host}
                 ansible: {self.dados_ansible}
                 additional_disks: {self.additional_disks}
                 '''
@@ -230,7 +230,7 @@ class VM:
             'networks': [network.to_dict() for network in self.networks],
             'vmm_id': self.vmm_id,
             'status': self.status.value,
-            'no_regiao': self.no_regiao,
+            'region_host': self.region_host,
             'ansible': [data_ansible.to_dict()
                         for data_ansible in self.dados_ansible.values()]
         }

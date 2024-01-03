@@ -1,5 +1,5 @@
-$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
-$Drive = $VM | Get-SCVirtualDiskDrive | where {$_.ID -eq "{{ id_drive }}"}
+$VM = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -ID "{{ vm_id }}"
+$Drive = $VM | Get-SCVirtualDiskDrive | where {$_.ID -eq "{{ drive_id }}"}
 
 Remove-SCVirtualDiskDrive -VirtualDiskDrive $Drive -JobVariable "job" -RunAsynchronously | Out-Null
 

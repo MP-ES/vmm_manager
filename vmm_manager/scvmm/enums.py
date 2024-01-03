@@ -6,17 +6,17 @@ from enum import Enum
 
 
 class VMStatusEnum(Enum):
-    EM_EXECUCAO = 0
-    DESLIGADA = 1
-    FALHA_NA_ATUALIZACAO = 107
+    RUNNING = 0
+    POWER_OFF = 1
+    UPDATED_WITH_ERROR = 107
 
 
 class SCJobStatusEnum(Enum):
-    EM_EXECUCAO = 1
-    FALHA = 3
-    CANCELADO = 4
-    SUCESSO = 5
-    SUCESSO_COM_AVISO = 6
+    RUNNING = 1
+    FAILED = 3
+    CANCELED = 4
+    SUCCESS = 5
+    SUCCESS_WITH_WARNING = 6
 
 
 class SCDiskBusType(Enum):

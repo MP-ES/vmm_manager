@@ -1,0 +1,12 @@
+$custom_group = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_group }}"
+$custom_name_id = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_id }}"
+$custom_image = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_image }}"
+$custom_region = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_region }}"
+$custom_network_default = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_network_default }}"
+$vm = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -Name "{{ vm_name }}"
+
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_group -Value "{{ group }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_name_id -Value "{{ vm_name }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_image -Value "{{ image }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_region -Value "{{ region }}"
+Set-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_network_default -Value "{{ network_default }}"

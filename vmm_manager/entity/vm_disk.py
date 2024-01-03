@@ -17,9 +17,9 @@ class VMDisk:
         self.__bus = None
         self.__lun = None
 
-    def set_parametros_extras_vmm(self, id_drive, id_disco, bus, lun):
-        self.__id_drive = id_drive
-        self.__id_disco = id_disco
+    def set_parametros_extras_vmm(self, drive_id, disk_id, bus, lun):
+        self.__id_drive = drive_id
+        self.__id_disco = disk_id
         self.__bus = bus
         self.__lun = lun
 
@@ -40,7 +40,7 @@ class VMDisk:
 
     def get_acao_criar_disco(self, vm_name):
         return Action(
-            'criar_disco_vm',
+            'create_vm_disk',
             vm_name=vm_name,
             bus_type=self.bus_type.value,
             size_mb=self.size_mb,
@@ -49,60 +49,60 @@ class VMDisk:
             path=self.path
         )
 
-    def get_acao_excluir_disco(self, id_vm):
+    def get_acao_excluir_disco(self, vm_id):
         return Action(
             Action.ACAO_EXCLUIR_DISCO_VM,
-            id_vm=id_vm,
-            id_drive=self.get_id_drive()
+            vm_id=vm_id,
+            drive_id=self.get_id_drive()
         )
 
-    def get_acao_expandir_disco(self, id_vm, id_drive):
+    def get_acao_expandir_disco(self, vm_id, drive_id):
         return Action(
-            'expandir_disco_vm',
-            id_vm=id_vm,
-            id_drive=id_drive,
+            'expand_vm_disk',
+            vm_id=vm_id,
+            drive_id=drive_id,
             size_mb=self.size_mb
         )
 
-    def get_acao_mover_disco(self, id_vm, id_disco):
+    def get_acao_mover_disco(self, vm_id, disk_id):
         return Action(
             'mover_disco_vm',
-            id_vm=id_vm,
-            id_disco=id_disco,
+            vm_id=vm_id,
+            disk_id=disk_id,
             path=self.path
         )
 
-    def get_acao_converter_disco(self, id_vm, id_drive):
+    def get_acao_converter_disco(self, vm_id, drive_id):
         return Action(
-            'converter_disco_vm',
-            id_vm=id_vm,
-            id_drive=id_drive,
+            'convert_vm_disk',
+            vm_id=vm_id,
+            drive_id=drive_id,
             size_type=self.get_tamanho_tipo_create()
         )
 
-    def get_acoes_diferenca_disco(self, disco_remoto, id_vm, vm_name):
+    def get_acoes_diferenca_disco(self, disco_remoto, vm_id, vm_name):
         actions = []
 
         # Alteração de tipo ou redução de disco exige a recriação
         if ((self.bus_type != disco_remoto.bus_type) or
                 (self.size_mb < disco_remoto.size_mb)):
-            actions.append(disco_remoto.get_acao_excluir_disco(id_vm))
+            actions.append(disco_remoto.get_acao_excluir_disco(vm_id))
             actions.append(self.get_acao_criar_disco(vm_name))
         else:
-            # Tipo de tamanho alterado: converter disco
+            # Type de tamanho alterado: converter disco
             if self.size_type != disco_remoto.size_type:
                 actions.append(self.get_acao_converter_disco(
-                    id_vm, disco_remoto.get_id_drive()))
+                    vm_id, disco_remoto.get_id_drive()))
 
             # Tamanho alterado: expansão
             if self.size_mb > disco_remoto.size_mb:
                 actions.append(self.get_acao_expandir_disco(
-                    id_vm, disco_remoto.get_id_drive()))
+                    vm_id, disco_remoto.get_id_drive()))
 
-            # Caminho alterado: mover disco
+            # Path alterado: mover disco
             if self.path and self.path != disco_remoto.path:
                 actions.append(self.get_acao_mover_disco(
-                    id_vm, disco_remoto.get_id_disco()))
+                    vm_id, disco_remoto.get_id_disco()))
 
         return actions
 
@@ -123,8 +123,8 @@ class VMDisk:
                 size_mb: {self.size_mb}
                 size_type: {self.size_type}
                 path: {self.path}
-                id_drive: {self.__id_drive}
-                id_disco: {self.__id_disco}
+                drive_id: {self.__id_drive}
+                disk_id: {self.__id_disco}
                 bus: {self.__bus}
                 lun: {self.__lun}
                 '''
@@ -136,8 +136,8 @@ class VMDisk:
             'size_mb': self.size_mb,
             'size_type': self.size_type.value,
             'path': self.path,
-            'id_drive': self.__id_drive,
-            'id_disco': self.__id_disco,
+            'drive_id': self.__id_drive,
+            'disk_id': self.__id_disco,
             'bus': self.__bus,
             'lun': self.__lun
         }

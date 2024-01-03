@@ -27,9 +27,9 @@ class AccessServer:
     def __get_caminho_arquivo(name):
         return f'{AccessServer.__PASTA_TEMPORARIA}/{os.path.basename(name)}'
 
-    def __init__(self, servidor, usuario, senha, servidor_vmm):
+    def __init__(self, servidor, usuario, senha, vmm_server):
         self.servidor = servidor
-        self.servidor_vmm = servidor_vmm
+        self.vmm_server = vmm_server
         self.usuario = usuario
         self.senha = senha
 

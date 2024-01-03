@@ -54,9 +54,9 @@ class ParserLocal:
 
     def __validar_arquivo_yaml(self):
         if not os.path.isfile(self.__arquivo_inventario):
-            raise ValueError('Arquivo de inventário não encontrado.')
+            raise ValueError('Path de inventário não encontrado.')
         if os.stat(self.__arquivo_inventario).st_size == 0:
-            raise ValueError('Arquivo de inventário vazio.')
+            raise ValueError('Path de inventário vazio.')
 
     def __montar_inventario(
         self,

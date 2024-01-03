@@ -1,0 +1,14 @@
+$hosts_cluster = Get-SCVMHost -VMMServer "{{ vmm_server }}" | Where-Object {$_.OverallState -in "OK","NeedsAttention"}
+$regioes = @()
+
+foreach($no_cluster in $hosts_cluster) {
+  $region = [PSCustomObject]@{
+    HostID = $no_cluster.ID
+    Hostname = $no_cluster.Name
+    Group = $no_cluster.VMHostGroup.Name
+    Cluster = $no_cluster.HostCluster.Name
+  }
+  $regioes += $region
+}
+
+ConvertTo-Json -Depth 3 $regioes

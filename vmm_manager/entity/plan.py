@@ -115,7 +115,7 @@ class Plan(YamlAble):
                     imprimir_ok(ocultar_progresso)
 
         # Monitorando jobs
-        SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
+        SCJob.monitore_jobs(self.__jobs_em_execucao, servidor_acesso)
         self.__coletar_resultado_jobs()
 
         # Ações pós execução
@@ -167,8 +167,8 @@ class Plan(YamlAble):
                 'Limpando objetos temporários', ocultar_progresso)
 
             cmd = Command(
-                'limpar_objs_criacao_vm',
-                servidor_vmm=servidor_acesso.servidor_vmm,
+                'clean_objects_after_vm_creation',
+                vmm_server=servidor_acesso.vmm_server,
                 guids=self.__guids_a_limpar
             )
             status, retorno = cmd.executar(servidor_acesso)

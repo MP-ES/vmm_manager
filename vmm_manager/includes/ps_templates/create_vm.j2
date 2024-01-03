@@ -1,5 +1,5 @@
 # Parâmetros do script
-$VMMServer="{{ servidor_vmm }}"
+$VMMServer="{{ vmm_server }}"
 $VMName = "{{ vm_name }}"
 $Description = "{{ description }}"
 $TemplateName = "{{ image }}"
@@ -13,26 +13,26 @@ $MsgsErro = ''
 
 $cloud = Get-SCCloud -VMMServer $VMMServer -Name $CloudName
 if (!$cloud ) {
-  $MsgsErro += "Nuvem (Cloud) $CloudName não encontrada.`n"
+  $MsgsErro += "Cloud (Cloud) $CloudName not found.`n"
 }
 
 $image = Get-SCVMTemplate -VMMServer $VMMServer | Where {$_.Name -eq $TemplateName }
 if (!$image ) {
-  $MsgsErro += "Imagem (Template) $TemplateName não encontrada.`n"
+  $MsgsErro += "Image (Template) $TemplateName not found.`n"
 }
 
 {% for network in networks %}
 $network = Get-SCVMNetwork -VMMServer $VMMServer -Name "{{ network }}"
 if (!$network ) {
-  $MsgsErro += "Rede {{ network }} não encontrada.`n"
+  $MsgsErro += "Rede {{ network }} not found.`n"
 }
 {% endfor %}
 
 if ($cloud){
-  $custom_agrupamento = Get-SCCustomProperty -VMMServer $VMMServer -Name "{{ campo_agrupamento }}"
+  $custom_group = Get-SCCustomProperty -VMMServer $VMMServer -Name "{{ field_group }}"
   $vms_nuvem = Get-SCVirtualMachine -VMMServer $VMMServer -Cloud $cloud
   foreach($vm in $vms_nuvem) {
-    $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_agrupamento
+    $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_group
     if ($group.Value -ne "{{ group }}" -and $vm.Name -eq $VMName) {
       $MsgsErro += "O name '$vm' já está sendo usado por uma VM na cloud '$cloud'.`n"
     }

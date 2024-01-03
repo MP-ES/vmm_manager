@@ -1,4 +1,4 @@
-$vm = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
+$vm = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -ID "{{ vm_id }}"
 
 if ($vm.Status -eq 'Running' ){
     Stop-SCVirtualMachine -Force -VM $vm | Out-Null

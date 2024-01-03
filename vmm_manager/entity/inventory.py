@@ -132,7 +132,7 @@ class Inventory:
 
             if maquina_virtual.image is None:
                 raise ValueError(
-                    f'Imagem da VM {maquina_virtual.name} não definida.')
+                    f'Image da VM {maquina_virtual.name} não definida.')
 
             if maquina_virtual.cpu is None:
                 raise ValueError(
@@ -163,14 +163,14 @@ class Inventory:
                 [network.name for network in maquina_virtual.networks])
 
         cmd = Command(
-            'validar_inventario', imagens=imagens,
+            'validate_inventory', imagens=imagens,
             cloud=self.cloud,
             networks=networks,
-            servidor_vmm=servidor_acesso.servidor_vmm,
+            vmm_server=servidor_acesso.vmm_server,
             qtde_minima_regioes=len(regioes),
             group=self.group,
             lista_nome_vms_str=self.lista_nome_vms_str(),
-            campo_agrupamento=FIELD_GROUP[0]
+            field_group=FIELD_GROUP[0]
         )
         _, msg = cmd.executar(servidor_acesso)
         if msg:

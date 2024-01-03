@@ -21,7 +21,7 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'Arquivo de inventário vazio.'
+        assert msg == 'Path de inventário vazio.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -42,7 +42,7 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Imagem da VM {inventario[0][0]['vms'][0]['name']} não definida."
+        assert msg == f"Image da VM {inventario[0][0]['vms'][0]['name']} não definida."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -244,7 +244,7 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Grupo ansible '{nome_grupo}' referenciado mais de uma vez " \
+        assert msg == f"Group ansible '{nome_grupo}' referenciado mais de uma vez " \
             f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
