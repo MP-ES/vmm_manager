@@ -25,13 +25,13 @@ class VMDisk:
 
     def get_id_disco(self):
         if not self.__id_disco:
-            raise ValueError('Disco local não possui ID.')
+            raise ValueError('Local disk does not have an ID.')
 
         return self.__id_disco
 
     def get_id_drive(self):
         if not self.__id_drive:
-            raise ValueError('Disco local não possui ID.')
+            raise ValueError('Local drive does not have an ID.')
 
         return self.__id_drive
 

@@ -19,7 +19,7 @@ from vmm_manager.util.msgs import (formatar_msg_erro, imprimir_acao_corrente,
 @yaml_info(yaml_tag_ns='scvmm_manager')
 class Plan(YamlAble):
     ARQUIVO_PLANO_EXECUCAO = 'plan.yaml'
-    ARQUIVO_LOG_ERROS = 'erros.log'
+    ARQUIVO_LOG_ERROS = 'errors.log'
 
     @staticmethod
     def carregar_plano_execucao(execution_plan_file):
@@ -28,7 +28,7 @@ class Plan(YamlAble):
                 plano_execucao = yaml.safe_load(file)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
-            return False, f"Erro ao carregar plano de execução '{execution_plan_file}'.\n{erro}"
+            return False, f"Error loading the plan '{execution_plan_file}'.\n{erro}"
 
     @staticmethod
     def excluir_arquivo():
@@ -57,7 +57,7 @@ class Plan(YamlAble):
             with open(Plan.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
-            return False, f'Erro ao gerar file {Plan.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
+            return False, f'Error generating file {Plan.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
 
         return True, conteudo
 
@@ -164,7 +164,7 @@ class Plan(YamlAble):
     def __limpar_guids(self, servidor_acesso, ocultar_progresso):
         if self.__guids_a_limpar:
             imprimir_acao_corrente(
-                'Limpando objetos temporários', ocultar_progresso)
+                'Cleaning up temporary VMM objects', ocultar_progresso)
 
             cmd = Command(
                 'clean_objects_after_vm_creation',
@@ -178,7 +178,7 @@ class Plan(YamlAble):
             else:
                 imprimir_erro(ocultar_progresso)
                 self.__logar_erros_comando(
-                    'limpar objetos temporários', retorno)
+                    'Clean up temporary VMM objects', retorno)
 
     def __processa_resultado_execucao(self):
         if self.has_erro_execucao():

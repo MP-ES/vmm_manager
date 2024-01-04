@@ -87,8 +87,7 @@ class Inventory:
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.group != inventario_remoto.group
                 or self.cloud != inventario_remoto.cloud):
-            return False, 'Não é possível calcular o plano de execução \
-                para inventários de group ou cloud distintos.'
+            return False, 'Inventories must be from the same group and cloud.'
 
         plano_execucao = Plan(self.group, self.cloud)
 
@@ -133,19 +132,19 @@ class Inventory:
 
             if maquina_virtual.image is None:
                 raise ValueError(
-                    f'Image da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have an image defined.')
 
             if maquina_virtual.cpu is None:
                 raise ValueError(
-                    f'Quantidade de CPUs da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have a CPU defined.')
 
             if maquina_virtual.memory is None:
                 raise ValueError(
-                    f'Quantidade de memória da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have a memory defined.')
 
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
-                    f'VM {maquina_virtual.name} deve ter exatamente uma network default.')
+                    f'VM {maquina_virtual.name} should have only one primary network defined.')
 
     def validar(self, servidor_acesso):
         self.__validar_regras_locais()

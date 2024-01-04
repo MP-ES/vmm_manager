@@ -46,8 +46,8 @@ class VM:
 
             if group in self.dados_ansible:
                 raise ValueError(
-                    f"Group ansible '{group}' "
-                    f"referenciado mais de uma vez para a VM '{self.name}'.")
+                    f"Ansible group '{group}' "
+                    f"already exists in VM '{self.name}'.")
 
             ansible_grupo = VMAnsible(group)
             ansible_grupo.extrair_dados_vars_dict(
