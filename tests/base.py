@@ -81,7 +81,7 @@ class Base():
                         redes_vm,
                         nested_virtualization=bool(getrandbits(1)),
                         dynamic_memory=bool(getrandbits(1)),
-                        no_regiao=inventario.get_nome_no_regiao(regiao_vm))
+                        region_host=inventario.get_nome_no_regiao(regiao_vm))
             vm_obj.add_discos_adicionais(discos_vm)
             inventario.vms[vm_name] = vm_obj
 

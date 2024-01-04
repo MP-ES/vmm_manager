@@ -12,12 +12,12 @@ from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
 class Action(YamlAble):
-    ACAO_CRIAR_VM = 'criar_vm'
-    ACAO_EXCLUIR_VM = 'excluir_vm'
-    ACAO_EXCLUIR_DISCO_VM = 'excluir_disco_vm'
+    ACAO_CRIAR_VM = 'create_vm'
+    ACAO_EXCLUIR_VM = 'delete_vm'
+    ACAO_EXCLUIR_DISCO_VM = 'delete_vm_disk'
 
     RESOURCE_IDENTIFIER_NAME = 'vm_name'
-    RESOURCE_IDENTIFIER_ID = 'id_vm'
+    RESOURCE_IDENTIFIER_ID = 'vm_id'
 
     def __init__(self, command, **kwargs):
         # Validate if the args contain the resource identifier
@@ -27,8 +27,8 @@ class Action(YamlAble):
             and Action.RESOURCE_IDENTIFIER_ID not in kwargs
         ):
             raise ValueError(
-                f'Os argumentos devem conter o identificador do recurso: '
-                f'{Action.RESOURCE_IDENTIFIER_NAME} ou {Action.RESOURCE_IDENTIFIER_ID}.'
+                f'The args must contain the resource identifier: '
+                f'{Action.RESOURCE_IDENTIFIER_NAME} or {Action.RESOURCE_IDENTIFIER_ID}.'
             )
 
         self.command = command
@@ -41,12 +41,12 @@ class Action(YamlAble):
     def executar(self, group, cloud, servidor_acesso, guid):
         cmd = Command(self.command,
                       group=group,
-                      campo_agrupamento=FIELD_GROUP[0],
-                      campo_id=FIELD_ID[0],
-                      campo_regiao=FIELD_REGION[0],
+                      field_group=FIELD_GROUP[0],
+                      field_id=FIELD_ID[0],
+                      field_region=FIELD_REGION[0],
                       cloud=cloud,
                       guid=guid,
-                      servidor_vmm=servidor_acesso.servidor_vmm
+                      vmm_server=servidor_acesso.vmm_server
                       )
         cmd.args.update(self.args)
 
@@ -102,14 +102,14 @@ class Action(YamlAble):
     def get_cmd_pos_execucao(self, group, servidor_acesso):
         if self.is_criacao_vm():
             cmd = Command(
-                'criar_vm_pos',
-                description=f"Taguear VM {self.args['vm_name']}",
-                servidor_vmm=servidor_acesso.servidor_vmm,
-                campo_agrupamento=FIELD_GROUP[0],
-                campo_id=FIELD_ID[0],
-                campo_imagem=FIELD_IMAGE[0],
-                campo_regiao=FIELD_REGION[0],
-                campo_rede_principal=FIELD_NETWORK_DEFAULT[0],
+                'create_vm_pos',
+                description=f"Add VMM tags for {self.args['vm_name']}",
+                vmm_server=servidor_acesso.vmm_server,
+                field_group=FIELD_GROUP[0],
+                field_id=FIELD_ID[0],
+                field_image=FIELD_IMAGE[0],
+                field_region=FIELD_REGION[0],
+                field_network_default=FIELD_NETWORK_DEFAULT[0],
                 group=group
             )
             cmd.args.update(self.args)

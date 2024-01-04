@@ -1,0 +1,52 @@
+$custom_group = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_group }}"
+$custom_name_id = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_id }}"
+$custom_image = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_image }}"
+$custom_region = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_region }}"
+$custom_network_default = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_network_default }}"
+$cloud = Get-SCCloud -VMMServer "{{ vmm_server }}" -Name "{{ cloud }}"
+$vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -Cloud $cloud
+$vms_agrupamento = @()
+
+foreach($vm in $vms_nuvem) {
+  $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_group
+  if ($group.Value -eq "{{ group }}") {
+    $nome_id = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_name_id
+
+    {% if filtro_nome_vm %}
+  # Filtrando por name: otimização
+  if ($nome_id.Value -ne "{{ filtro_nome_vm }}"){Continue}
+    {% endif %}
+    
+    $image = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_image
+    $region = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_region
+    $network_default = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_network_default
+
+    $networks = @()
+    foreach($interface in $vm.VirtualNetworkAdapters) {
+      $network = [PSCustomObject]@{
+        Name = $interface.VMNetwork.Name
+        IPS = $interface.IPv4Addresses
+        Principal = $interface.VMNetwork.Name -eq $network_default.Value
+      }
+      $networks += $network
+    }
+
+    $vm_agrupamento = [PSCustomObject]@{
+      ID = $vm.ID
+      Name = if ($nome_id.Value -ne $null) { $nome_id.Value } else { $vm.ID } 
+      Description = $vm.Description
+      Status = $vm.Status
+      RegionHostname = $vm.VMHost.Name
+      Cpu = $vm.CPUCount
+      Ram = $vm.Memory
+      Networks = $networks
+      Image = $image.Value
+      Region = $region.Value
+      NestedVirtualization = $vm.EnabledNestedVirtualization
+      DynamicMemory = $vm.DynamicMemoryEnabled
+    }
+    $vms_agrupamento += $vm_agrupamento
+  }
+}
+
+ConvertTo-Json -Depth 3 $vms_agrupamento

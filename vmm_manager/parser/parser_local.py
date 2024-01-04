@@ -34,8 +34,7 @@ class ParserLocal:
 
             if file in [additional_disk.file for additional_disk in additional_disks]:
                 raise ValueError(
-                    f"Disco '{file}' referenciado mais de uma vez "
-                    f"para a VM '{vm_name}'.")
+                    f"Disk '{file}' already exists in VM '{vm_name}'.")
 
             additional_disk = VMDisk(
                 SCDiskBusType(item.get('bus_type')),
@@ -54,9 +53,9 @@ class ParserLocal:
 
     def __validar_arquivo_yaml(self):
         if not os.path.isfile(self.__arquivo_inventario):
-            raise ValueError('Arquivo de inventário não encontrado.')
+            raise ValueError('Inventory file not found.')
         if os.stat(self.__arquivo_inventario).st_size == 0:
-            raise ValueError('Arquivo de inventário vazio.')
+            raise ValueError('Empty inventory file.')
 
     def __montar_inventario(
         self,
@@ -72,7 +71,7 @@ class ParserLocal:
             vm_name = maquina_virtual.get('name').upper()
             if vm_name in nomes_vm:
                 raise ValueError(
-                    f'VM {vm_name} referenciada mais de uma vez no inventário.')
+                    f'VM {vm_name} already exists in inventory.')
             nomes_vm.append(vm_name)
 
             # filtrando vms: melhoria no desempenho
@@ -89,7 +88,7 @@ class ParserLocal:
 
                 if nome_rede in nomes_redes:
                     raise ValueError(
-                        f"Rede '{nome_rede}' referenciada mais de uma vez para a VM '{vm_name}'.")
+                        f"Network '{nome_rede}' already exists in VM '{vm_name}'.")
 
                 nomes_redes.append(nome_rede)
                 vm_redes.append(

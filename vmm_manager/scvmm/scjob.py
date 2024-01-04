@@ -15,7 +15,7 @@ from vmm_manager.util.msgs import formatar_msg_aviso
 class SCJob():
 
     @staticmethod
-    def monitorar_jobs(jobs, servidor_acesso):
+    def monitore_jobs(jobs, servidor_acesso):
         if jobs:
             print('\nMonitoring jobs:')
             pbars = {}
@@ -58,8 +58,8 @@ class SCJob():
 
     @staticmethod
     def __obter_status_jobs_vmm(jobs, servidor_acesso):
-        cmd = Command('monitorar_jobs',
-                      servidor_vmm=servidor_acesso.servidor_vmm,
+        cmd = Command('monitore_jobs',
+                      vmm_server=servidor_acesso.vmm_server,
                       jobs=jobs)
         return cmd.executar(servidor_acesso)
 

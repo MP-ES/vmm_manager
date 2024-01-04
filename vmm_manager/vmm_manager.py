@@ -22,9 +22,9 @@ from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
 from vmm_manager.util.msgs import (finalizar_com_erro, formatar_msg_aviso,
                                    imprimir_acao_corrente,
                                    set_parametros_globais_escrita)
-from vmm_manager.util.operation import (adquirir_lock,
+from vmm_manager.util.operation import (add_operation_lock,
                                         confirmar_acao_usuario_com_lock,
-                                        liberar_lock,
+                                        remove_operation_lock,
                                         validar_retorno_operacao_com_lock,
                                         validar_retorno_operacao_sem_lock)
 
@@ -191,7 +191,7 @@ def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
 
 def validar_conexao(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Checking VMM connection', ocultar_progresso)
-    cmd = Command('testar_conexao', servidor_vmm=servidor_acesso.servidor_vmm)
+    cmd = Command('connection_test', vmm_server=servidor_acesso.vmm_server)
     status, msg = cmd.executar(servidor_acesso)
 
     if status and 'True' not in msg:
@@ -199,9 +199,9 @@ def validar_conexao(servidor_acesso, ocultar_progresso):
     validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso)
 
 
-def configurar_vmm(servidor_acesso, ocultar_progresso):
+def vmm_setup(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Setting up the VMM', ocultar_progresso)
-    cmd = Command('configurar_vmm', servidor_vmm=servidor_acesso.servidor_vmm,
+    cmd = Command('vmm_setup', vmm_server=servidor_acesso.vmm_server,
                   campos_customizados=[FIELD_GROUP, FIELD_ID,
                                        FIELD_IMAGE, FIELD_REGION,
                                        FIELD_NETWORK_DEFAULT])
@@ -210,13 +210,13 @@ def configurar_vmm(servidor_acesso, ocultar_progresso):
     validar_retorno_operacao_sem_lock(status, msg, ocultar_progresso)
 
 
-def listar_opcoes(servidor_acesso, ocultar_progresso):
+def list_options(servidor_acesso, ocultar_progresso):
     imprimir_acao_corrente('Listing options', ocultar_progresso)
-    cmd = Command('listar_opcoes', servidor_vmm=servidor_acesso.servidor_vmm)
+    cmd = Command('list_options', vmm_server=servidor_acesso.vmm_server)
     status, opcoes = cmd.executar(servidor_acesso)
 
     validar_retorno_operacao_sem_lock(status, opcoes, ocultar_progresso)
-    regioes = re.search(r'regioes: ([0-9]{1,})', opcoes).group(1)
+    regioes = re.search(r'regions: ([0-9]{1,})', opcoes).group(1)
     str_regioes = '\n'.join(string.ascii_uppercase[0:int(regioes)])
     opcoes = opcoes.replace(f'regions: {regioes}', str_regioes)
     print('\n' + opcoes)
@@ -229,21 +229,21 @@ def imprimir_json_inventario(
     all_data,
     ocultar_progresso
 ):
-    configurar_vmm(servidor_acesso, ocultar_progresso)
+    vmm_setup(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
         servidor_acesso, inventory_file, ocultar_progresso,
         filtro_nome_vm=vm_name, filtro_dados_completos=all_data)
 
-    adquirir_lock(servidor_acesso, inventario_local.group,
-                  inventario_local.cloud, ocultar_progresso)
+    add_operation_lock(servidor_acesso, inventario_local.group,
+                       inventario_local.cloud, ocultar_progresso)
 
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, inventario_local.group,
         inventario_local.cloud, ocultar_progresso,
         filtro_nome_vm=vm_name, filtro_dados_completos=all_data)
 
-    liberar_lock(servidor_acesso, inventario_local.group,
-                 inventario_local.cloud, ocultar_progresso)
+    remove_operation_lock(servidor_acesso, inventario_local.group,
+                          inventario_local.cloud, ocultar_progresso)
 
     imprimir_acao_corrente('Generating JSON', ocultar_progresso)
     status, json_inventario = Inventory.get_json(
@@ -254,13 +254,13 @@ def imprimir_json_inventario(
 
 
 def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
-    configurar_vmm(servidor_acesso, ocultar_progresso)
+    vmm_setup(servidor_acesso, ocultar_progresso)
     inventario_local = obter_inventario_local(
         servidor_acesso, inventory_file, ocultar_progresso)
 
-    adquirir_lock(servidor_acesso,
-                  inventario_local.group,
-                  inventario_local.cloud, ocultar_progresso)
+    add_operation_lock(servidor_acesso,
+                       inventario_local.group,
+                       inventario_local.cloud, ocultar_progresso)
 
     conteudo_arquivo = None
     plano_execucao = obter_plano_execucao(
@@ -274,8 +274,8 @@ def planejar_sincronizacao(servidor_acesso, inventory_file, ocultar_progresso):
         validar_retorno_operacao_sem_lock(
             status, conteudo_arquivo, ocultar_progresso)
 
-    liberar_lock(servidor_acesso, inventario_local.group,
-                 inventario_local.cloud, ocultar_progresso)
+    remove_operation_lock(servidor_acesso, inventario_local.group,
+                          inventario_local.cloud, ocultar_progresso)
 
     if conteudo_arquivo:
         print(f'\nChanges to apply:\n{conteudo_arquivo}')
@@ -292,7 +292,7 @@ def executar_sincronizacao(
     inventory_file,
     ocultar_progresso
 ):
-    configurar_vmm(servidor_acesso, ocultar_progresso)
+    vmm_setup(servidor_acesso, ocultar_progresso)
 
     # Obtendo plano de execução
     #
@@ -313,8 +313,8 @@ def executar_sincronizacao(
         inventario_local = obter_inventario_local(
             servidor_acesso, inventory_file, ocultar_progresso)
 
-        adquirir_lock(servidor_acesso, inventario_local.group,
-                      inventario_local.cloud, ocultar_progresso)
+        add_operation_lock(servidor_acesso, inventario_local.group,
+                           inventario_local.cloud, ocultar_progresso)
         adquiriu_lock = True
 
         plano_execucao = obter_plano_execucao(
@@ -325,12 +325,12 @@ def executar_sincronizacao(
             'You must pass the execution plan or the inventory file.')
 
     if not adquiriu_lock:
-        adquirir_lock(servidor_acesso, plano_execucao.group,
-                      plano_execucao.cloud, ocultar_progresso)
+        add_operation_lock(servidor_acesso, plano_execucao.group,
+                           plano_execucao.cloud, ocultar_progresso)
 
     if plano_execucao.is_vazio():
-        liberar_lock(servidor_acesso, plano_execucao.group,
-                     plano_execucao.cloud, ocultar_progresso)
+        remove_operation_lock(servidor_acesso, plano_execucao.group,
+                              plano_execucao.cloud, ocultar_progresso)
         print(
             '\nThe execution plan is empty: nothing to do.')
     else:
@@ -344,8 +344,8 @@ def executar_sincronizacao(
 
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
-        liberar_lock(servidor_acesso, plano_execucao.group,
-                     plano_execucao.cloud, ocultar_progresso)
+        remove_operation_lock(servidor_acesso, plano_execucao.group,
+                              plano_execucao.cloud, ocultar_progresso)
         plano_execucao.imprimir_resultado_execucao()
 
 
@@ -356,9 +356,9 @@ def remover_agrupamento_da_nuvem(
     skip_confirmation,
     ocultar_progresso
 ):
-    configurar_vmm(servidor_acesso, ocultar_progresso)
+    vmm_setup(servidor_acesso, ocultar_progresso)
 
-    adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso)
+    add_operation_lock(servidor_acesso, group, cloud, ocultar_progresso)
 
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, group, cloud, ocultar_progresso)
@@ -378,10 +378,10 @@ def remover_agrupamento_da_nuvem(
         plano_execucao = inventario_remoto.gerar_plano_exclusao()
         plano_execucao.executar(servidor_acesso, ocultar_progresso)
 
-        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
+        remove_operation_lock(servidor_acesso, group, cloud, ocultar_progresso)
         plano_execucao.imprimir_resultado_execucao()
     else:
-        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
+        remove_operation_lock(servidor_acesso, group, cloud, ocultar_progresso)
         print(
             f'\nThere are no resources in the cloud {cloud} for the group {group}.')
 
@@ -412,7 +412,7 @@ def main():
             servidor_acesso, args.group, args.cloud,
             args.skip_confirmation, args.hide_progress)
     elif args.command == 'opts':
-        listar_opcoes(servidor_acesso, args.hide_progress)
+        list_options(servidor_acesso, args.hide_progress)
     elif args.command == 'show':
         imprimir_json_inventario(
             servidor_acesso, args.inventory_file,

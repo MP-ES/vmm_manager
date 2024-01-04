@@ -1,0 +1,12 @@
+Write-Host "Available clouds:"
+Get-SCCloud -VMMServer "{{ vmm_server }}" | Format-Table -Property Name
+
+Write-Host "Available images:"
+Get-SCVMTemplate -VMMServer "{{ vmm_server }}" | Format-Table -Property Name
+
+Write-Host "Available networks:"
+Get-SCVMNetwork -VMMServer "{{ vmm_server }}" | Format-Table -Property Name
+
+Write-Host "Available regions:`n`nName`n----"
+$regions=(Get-SCVMHost -VMMServer "{{ vmm_server }}" | Where-Object {$_.OverallState -eq "OK"} | Measure-Object)
+Write-Host "regions:"($regions.Count)

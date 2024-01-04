@@ -1,5 +1,5 @@
-$VM = Get-SCVirtualMachine -VMMServer "{{ servidor_vmm }}" -ID "{{ id_vm }}"
-$Disk = $VM | Get-SCVirtualHardDisk | where {$_.ID -eq "{{ id_disco }}"}
+$VM = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -ID "{{ vm_id }}"
+$Disk = $VM | Get-SCVirtualHardDisk | where {$_.ID -eq "{{ disk_id }}"}
 
 $JobGroupID = "{{ guid }}"
 Move-SCVirtualHardDisk -VirtualHardDisk $Disk -Path "{{ path }}" -JobGroup $JobGroupID

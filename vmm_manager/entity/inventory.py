@@ -9,10 +9,11 @@ from vmm_manager.scvmm.scregion import SCRegion
 from vmm_manager.util.config import FIELD_GROUP
 
 
-def json_handle_inventario(obj):
+def json_handle_inventory(obj):
     if isinstance(obj, Inventory):
         return obj.to_dict()
-    raise ValueError('Objeto precisa ser uma instância de inventário.')
+
+    raise ValueError('Object must be an Inventory')
 
 
 class Inventory:
@@ -31,7 +32,7 @@ class Inventory:
             inventario_remoto.vms[vm_name].to_json_dados_completos = all_data
 
         return True, json.dumps(inventario_remoto,
-                                default=json_handle_inventario,
+                                default=json_handle_inventory,
                                 sort_keys=True, indent=4)
 
     def __init__(self, group, cloud):
@@ -48,7 +49,7 @@ class Inventory:
         if region in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[region].nome_no
 
-        raise ValueError(f"Região '{region}' não possui nó definido.")
+        raise ValueError(f"Region '{region}' does not have a host defined.")
 
     def get_id_no_regiao(self, region):
         self.__retirar_regiao_pool(region)
@@ -56,7 +57,7 @@ class Inventory:
         if region in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[region].id_no
 
-        raise ValueError(f"Região '{region}' não possui nó definido.")
+        raise ValueError(f"Region '{region}' does not have a host defined.")
 
     def get_mapeamento_regioes_to_test(self):
         # flush regions
@@ -66,7 +67,7 @@ class Inventory:
             it_regioes += 1
 
         if self.__regioes_por_letra_id is None:
-            raise ValueError('Mapeamento de regiões não definido.')
+            raise ValueError('Regions map not set.')
 
         return self.__regioes_por_letra_id
 
@@ -86,8 +87,7 @@ class Inventory:
     def calcular_plano_execucao(self, inventario_remoto):
         if (self.group != inventario_remoto.group
                 or self.cloud != inventario_remoto.cloud):
-            return False, 'Não é possível calcular o plano de execução \
-                para inventários de group ou cloud distintos.'
+            return False, 'Inventories must be from the same group and cloud.'
 
         plano_execucao = Plan(self.group, self.cloud)
 
@@ -132,19 +132,19 @@ class Inventory:
 
             if maquina_virtual.image is None:
                 raise ValueError(
-                    f'Imagem da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have an image defined.')
 
             if maquina_virtual.cpu is None:
                 raise ValueError(
-                    f'Quantidade de CPUs da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have a CPU defined.')
 
             if maquina_virtual.memory is None:
                 raise ValueError(
-                    f'Quantidade de memória da VM {maquina_virtual.name} não definida.')
+                    f'VM {maquina_virtual.name} does not have a memory defined.')
 
             if maquina_virtual.get_qtde_rede_principal() != 1:
                 raise ValueError(
-                    f'VM {maquina_virtual.name} deve ter exatamente uma network default.')
+                    f'VM {maquina_virtual.name} should have only one primary network defined.')
 
     def validar(self, servidor_acesso):
         self.__validar_regras_locais()
@@ -163,14 +163,14 @@ class Inventory:
                 [network.name for network in maquina_virtual.networks])
 
         cmd = Command(
-            'validar_inventario', imagens=imagens,
+            'validate_inventory', imagens=imagens,
             cloud=self.cloud,
             networks=networks,
-            servidor_vmm=servidor_acesso.servidor_vmm,
+            vmm_server=servidor_acesso.vmm_server,
             qtde_minima_regioes=len(regioes),
             group=self.group,
             lista_nome_vms_str=self.lista_nome_vms_str(),
-            campo_agrupamento=FIELD_GROUP[0]
+            field_group=FIELD_GROUP[0]
         )
         _, msg = cmd.executar(servidor_acesso)
         if msg:

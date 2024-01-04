@@ -1,16 +1,16 @@
 $lockfile = "{{ lockfile }}"
-$pid_processo = "{{ pid }}"
-$host_processo = "{{ host }}"
+$process_id = "{{ pid }}"
+$process_host = "{{ host }}"
 $data_lock = "{{ data }}"
 $group = "{{ group }}"
 $cloud = "{{ cloud }}"
 
 $dados_processo = [PSCustomObject]@{
-  PIDProcesso = $pid_processo
-  HostLock    = $host_processo
-  DataLock    = $data_lock
-  Agrupamento = $group
-  Nuvem       = $cloud
+  PID      = $process_id
+  HostLock = $process_host
+  DataLock = $data_lock
+  Group    = $group
+  Cloud    = $cloud
 } | ConvertTo-Json
 
 if (Test-Path $lockfile) {

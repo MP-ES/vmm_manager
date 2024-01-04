@@ -19,7 +19,7 @@ from vmm_manager.util.msgs import (formatar_msg_erro, imprimir_acao_corrente,
 @yaml_info(yaml_tag_ns='scvmm_manager')
 class Plan(YamlAble):
     ARQUIVO_PLANO_EXECUCAO = 'plan.yaml'
-    ARQUIVO_LOG_ERROS = 'erros.log'
+    ARQUIVO_LOG_ERROS = 'errors.log'
 
     @staticmethod
     def carregar_plano_execucao(execution_plan_file):
@@ -28,7 +28,7 @@ class Plan(YamlAble):
                 plano_execucao = yaml.safe_load(file)
                 return True, plano_execucao
         except (IOError, TypeError) as erro:
-            return False, f"Erro ao carregar plano de execução '{execution_plan_file}'.\n{erro}"
+            return False, f"Error loading the plan '{execution_plan_file}'.\n{erro}"
 
     @staticmethod
     def excluir_arquivo():
@@ -57,7 +57,7 @@ class Plan(YamlAble):
             with open(Plan.ARQUIVO_PLANO_EXECUCAO, 'w', encoding='utf8') as arquivo_yaml:
                 arquivo_yaml.write(conteudo)
         except IOError as erro:
-            return False, f'Erro ao gerar file {Plan.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
+            return False, f'Error generating file {Plan.ARQUIVO_PLANO_EXECUCAO}.\n{erro}'
 
         return True, conteudo
 
@@ -90,7 +90,7 @@ class Plan(YamlAble):
                     # Job em execução
                     self.__jobs_em_execucao[guid] = SCJob(
                         guid, acao)
-                    print(f'[Iniciado {guid}]')
+                    print(f'[Started {guid}]')
                 else:
                     # Comando já finalizado
                     imprimir_ok(ocultar_progresso)
@@ -107,7 +107,7 @@ class Plan(YamlAble):
                     interval = 10
 
                     print(
-                        f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # noqa: E501
+                        f'{textwrap.shorten(f"Waiting {interval} seconds to start the next action", 100)} => ',  # noqa: E501
                         end='',
                         flush=True
                     )
@@ -115,7 +115,7 @@ class Plan(YamlAble):
                     imprimir_ok(ocultar_progresso)
 
         # Monitorando jobs
-        SCJob.monitorar_jobs(self.__jobs_em_execucao, servidor_acesso)
+        SCJob.monitore_jobs(self.__jobs_em_execucao, servidor_acesso)
         self.__coletar_resultado_jobs()
 
         # Ações pós execução
@@ -125,7 +125,7 @@ class Plan(YamlAble):
 
     def executar(self, servidor_acesso, ocultar_progresso):
         if not self.is_vazio():
-            print('\nOperações executadas:')
+            print('\nApplied operations:')
 
             # actions bloqueantes primeiro
             acoes_bloqueantes = [
@@ -164,11 +164,11 @@ class Plan(YamlAble):
     def __limpar_guids(self, servidor_acesso, ocultar_progresso):
         if self.__guids_a_limpar:
             imprimir_acao_corrente(
-                'Limpando objetos temporários', ocultar_progresso)
+                'Cleaning up temporary VMM objects', ocultar_progresso)
 
             cmd = Command(
-                'limpar_objs_criacao_vm',
-                servidor_vmm=servidor_acesso.servidor_vmm,
+                'clean_objects_after_vm_creation',
+                vmm_server=servidor_acesso.vmm_server,
                 guids=self.__guids_a_limpar
             )
             status, retorno = cmd.executar(servidor_acesso)
@@ -178,7 +178,7 @@ class Plan(YamlAble):
             else:
                 imprimir_erro(ocultar_progresso)
                 self.__logar_erros_comando(
-                    'limpar objetos temporários', retorno)
+                    'Clean up temporary VMM objects', retorno)
 
     def __processa_resultado_execucao(self):
         if self.has_erro_execucao():
@@ -189,10 +189,10 @@ class Plan(YamlAble):
     def imprimir_resultado_execucao(self):
         if self.has_erro_execucao():
             print(formatar_msg_erro(
-                '\nErro ao executar algumas operações. '
-                f'Mais detalhes em {Plan.ARQUIVO_LOG_ERROS}.'))
+                '\nSynchronization completed with errors. '
+                f'More details in {Plan.ARQUIVO_LOG_ERROS}.'))
         else:
-            print('\nSincronização executada com sucesso.')
+            print('\nSynchronization completed successfully.')
 
     def has_erro_execucao(self):
         return self.__msgs_erros
@@ -202,15 +202,15 @@ class Plan(YamlAble):
             for job in self.__jobs_em_execucao.values():
                 if job.is_finalizado_com_erro():
                     print(formatar_msg_erro(
-                        f'Processo {job.vmm_id} finalizado com erro.'))
+                        f'Process {job.vmm_id} finalized with error.'))
                     self.__logar_erros_acao(job.acao, job.resumo_erro)
 
     def __logar_erros_comando(self, command, erro):
-        self.__msgs_erros += f'Erro no command "{command}":\n{erro}\n\n'
+        self.__msgs_erros += f'Error found in "{command}":\n{erro}\n\n'
 
     def __logar_erros_acao(self, acao, erro):
-        self.__msgs_erros += f'Comando:\n{acao.get_str_impressao_inline()}' \
-            f'\n\nErro capturado:\n{erro}\n\n'
+        self.__msgs_erros += f'Command:\n{acao.get_str_impressao_inline()}' \
+            f'\n\nCaptured error:\n{erro}\n\n'
 
     def __gerar_arquivo_erros(self):
         try:
@@ -218,7 +218,7 @@ class Plan(YamlAble):
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
             print(
-                f'Não foi possível gerar file de erros ({Plan.ARQUIVO_LOG_ERROS}): '
+                f'It was not possible to generate the error file ({Plan.ARQUIVO_LOG_ERROS}): '
                 f'{erro}')
 
     def imprimir_acoes(self):

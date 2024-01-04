@@ -19,20 +19,20 @@ class ParserRemote:
 
     @staticmethod
     def __get_regioes_disponiveis(servidor_acesso):
-        cmd = Command('obter_regioes_disponiveis',
-                      servidor_vmm=servidor_acesso.servidor_vmm)
+        cmd = Command('get_available_regions',
+                      vmm_server=servidor_acesso.vmm_server)
         status, regioes = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f'Erro ao recuperar regiões disponíveis: {regioes}')
+                f'Error getting available regions: {regioes}')
 
         regioes_remoto = json.loads(regioes)
         regioes_disponiveis = []
         for region in regioes_remoto:
             regiao_obj = SCRegion(
-                region.get('IDNo'),
-                region.get('NomeNo'),
-                region.get('Grupo'),
+                region.get('HostID'),
+                region.get('Hostname'),
+                region.get('Group'),
                 region.get('Cluster')
             )
 
@@ -46,52 +46,52 @@ class ParserRemote:
         self.__inventario = None
 
     def __get_vms_servidor(self, servidor_acesso, filtro_nome_vm=None):
-        cmd = Command('obter_vms_agrupamento',
-                      servidor_vmm=servidor_acesso.servidor_vmm,
-                      campo_agrupamento=FIELD_GROUP[0],
-                      campo_id=FIELD_ID[0],
-                      campo_imagem=FIELD_IMAGE[0],
-                      campo_regiao=FIELD_REGION[0],
-                      campo_rede_principal=FIELD_NETWORK_DEFAULT[0],
+        cmd = Command('get_vms_in_group',
+                      vmm_server=servidor_acesso.vmm_server,
+                      field_group=FIELD_GROUP[0],
+                      field_id=FIELD_ID[0],
+                      field_image=FIELD_IMAGE[0],
+                      field_region=FIELD_REGION[0],
+                      field_network_default=FIELD_NETWORK_DEFAULT[0],
                       group=self.group,
                       filtro_nome_vm=filtro_nome_vm,
                       cloud=self.cloud)
         status, vms = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f"Erro ao recuperar VM's do group: {vms}")
+                f"Error getting VMs: {vms}")
         return vms
 
     def __get_discos_adicionais(self, servidor_acesso):
-        cmd = Command('obter_discos_adicionais',
-                      servidor_vmm=servidor_acesso.servidor_vmm,
-                      campo_agrupamento=FIELD_GROUP[0],
-                      campo_id=FIELD_ID[0],
+        cmd = Command('get_additional_disks',
+                      vmm_server=servidor_acesso.vmm_server,
+                      field_group=FIELD_GROUP[0],
+                      field_id=FIELD_ID[0],
                       group=self.group,
                       cloud=self.cloud,
                       vm_nomes=','.join([f'"{vm_name}"' for vm_name in self.__inventario.vms]))
         status, additional_disks = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f'Erro ao recuperar discos adicionais: {additional_disks}')
+                f'Error getting additional disks: {additional_disks}')
 
         discos_vms_remoto = json.loads(additional_disks)
         discos_vms = {}
         for maquina_virtual in discos_vms_remoto:
-            vm_name = maquina_virtual.get('Nome')
+            vm_name = maquina_virtual.get('Name')
             discos_vms[vm_name] = []
 
             for disco_remoto in maquina_virtual.get('Discos'):
                 disco = VMDisk(
-                    SCDiskBusType(disco_remoto.get('Tipo')),
-                    disco_remoto.get('Arquivo'),
-                    disco_remoto.get('TamanhoMB'),
-                    SCDiskSizeType(disco_remoto.get('TamanhoTipo')),
-                    disco_remoto.get('Caminho'))
+                    SCDiskBusType(disco_remoto.get('Type')),
+                    disco_remoto.get('File'),
+                    disco_remoto.get('SizeMB'),
+                    SCDiskSizeType(disco_remoto.get('SizeType')),
+                    disco_remoto.get('Path'))
 
                 disco.set_parametros_extras_vmm(
-                    disco_remoto.get('IDDrive'),
-                    disco_remoto.get('IDDisco'),
+                    disco_remoto.get('DriveID'),
+                    disco_remoto.get('DiskID'),
                     disco_remoto.get('Bus'),
                     disco_remoto.get('Lun'),
                 )
@@ -113,24 +113,24 @@ class ParserRemote:
 
         for maquina_virtual in vms_servidor:
             vms_rede = []
-            for network in maquina_virtual.get('Redes'):
-                vm_rede = VMNetwork(network.get('Nome'), network.get('Principal'))
+            for network in maquina_virtual.get('Networks'):
+                vm_rede = VMNetwork(network.get('Name'), network.get('Principal'))
                 vm_rede.ips = network.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 
-            self.__inventario.vms[maquina_virtual.get('Nome')] = VM(
-                maquina_virtual.get('Nome'),
-                maquina_virtual.get('Descricao'),
-                maquina_virtual.get('Imagem'),
-                maquina_virtual.get('Regiao'),
-                maquina_virtual.get('QtdeCpu'),
-                maquina_virtual.get('QtdeRam'),
+            self.__inventario.vms[maquina_virtual.get('Name')] = VM(
+                maquina_virtual.get('Name'),
+                maquina_virtual.get('Description'),
+                maquina_virtual.get('Image'),
+                maquina_virtual.get('Region'),
+                maquina_virtual.get('Cpu'),
+                maquina_virtual.get('Ram'),
                 vms_rede,
                 maquina_virtual.get('ID'),
-                maquina_virtual.get('VirtualizacaoAninhada'),
-                maquina_virtual.get('MemoriaDinamica'),
+                maquina_virtual.get('NestedVirtualization'),
+                maquina_virtual.get('DynamicMemory'),
                 VMStatusEnum(maquina_virtual.get('Status')),
-                maquina_virtual.get('NoRegiao'),
+                maquina_virtual.get('RegionHostname'),
             )
 
         # Obtendo dados adicionais

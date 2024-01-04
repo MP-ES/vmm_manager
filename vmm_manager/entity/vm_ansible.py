@@ -15,8 +15,8 @@ class VMAnsible:
 
             if nome_var in lista_nomes_var:
                 raise ValueError(
-                    (f"Variável '{nome_var}' do group ansible '{self.group}' "
-                     f"referenciada mais de uma vez na VM '{vm_name}'."))
+                    (f"Variable '{nome_var}' from Ansible group '{self.group}' "
+                     f"already exists in VM '{vm_name}'."))
 
             lista_nomes_var.append(nome_var)
             ansible_var = VMAnsibleVars(

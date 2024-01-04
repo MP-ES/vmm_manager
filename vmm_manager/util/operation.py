@@ -26,8 +26,8 @@ def __confirmar_acao_usuario(
 
         if resposta == 'n':
             if servidor_acesso and group and cloud:
-                liberar_lock(servidor_acesso, group,
-                             cloud, ocultar_progresso)
+                remove_operation_lock(servidor_acesso, group,
+                                      cloud, ocultar_progresso)
 
             if not ocultar_progresso:
                 print(formatar_msg_aviso('Canceled by user.'))
@@ -64,14 +64,14 @@ def validar_retorno_operacao_com_lock(
         imprimir_ok(ocultar_progresso)
     else:
         imprimir_erro(ocultar_progresso)
-        liberar_lock(servidor_acesso, group, cloud, ocultar_progresso)
+        remove_operation_lock(servidor_acesso, group, cloud, ocultar_progresso)
         finalizar_com_erro(msg)
 
 
-def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
+def add_operation_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Adding lock', ocultar_progresso)
 
-    cmd = Command('adquirir_lock',
+    cmd = Command('add_operation_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
                       group,
                       cloud),
@@ -86,19 +86,19 @@ def adquirir_lock(servidor_acesso, group, cloud, ocultar_progresso):
         dados_lock = json.loads(retorno_cmd)
         if not dados_lock.get('Sucesso'):
             status = False
-            retorno_cmd = f"The process {dados_lock.get('PIDProcesso')}, " \
+            retorno_cmd = f"The process {dados_lock.get('PID')}, " \
                 f"started in {dados_lock.get('DataLock')} " \
                 f"on the server {dados_lock.get('HostLock')}, " \
-                f"is already working on the {dados_lock.get('Agrupamento')} group " \
-                f"in the {dados_lock.get('Nuvem')} cloud."
+                f"is already working on the {dados_lock.get('Group')} group " \
+                f"in the {dados_lock.get('Cloud')} cloud."
 
     validar_retorno_operacao_sem_lock(status, retorno_cmd, ocultar_progresso)
 
 
-def liberar_lock(servidor_acesso, group, cloud, ocultar_progresso):
+def remove_operation_lock(servidor_acesso, group, cloud, ocultar_progresso):
     imprimir_acao_corrente('Removing lock', ocultar_progresso)
 
-    cmd = Command('liberar_lock',
+    cmd = Command('remove_operation_lock',
                   lockfile=servidor_acesso.get_caminho_lockfile(
                       group,
                       cloud))

@@ -1,0 +1,36 @@
+$cloud = Get-SCCloud -VMMServer "{{ vmm_server }}" -Name "{{ cloud }}"
+if (!$cloud ) {
+  Write-Host "Cloud '{{ cloud }}' not found."
+}
+
+{% for image in imagens %}
+$image = Get-SCVMTemplate -VMMServer "{{ vmm_server }}" | Where {$_.Name -eq "{{ image }}"}
+if (!$image ) {
+  Write-Host "Image (Template) '{{ image }}' not found."
+}
+{% endfor %}
+
+$qtde_minima_regioes = {{ qtde_minima_regioes }}
+$qtde_regioes = (Get-SCVMHost -VMMServer "{{ vmm_server }}" | Where-Object {$_.OverallState -in "OK","NeedsAttention"} | Measure-Object).Count
+if ($qtde_minima_regioes -gt $qtde_regioes) {
+  Write-Host "Incompatible number of regions. Available: $qtde_regioes. Required: $qtde_minima_regioes."
+}
+
+{% for network in networks %}
+$network = Get-SCVMNetwork -VMMServer "{{ vmm_server }}" -Name "{{ network }}"
+if (!$network ) {
+  Write-Host "Network '{{ network }}' not found."
+}
+{% endfor %} 
+
+if ($cloud ) {
+  $custom_group = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_group }}"
+  $vms_nuvem = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -Cloud $cloud
+  $nomes_vm_desejados = @({{ lista_nome_vms_str }})
+  foreach($vm in $vms_nuvem) {
+    $group = Get-SCCustomPropertyValue -InputObject $vm -CustomProperty $custom_group
+    if ($group.Value -ne "{{ group }}" -and $nomes_vm_desejados -Contains $vm.Name) {
+      Write-Output "The name '$vm' is already being used by a VM in the cloud '$cloud'. Please, choose another name."
+    }
+  }
+}

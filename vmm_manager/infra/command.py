@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader, exceptions
 
 class Command:
     __TEMPLATES_DIR = '../includes/ps_templates'
-    __TEMPLATES_EXTENSAO = '.j2'
+    __TEMPLATES_EXTENSION = '.j2'
 
     def __init__(self, command, description=None, **kwargs):
         try:
@@ -21,10 +21,10 @@ class Command:
                     os.path.dirname(__file__), Command.__TEMPLATES_DIR)),
                 trim_blocks=True)
             self.template = j2_env.get_template(
-                self.command + Command.__TEMPLATES_EXTENSAO)
+                self.command + Command.__TEMPLATES_EXTENSION)
         except exceptions.TemplateNotFound as ex:
             print(
-                f"Template '{ex}' não encontrado para o command '{self.command}'.")
+                f"Template '{ex}' not found for the command '{self.command}'.")
             sys.exit(1)
 
     def imprimir(self):
