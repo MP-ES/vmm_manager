@@ -107,7 +107,7 @@ class Plan(YamlAble):
                     interval = 10
 
                     print(
-                        f'{textwrap.shorten(f"Aguardando intervalo de {interval} segundos entre recursos", 100)} => ',  # noqa: E501
+                        f'{textwrap.shorten(f"Waiting {interval} seconds to start the next action", 100)} => ',  # noqa: E501
                         end='',
                         flush=True
                     )
