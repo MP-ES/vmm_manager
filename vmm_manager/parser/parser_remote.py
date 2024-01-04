@@ -24,7 +24,7 @@ class ParserRemote:
         status, regioes = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f'Erro ao recuperar regiões disponíveis: {regioes}')
+                f'Error getting available regions: {regioes}')
 
         regioes_remoto = json.loads(regioes)
         regioes_disponiveis = []
@@ -59,7 +59,7 @@ class ParserRemote:
         status, vms = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f"Erro ao recuperar VM's do group: {vms}")
+                f"Error getting VMs: {vms}")
         return vms
 
     def __get_discos_adicionais(self, servidor_acesso):
@@ -73,7 +73,7 @@ class ParserRemote:
         status, additional_disks = cmd.executar(servidor_acesso)
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f'Erro ao recuperar discos adicionais: {additional_disks}')
+                f'Error getting additional disks: {additional_disks}')
 
         discos_vms_remoto = json.loads(additional_disks)
         discos_vms = {}

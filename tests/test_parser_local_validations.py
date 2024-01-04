@@ -21,7 +21,7 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == 'Path de inventário vazio.'
+        assert msg == 'Empty inventory file.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -42,7 +42,7 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Image da VM {inventario[0][0]['vms'][0]['name']} não definida."
+        assert msg == f"VM {inventario[0][0]['vms'][0]['name']} does not have an image defined."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -90,7 +90,7 @@ class TestParserLocalValidations(Base):
 
         assert status is False
         assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
-            ' deve ter exatamente uma network default.'
+            ' should have only one primary network defined.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -118,7 +118,7 @@ class TestParserLocalValidations(Base):
 
         assert status is False
         assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
-            ' deve ter exatamente uma network default.'
+            ' should have only one primary network defined.'
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -147,8 +147,8 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Rede '{nome_rede}' referenciada mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
+        assert msg == f"Network '{nome_rede}' already exists in VM " \
+            f"'{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -244,8 +244,8 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Group ansible '{nome_grupo}' referenciado mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
+        assert msg == f"Ansible group '{nome_grupo}' already exists in VM " \
+            f"'{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -283,8 +283,8 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Variável '{nome_var}' do group ansible '{nome_grupo}' " \
-            f"referenciada mais de uma vez na VM '{inventario[0][0]['vms'][0]['name']}'."
+        assert msg == f"Variable '{nome_var}' from Ansible group '{nome_grupo}' " \
+            f"already exists in VM '{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -352,8 +352,8 @@ class TestParserLocalValidations(Base):
         status, msg = parser_local.get_inventario(servidor_acesso)
 
         assert status is False
-        assert msg == f"Disco '{file}' referenciado mais de uma vez " \
-            f"para a VM '{inventario[0][0]['vms'][0]['name']}'."
+        assert msg == f"Disk '{file}' already exists in VM " \
+            f"'{inventario[0][0]['vms'][0]['name']}'."
 
     @mock.patch('vmm_manager.parser.parser_local.ParserLocal._ParserLocal__validar_arquivo_yaml',
                 return_value=None)
@@ -382,4 +382,4 @@ class TestParserLocalValidations(Base):
 
         assert status is False
         assert msg == f"VM {inventario[0][0]['vms'][0]['name']}" \
-            ' referenciada mais de uma vez no inventário.'
+            ' already exists in inventory.'

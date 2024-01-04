@@ -46,13 +46,13 @@ class AccessServer:
 
     def get_msg_erro_conexao(self):
         if self.__msg_erro_conexao:
-            return f'Não foi possível se conectar ao servidor de acesso. {self.__msg_erro_conexao}'
+            return f'It was not possible to connect to the access server. {self.__msg_erro_conexao}'
         return None
 
     def get_msg_erro_conexao_sftp(self):
         if self.__msg_erro_conexao_sftp:
-            return ('Não foi possível abrir uma conexão sftp ' +
-                    f'com o servidor de acesso. {self.__msg_erro_conexao_sftp}')
+            return ('It was not possible to open a SFPT connection '
+                    f'with the access server. {self.__msg_erro_conexao_sftp}')
         return None
 
     def __is_conexao_ok(self):
@@ -72,11 +72,11 @@ class AccessServer:
                                  password=self.senha,
                                  banner_timeout=AccessServer.__TIMEOUT_CONEXAO)
         except paramiko.AuthenticationException:
-            self.__msg_erro_conexao = 'Usuário ou senha inválidos.'
+            self.__msg_erro_conexao = 'User or password invalid.'
         except paramiko.SSHException as ex:
-            self.__msg_erro_conexao = f'Erro ao estabelecer conexão SSH: {ex}'
+            self.__msg_erro_conexao = f'Error to establish SSH connection: {ex}'
         except (socket.error, socket.timeout) as ex:
-            self.__msg_erro_conexao = f'Erro de socket: {ex}'
+            self.__msg_erro_conexao = f'Socket error: {ex}'
 
     def __is_conexao_sftp_ok(self):
         if self.conexao_sftp:
@@ -94,11 +94,11 @@ class AccessServer:
                 paramiko_transport)
 
         except paramiko.AuthenticationException:
-            self.__msg_erro_conexao_sftp = 'Usuário ou senha inválidos.'
+            self.__msg_erro_conexao_sftp = 'User or password invalid.'
         except paramiko.SSHException as ex:
-            self.__msg_erro_conexao_sftp = f'Erro ao estabelecer conexão SSH: {ex}'
+            self.__msg_erro_conexao_sftp = f'Error to establish SSH connection: {ex}'
         except (socket.error, socket.timeout) as ex:
-            self.__msg_erro_conexao_sftp = f'Erro de socket: {ex}'
+            self.__msg_erro_conexao_sftp = f'Socket error: {ex}'
 
     def __executar_comando(self, cmd):
         if self.__is_conexao_ok():
@@ -110,9 +110,9 @@ class AccessServer:
 
                 return True, stdout.read().decode(AccessServer.__ENCODE_CMD)
             except paramiko.SSHException as ex:
-                return False, f"Erro ao executar command '{cmd}': {ex}"
+                return False, f"Error to execute '{cmd}': {ex}"
             except socket.error as ex:
-                return False, f"Erro de socket ao executar '{cmd}': {ex}"
+                return False, f"Socket error to execute '{cmd}': {ex}"
         else:
             return False, self.get_msg_erro_conexao()
 
@@ -171,7 +171,7 @@ class AccessServer:
             return False, self.get_msg_erro_conexao()
         # pylint: disable=broad-except
         except Exception as ex:
-            return False, f'Erro "{type(ex).__name__}" ao executar script: {ex}'
+            return False, f'Error "{type(ex).__name__}" to execute script: {ex}'
         finally:
             if arquivo_script:
                 arquivo_script.close()
