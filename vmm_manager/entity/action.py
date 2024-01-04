@@ -27,8 +27,8 @@ class Action(YamlAble):
             and Action.RESOURCE_IDENTIFIER_ID not in kwargs
         ):
             raise ValueError(
-                f'Os argumentos devem conter o identificador do recurso: '
-                f'{Action.RESOURCE_IDENTIFIER_NAME} ou {Action.RESOURCE_IDENTIFIER_ID}.'
+                f'The args must contain the resource identifier: '
+                f'{Action.RESOURCE_IDENTIFIER_NAME} or {Action.RESOURCE_IDENTIFIER_ID}.'
             )
 
         self.command = command
@@ -103,7 +103,7 @@ class Action(YamlAble):
         if self.is_criacao_vm():
             cmd = Command(
                 'create_vm_pos',
-                description=f"Taguear VM {self.args['vm_name']}",
+                description=f"Add VMM tags for {self.args['vm_name']}",
                 vmm_server=servidor_acesso.vmm_server,
                 field_group=FIELD_GROUP[0],
                 field_id=FIELD_ID[0],

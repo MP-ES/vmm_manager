@@ -9,10 +9,11 @@ from vmm_manager.scvmm.scregion import SCRegion
 from vmm_manager.util.config import FIELD_GROUP
 
 
-def json_handle_inventario(obj):
+def json_handle_inventory(obj):
     if isinstance(obj, Inventory):
         return obj.to_dict()
-    raise ValueError('Objeto precisa ser uma instância de inventário.')
+
+    raise ValueError('Object must be an Inventory')
 
 
 class Inventory:
@@ -31,7 +32,7 @@ class Inventory:
             inventario_remoto.vms[vm_name].to_json_dados_completos = all_data
 
         return True, json.dumps(inventario_remoto,
-                                default=json_handle_inventario,
+                                default=json_handle_inventory,
                                 sort_keys=True, indent=4)
 
     def __init__(self, group, cloud):
@@ -48,7 +49,7 @@ class Inventory:
         if region in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[region].nome_no
 
-        raise ValueError(f"Região '{region}' não possui nó definido.")
+        raise ValueError(f"Region '{region}' does not have a host defined.")
 
     def get_id_no_regiao(self, region):
         self.__retirar_regiao_pool(region)
@@ -56,7 +57,7 @@ class Inventory:
         if region in self.__regioes_por_letra_id:
             return self.__regioes_por_letra_id[region].id_no
 
-        raise ValueError(f"Região '{region}' não possui nó definido.")
+        raise ValueError(f"Region '{region}' does not have a host defined.")
 
     def get_mapeamento_regioes_to_test(self):
         # flush regions
@@ -66,7 +67,7 @@ class Inventory:
             it_regioes += 1
 
         if self.__regioes_por_letra_id is None:
-            raise ValueError('Mapeamento de regiões não definido.')
+            raise ValueError('Regions map not set.')
 
         return self.__regioes_por_letra_id
 

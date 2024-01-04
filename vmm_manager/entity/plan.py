@@ -90,7 +90,7 @@ class Plan(YamlAble):
                     # Job em execução
                     self.__jobs_em_execucao[guid] = SCJob(
                         guid, acao)
-                    print(f'[Iniciado {guid}]')
+                    print(f'[Started {guid}]')
                 else:
                     # Comando já finalizado
                     imprimir_ok(ocultar_progresso)
@@ -125,7 +125,7 @@ class Plan(YamlAble):
 
     def executar(self, servidor_acesso, ocultar_progresso):
         if not self.is_vazio():
-            print('\nOperações executadas:')
+            print('\nApplied operations:')
 
             # actions bloqueantes primeiro
             acoes_bloqueantes = [
@@ -189,10 +189,10 @@ class Plan(YamlAble):
     def imprimir_resultado_execucao(self):
         if self.has_erro_execucao():
             print(formatar_msg_erro(
-                '\nErro ao executar algumas operações. '
-                f'Mais detalhes em {Plan.ARQUIVO_LOG_ERROS}.'))
+                '\nSynchronization completed with errors. '
+                f'More details in {Plan.ARQUIVO_LOG_ERROS}.'))
         else:
-            print('\nSincronização executada com sucesso.')
+            print('\nSynchronization completed successfully.')
 
     def has_erro_execucao(self):
         return self.__msgs_erros
@@ -202,15 +202,15 @@ class Plan(YamlAble):
             for job in self.__jobs_em_execucao.values():
                 if job.is_finalizado_com_erro():
                     print(formatar_msg_erro(
-                        f'Processo {job.vmm_id} finalizado com erro.'))
+                        f'Process {job.vmm_id} finalized with error.'))
                     self.__logar_erros_acao(job.acao, job.resumo_erro)
 
     def __logar_erros_comando(self, command, erro):
-        self.__msgs_erros += f'Erro no command "{command}":\n{erro}\n\n'
+        self.__msgs_erros += f'Error found in "{command}":\n{erro}\n\n'
 
     def __logar_erros_acao(self, acao, erro):
-        self.__msgs_erros += f'Comando:\n{acao.get_str_impressao_inline()}' \
-            f'\n\nErro capturado:\n{erro}\n\n'
+        self.__msgs_erros += f'Command:\n{acao.get_str_impressao_inline()}' \
+            f'\n\nCaptured error:\n{erro}\n\n'
 
     def __gerar_arquivo_erros(self):
         try:
@@ -218,7 +218,7 @@ class Plan(YamlAble):
                 arquivo_erros.write(self.__msgs_erros)
         except IOError as erro:
             print(
-                f'Não foi possível gerar file de erros ({Plan.ARQUIVO_LOG_ERROS}): '
+                f'It was not possible to generate the error file ({Plan.ARQUIVO_LOG_ERROS}): '
                 f'{erro}')
 
     def imprimir_acoes(self):
