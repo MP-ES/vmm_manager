@@ -14,7 +14,7 @@ documentation = "https://github.com/MP-ES/vmm_manager"
 keywords = ["IaC", "scvmm", "vmm_manager"]
 
 classifiers = [
-    "Development Status :: 5 - Production/Stable,
+    "Development Status :: 5 - Production/Stable",
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: System Administrators",
     "Topic :: System :: Installation/Setup",
