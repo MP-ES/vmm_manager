@@ -8,6 +8,14 @@ Python script that manages resources in the System Center Virtual Machine Manage
 [![Python](https://img.shields.io/pypi/pyversions/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
 [![PyPI](http://img.shields.io/pypi/v/vmm-manager.svg)](https://pypi.python.org/pypi/vmm-manager)
 
+## Breaking changes
+
+### 1.0.0
+
+- The inventory file schema has completely changed. See the [**inventory_example.yaml**](inventory_example.yaml) file for more details.
+- The command parameters were renamed to be more consistent.
+- The API and inventory schema are now stable.
+
 ## Prerequisites
 
 You need a Windows machine, which will serve as the access point to SCVMM, with the following tools:

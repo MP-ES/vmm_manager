@@ -107,6 +107,12 @@ def get_parser():
     apply.add_argument('--skip-confirmation',
                        help='Skip confirmation',
                        env_var='VMM_SKIP_CONFIRMATION', required=False, action='store_true')
+    apply.add_argument('--interval-between-resources',
+                       help='Interval (in seconds) to wait between operations on different resources. '
+                            'It has precedence over the value defined in the inventory file. '
+                            'It is useful when you are working with clusters, and you want to '
+                            'wait for the node stabilization before starting the operations on the next node.',
+                       env_var='VMM_INTERVAL_BETWEEN_RESOURCES', required=False, type=int, default=-1)
 
     destroy = subprasers.add_parser(
         'destroy', help='Remove all machines from the specified group in the specified cloud')
@@ -175,7 +181,7 @@ def obter_inventario_local(
     return inventario_local
 
 
-def obter_plano_execucao(servidor_acesso, inventario_local, ocultar_progresso):
+def obter_plano_execucao(servidor_acesso, inventario_local: Inventory, ocultar_progresso):
     inventario_remoto = obter_inventario_remoto(
         servidor_acesso, inventario_local.group,
         inventario_local.cloud, ocultar_progresso)
@@ -290,7 +296,8 @@ def executar_sincronizacao(
     execution_plan_file,
     skip_confirmation,
     inventory_file,
-    ocultar_progresso
+    ocultar_progresso,
+    interval_between_resources
 ):
     vmm_setup(servidor_acesso, ocultar_progresso)
 
@@ -318,7 +325,10 @@ def executar_sincronizacao(
         adquiriu_lock = True
 
         plano_execucao = obter_plano_execucao(
-            servidor_acesso, inventario_local, ocultar_progresso)
+            servidor_acesso,
+            inventario_local,
+            ocultar_progresso
+        )
     # Se não informou nem o plano nem o inventário, então informar erro
     else:
         finalizar_com_erro(
@@ -342,7 +352,7 @@ def executar_sincronizacao(
                 servidor_acesso, plano_execucao.group,
                 plano_execucao.cloud, ocultar_progresso)
 
-        plano_execucao.executar(servidor_acesso, ocultar_progresso)
+        plano_execucao.executar(servidor_acesso, ocultar_progresso, interval_between_resources)
 
         remove_operation_lock(servidor_acesso, plano_execucao.group,
                               plano_execucao.cloud, ocultar_progresso)
@@ -406,7 +416,7 @@ def main():
         executar_sincronizacao(
             servidor_acesso, args.execution_plan_file,
             args.skip_confirmation, args.inventory_file,
-            args.hide_progress)
+            args.hide_progress, args.interval_between_resources)
     elif args.command == 'destroy':
         remover_agrupamento_da_nuvem(
             servidor_acesso, args.group, args.cloud,
