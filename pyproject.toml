@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vmm_manager"
-version = "0.3.4"
+version = "1.0.0"
 description = "Management of resources on System Center Virtual Machine Manager (SCVMM) in a declarative way."
 authors = ["Estevão Costa <ecosta@mpes.mp.br>"]
 
@@ -14,7 +14,7 @@ documentation = "https://github.com/MP-ES/vmm_manager"
 keywords = ["IaC", "scvmm", "vmm_manager"]
 
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - PRODUCTION/STABLE",
     "Operating System :: POSIX :: Linux",
     "Intended Audience :: System Administrators",
     "Topic :: System :: Installation/Setup",
