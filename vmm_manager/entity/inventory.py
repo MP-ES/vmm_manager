@@ -39,6 +39,7 @@ class Inventory:
         self.group = group
         self.cloud = cloud
         self.vms = {}
+        self.interval_between_resources = 0
 
         self.__regioes_por_letra_id = None
         self.__regioes_disponiveis = None
@@ -90,6 +91,9 @@ class Inventory:
             return False, 'Inventories must be from the same group and cloud.'
 
         plano_execucao = Plan(self.group, self.cloud)
+
+        # update interval between resources
+        plano_execucao.interval_between_resources = self.interval_between_resources
 
         self.__add_acoes_criar_vms(inventario_remoto, plano_execucao)
         self.__add_acoes_execucao_excluir_vms(

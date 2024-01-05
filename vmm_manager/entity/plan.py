@@ -44,6 +44,8 @@ class Plan(YamlAble):
         self.group = group
         self.cloud = cloud
         self.actions = []
+        self.interval_between_resources = 0
+
         self.__jobs_em_execucao = {}
         self.__guids_a_limpar = []
         self.__msgs_erros = ''
@@ -63,7 +65,7 @@ class Plan(YamlAble):
 
     def __executar_acoes(self, actions, servidor_acesso, ocultar_progresso):
         if not actions:
-            return  # retornando caso não haja ações
+            return  # return early if there are no actions to execute
 
         # zerando jobs em execução
         self.__jobs_em_execucao = {}
@@ -103,15 +105,13 @@ class Plan(YamlAble):
             if i < total_acoes - 1:
                 proxima_acao = actions[i + 1]
 
-                if not acao.is_same_resource(proxima_acao):
-                    interval = 10
-
+                if not acao.is_same_resource(proxima_acao) and self.interval_between_resources > 0:
                     print(
-                        f'{textwrap.shorten(f"Waiting {interval} seconds to start the next action", 100)} => ',  # noqa: E501
+                        f'{textwrap.shorten(f"Waiting {self.interval_between_resources} seconds to start the next action", 100)} => ',  # noqa: E501
                         end='',
                         flush=True
                     )
-                    time.sleep(interval)
+                    time.sleep(self.interval_between_resources)
                     imprimir_ok(ocultar_progresso)
 
         # Monitorando jobs
@@ -123,27 +123,33 @@ class Plan(YamlAble):
         self.__executar_cmds_finalizacao(
             actions, servidor_acesso, ocultar_progresso)
 
-    def executar(self, servidor_acesso, ocultar_progresso):
-        if not self.is_vazio():
-            print('\nApplied operations:')
+    def executar(self, servidor_acesso, ocultar_progresso, interval_between_resources=0):
+        if self.is_vazio():
+            return
 
-            # actions bloqueantes primeiro
-            acoes_bloqueantes = [
-                acao for acao in self.actions if acao.is_bloqueante()]
+        # update interval between resources
+        if interval_between_resources >= 0:
+            self.interval_between_resources = interval_between_resources
+
+        print('\nApplied operations:')
+
+        # actions bloqueantes primeiro
+        acoes_bloqueantes = [
+            acao for acao in self.actions if acao.is_bloqueante()]
+        self.__executar_acoes(
+            acoes_bloqueantes, servidor_acesso, ocultar_progresso)
+
+        # demais ações, se não houve erro
+        if not self.has_erro_execucao():
+            acoes_nao_bloqueantes = [acao
+                                     for acao in self.actions if not acao.is_bloqueante()]
             self.__executar_acoes(
-                acoes_bloqueantes, servidor_acesso, ocultar_progresso)
+                acoes_nao_bloqueantes, servidor_acesso, ocultar_progresso)
 
-            # demais ações, se não houve erro
-            if not self.has_erro_execucao():
-                acoes_nao_bloqueantes = [acao
-                                         for acao in self.actions if not acao.is_bloqueante()]
-                self.__executar_acoes(
-                    acoes_nao_bloqueantes, servidor_acesso, ocultar_progresso)
-
-            # Ações de finalização
-            self.__limpar_guids(servidor_acesso, ocultar_progresso)
-            self.__processa_resultado_execucao()
-            Plan.excluir_arquivo()
+        # Ações de finalização
+        self.__limpar_guids(servidor_acesso, ocultar_progresso)
+        self.__processa_resultado_execucao()
+        Plan.excluir_arquivo()
 
     def __executar_cmds_finalizacao(self, actions, servidor_acesso, ocultar_progresso):
         for acao in actions:

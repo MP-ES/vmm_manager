@@ -4,6 +4,7 @@ cloud: 'developer'
 image_default: 'vm_linux'
 cpu_default: 1
 memory_default: 512
+interval_between_resources: 5 # value in seconds. Default: 0
 networks_default:
   - name: 'vlan1'
     default: true

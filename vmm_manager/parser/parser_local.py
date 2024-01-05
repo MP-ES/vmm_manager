@@ -65,7 +65,14 @@ class ParserLocal:
     ):
         nomes_vm = []
         self.__inventario = Inventory(
-            dados_inventario['group'], dados_inventario['cloud'])
+            dados_inventario['group'],
+            dados_inventario['cloud']
+        )
+
+        # set interval between resources
+        self.__inventario.interval_between_resources = dados_inventario.get(
+            'interval_between_resources', 0
+        )
 
         for maquina_virtual in dados_inventario['vms']:
             vm_name = maquina_virtual.get('name').upper()

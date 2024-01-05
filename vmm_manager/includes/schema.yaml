@@ -6,6 +6,7 @@ memory_default: int(min=512, max=524288, required=False)
 networks_default: list(include('network'), required=False)
 dynamic_memory_default: bool(required=False)
 nested_virtualization_default: bool(required=False)
+interval_between_resources: int(min=0, max=86400, required=False)
 vms: list(include('vm'), min=1)
 ---
 vm:
