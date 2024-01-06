@@ -124,15 +124,9 @@ class ParserRemote:
                 vm_rede.ips = network.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 
-            # convert description to utf-8
-            if maquina_virtual.get('Description'):
-                vm_description = bytearray(maquina_virtual.get('Description')).decode('utf-8')
-            else:
-                vm_description = ''
-
             self.__inventario.vms[maquina_virtual.get('Name')] = VM(
                 maquina_virtual.get('Name'),
-                vm_description,
+                bytearray(maquina_virtual.get('Description')).decode('utf-8'),  # convert utf-8 bytes to string
                 maquina_virtual.get('Image'),
                 maquina_virtual.get('Region'),
                 maquina_virtual.get('Cpu'),
