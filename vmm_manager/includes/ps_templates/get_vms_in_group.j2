@@ -34,7 +34,7 @@ foreach($vm in $vms_nuvem) {
     $vm_agrupamento = [PSCustomObject]@{
       ID = $vm.ID
       Name = if ($nome_id.Value -ne $null) { $nome_id.Value } else { $vm.ID } 
-      Description = $vm.Description
+      Description = [System.Text.Encoding]::UTF8.GetBytes($vm.Description) # Prevents encoding errors
       Status = $vm.Status
       RegionHostname = $vm.VMHost.Name
       Cpu = $vm.CPUCount
