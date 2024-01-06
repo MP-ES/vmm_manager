@@ -79,12 +79,12 @@ def add_operation_lock(servidor_acesso, group, cloud, ocultar_progresso):
                   host=platform.node(),
                   group=group,
                   cloud=cloud,
-                  data=get_str_data_formatada('%d/%m/%Y às %H:%M:%S.%f'))
+                  data=get_str_data_formatada('%m-%d-%Y at %I:%M:%S.%f %p'))
 
     status, retorno_cmd = cmd.executar(servidor_acesso)
     if status:
         dados_lock = json.loads(retorno_cmd)
-        if not dados_lock.get('Sucesso'):
+        if not dados_lock.get('Success'):
             status = False
             retorno_cmd = f"The process {dados_lock.get('PID')}, " \
                 f"started in {dados_lock.get('DataLock')} " \

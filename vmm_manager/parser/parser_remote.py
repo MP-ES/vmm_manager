@@ -46,20 +46,25 @@ class ParserRemote:
         self.__inventario = None
 
     def __get_vms_servidor(self, servidor_acesso, filtro_nome_vm=None):
-        cmd = Command('get_vms_in_group',
-                      vmm_server=servidor_acesso.vmm_server,
-                      field_group=FIELD_GROUP[0],
-                      field_id=FIELD_ID[0],
-                      field_image=FIELD_IMAGE[0],
-                      field_region=FIELD_REGION[0],
-                      field_network_default=FIELD_NETWORK_DEFAULT[0],
-                      group=self.group,
-                      filtro_nome_vm=filtro_nome_vm,
-                      cloud=self.cloud)
+        cmd = Command(
+            'get_vms_in_group',
+            vmm_server=servidor_acesso.vmm_server,
+            field_group=FIELD_GROUP[0],
+            field_id=FIELD_ID[0],
+            field_image=FIELD_IMAGE[0],
+            field_region=FIELD_REGION[0],
+            field_network_default=FIELD_NETWORK_DEFAULT[0],
+            group=self.group,
+            filtro_nome_vm=filtro_nome_vm,
+            cloud=self.cloud
+        )
+
         status, vms = cmd.executar(servidor_acesso)
+
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
                 f"Error getting VMs: {vms}")
+
         return vms
 
     def __get_discos_adicionais(self, servidor_acesso):
@@ -113,14 +118,21 @@ class ParserRemote:
 
         for maquina_virtual in vms_servidor:
             vms_rede = []
+
             for network in maquina_virtual.get('Networks'):
                 vm_rede = VMNetwork(network.get('Name'), network.get('Principal'))
                 vm_rede.ips = network.get('IPS', '').split(' ')
                 vms_rede.append(vm_rede)
 
+            # convert description to utf-8
+            if maquina_virtual.get('Description'):
+                vm_description = bytearray(maquina_virtual.get('Description')).decode('utf-8')
+            else:
+                vm_description = ''
+
             self.__inventario.vms[maquina_virtual.get('Name')] = VM(
                 maquina_virtual.get('Name'),
-                maquina_virtual.get('Description'),
+                vm_description,
                 maquina_virtual.get('Image'),
                 maquina_virtual.get('Region'),
                 maquina_virtual.get('Cpu'),

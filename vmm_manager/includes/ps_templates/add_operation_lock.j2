@@ -14,9 +14,9 @@ $dados_processo = [PSCustomObject]@{
 } | ConvertTo-Json
 
 if (Test-Path $lockfile) {
-  Get-Content -Path $lockfile | ConvertFrom-Json | Select-Object *, @{n = "Sucesso"; e = { $false } } | ConvertTo-Json
+  Get-Content -Path $lockfile | ConvertFrom-Json | Select-Object *, @{n = "Success"; e = { $false } } | ConvertTo-Json
 }
 else {
   Set-Content -Path $lockfile -Value $dados_processo
-  [PSCustomObject]@{ Sucesso = $true } | ConvertTo-Json
+  [PSCustomObject]@{ Success = $true } | ConvertTo-Json
 }
