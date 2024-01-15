@@ -9,6 +9,7 @@ class VMStatusEnum(Enum):
     RUNNING = 0
     POWER_OFF = 1
     UPDATED_WITH_ERROR = 107
+    INCOMPLETE_VM_CONFIGURATION = 223
 
 
 class SCJobStatusEnum(Enum):
