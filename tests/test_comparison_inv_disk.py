@@ -70,7 +70,11 @@ class TestComparisonInvDisk(Base):
         for vm_name in discos_removidos:
             for disco in discos_removidos[vm_name].values():
                 plano_execucao.actions.append(
-                    disco.get_acao_excluir_disco(inventario.vms[vm_name].vmm_id))
+                    disco.get_acao_excluir_disco(
+                        inventario.vms[vm_name].vmm_id,
+                        vm_name
+                    )
+                )
 
         return plano_execucao
 
@@ -85,21 +89,37 @@ class TestComparisonInvDisk(Base):
                         [TestComparisonInvDisk.TP_ALTERACAO_TP_BUS,
                          TestComparisonInvDisk.TP_ALTERACAO_REDUCAO]):
                     plano_execucao.actions.append(
-                        disco.get_acao_excluir_disco(inventario.vms[vm_name].vmm_id))
+                        disco.get_acao_excluir_disco(
+                            inventario.vms[vm_name].vmm_id,
+                            vm_name
+                        )
+                    )
                     plano_execucao.actions.append(
                         disco.get_acao_criar_disco(vm_name))
                 elif tipo_alteracao == TestComparisonInvDisk.TP_ALTERACAO_EXPANSAO:
                     plano_execucao.actions.append(
-                        disco.get_acao_expandir_disco(inventario.vms[vm_name].vmm_id,
-                                                      disco.get_id_drive()))
+                        disco.get_acao_expandir_disco(
+                            inventario.vms[vm_name].vmm_id,
+                            disco.get_id_drive(),
+                            vm_name
+                        )
+                    )
                 elif tipo_alteracao == TestComparisonInvDisk.TP_ALTERACAO_CAMINHO:
                     plano_execucao.actions.append(
-                        disco.get_acao_mover_disco(inventario.vms[vm_name].vmm_id,
-                                                   disco.get_id_disco()))
+                        disco.get_acao_mover_disco(
+                            inventario.vms[vm_name].vmm_id,
+                            disco.get_id_disco(),
+                            vm_name
+                        )
+                    )
                 elif tipo_alteracao == TestComparisonInvDisk.TP_ALTERACAO_TP_TAMANHO:
                     plano_execucao.actions.append(
-                        disco.get_acao_converter_disco(inventario.vms[vm_name].vmm_id,
-                                                       disco.get_id_drive()))
+                        disco.get_acao_converter_disco(
+                            inventario.vms[vm_name].vmm_id,
+                            disco.get_id_drive(),
+                            vm_name
+                        )
+                    )
 
         return plano_execucao
 

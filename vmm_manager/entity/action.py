@@ -12,9 +12,9 @@ from vmm_manager.util.config import (FIELD_GROUP, FIELD_ID, FIELD_IMAGE,
 
 @yaml_info(yaml_tag_ns='scvmm_manager')
 class Action(YamlAble):
-    ACAO_CRIAR_VM = 'create_vm'
-    ACAO_EXCLUIR_VM = 'delete_vm'
-    ACAO_EXCLUIR_DISCO_VM = 'delete_vm_disk'
+    ACTION_CREATE_VM = 'create_vm'
+    ACTION_DELETE_VM = 'delete_vm'
+    ACTION_DELETE_VM_DISK = 'delete_vm_disk'
 
     RESOURCE_IDENTIFIER_NAME = 'vm_name'
     RESOURCE_IDENTIFIER_ID = 'vm_id'
@@ -62,12 +62,12 @@ class Action(YamlAble):
         self.__status_execucao_job = status
 
     def is_criacao_vm(self):
-        return self.command == Action.ACAO_CRIAR_VM
+        return self.command == Action.ACTION_CREATE_VM
 
     def is_bloqueante(self):
         return (self.is_criacao_vm()
-                or self.command == Action.ACAO_EXCLUIR_VM
-                or self.command == Action.ACAO_EXCLUIR_DISCO_VM)
+                or self.command == Action.ACTION_DELETE_VM
+                or self.command == Action.ACTION_DELETE_VM_DISK)
 
     def is_same_resource(self, other):
         if (self.RESOURCE_IDENTIFIER_NAME in self.args
