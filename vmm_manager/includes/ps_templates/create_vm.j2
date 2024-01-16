@@ -53,7 +53,7 @@ if ($MsgsErro){
   $TemplateBase = Get-SCVMTemplate -VMMServer $VMMServer -Name $TemplateName
   $CPUType = $TemplateBase.CPUType
   $CapabilityProfile = $TemplateBase.CapabilityProfile
-  $MemoryMBMin = [math]::min( 512 , $MemoryMB )
+  $MemoryMBMin = [math]::min( 1024 , $MemoryMB )
 
   New-SCVirtualScsiAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
   New-SCVirtualDVDDrive -VMMServer $VMMServer -JobGroup $JobGroupID -Bus 0 -LUN 1

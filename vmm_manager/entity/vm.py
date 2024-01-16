@@ -1,6 +1,8 @@
 """
 VM entity.
 """
+from typing import Self
+
 from vmm_manager.entity.action import Action
 from vmm_manager.entity.vm_ansible import VMAnsible
 from vmm_manager.scvmm.enums import VMStatusEnum
@@ -59,17 +61,21 @@ class VM:
         for additional_disk in additional_disks:
             self.additional_disks[additional_disk.file] = additional_disk
 
-    def add_acoes_diferenca_discos_adicionais(self, vm_remota, plano_execucao):
+    def add_acoes_diferenca_discos_adicionais(self, vm_remota: Self, plano_execucao):
         # discos a excluir
         if vm_remota:
             discos_excluir = [
                 nome_disco_remoto for nome_disco_remoto in vm_remota.additional_disks
                 if nome_disco_remoto not in self.additional_disks
             ]
+
             for nome_disco in discos_excluir:
                 plano_execucao.actions.append(
                     vm_remota.additional_disks[nome_disco].get_acao_excluir_disco(
-                        vm_remota.vmm_id))
+                        vm_remota.vmm_id,
+                        vm_remota.name
+                    )
+                )
 
         # verificando discos atuais
         for nome_disco, data_disco in self.additional_disks.items():
@@ -111,7 +117,7 @@ class VM:
             plano_execucao.actions.append(
                 self.get_acao_atualizar_memoria_dinamica())
 
-    def add_acoes_diferenca_vm(self, vm_remota, plano_execucao):
+    def add_acoes_diferenca_vm(self, vm_remota: Self, plano_execucao):
         # alteração da image é irreversível
         if self.image != vm_remota.image:
             plano_execucao.actions.append(vm_remota.get_acao_excluir_vm())
@@ -125,11 +131,17 @@ class VM:
             return
 
         # alteração de descrição, cpu ou ram
-        if (self.description != vm_remota.description
-                or self.cpu != vm_remota.cpu
-                or self.memory != vm_remota.memory):
+        if (
+            self.description != vm_remota.description
+            or self.cpu != vm_remota.cpu
+            or self.memory != vm_remota.memory
+        ):
             plano_execucao.actions.append(
-                self.get_acao_atualizar_vm(vm_remota.vmm_id))
+                self.get_acao_atualizar_vm(
+                    vm_remota.vmm_id,
+                    vm_remota.name
+                )
+            )
 
     def get_qtde_rede_principal(self):
         return sum(1 for network in self.networks if network.default)
@@ -139,7 +151,7 @@ class VM:
 
     def get_acao_criar_vm(self):
         return Action(
-            Action.ACAO_CRIAR_VM,
+            Action.ACTION_CREATE_VM,
             vm_name=self.name,
             description=self.description,
             image=self.image,
@@ -153,8 +165,9 @@ class VM:
 
     def get_acao_excluir_vm(self):
         return Action(
-            Action.ACAO_EXCLUIR_VM,
-            vm_id=self.vmm_id
+            Action.ACTION_DELETE_VM,
+            vm_id=self.vmm_id,
+            vm_name=self.name
         )
 
     def get_acao_mover_vm_regiao(self, region_host_id):
@@ -179,10 +192,11 @@ class VM:
             dynamic_memory=self.dynamic_memory
         )
 
-    def get_acao_atualizar_vm(self, id_vm_remota):
+    def get_acao_atualizar_vm(self, id_vm_remota, vm_name_remota):
         return Action(
             'update_vm',
             vm_id=id_vm_remota,
+            vm_name=vm_name_remota,
             description=self.description,
             cpu=self.cpu,
             memory=self.memory

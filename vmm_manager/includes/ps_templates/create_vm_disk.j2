@@ -1,6 +1,6 @@
 # Recuperar VM com segurança
 # Pelo ID gera dependência cíclica e, só pelo name, pode gerar conflito
-# O SCVMM permite mais de uma VM com o mesmo name!
+# SCVMM allows more than one VM with the same name!
 $VM = $null
 $custom_group = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_group }}"
 $custom_name_id = Get-SCCustomProperty -VMMServer "{{ vmm_server }}" -Name "{{ field_id }}"
