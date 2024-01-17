@@ -48,6 +48,8 @@ class Action(YamlAble):
                       guid=guid,
                       vmm_server=servidor_acesso.vmm_server
                       )
+
+        # Add the specific args for the command
         cmd.args.update(self.args)
 
         status, retorno = cmd.executar(servidor_acesso)
