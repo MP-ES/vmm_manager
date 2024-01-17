@@ -199,7 +199,8 @@ class VM:
             vm_name=vm_name_remota,
             description=self.description,
             cpu=self.cpu,
-            memory=self.memory
+            memory=self.memory,
+            dynamic_memory=self.dynamic_memory
         )
 
     def __hash__(self):

@@ -3,6 +3,8 @@ $VM = Get-SCVirtualMachine -VMMServer "{{ vmm_server }}" -ID "{{ vm_id }}"
 $Description = "{{ description }}"
 $CPUCount = "{{ cpu }}"
 $MemoryMB = "{{ memory }}"
+$DynamicMemory = {{ "$true" if dynamic_memory else "$false" }}
+$MemoryMBMin = [math]::min( 1024 , $MemoryMB )
 
 $NeedShutdown = ($VM.CPUCount -ne $CPUCount) -or ($VM.Memory -ne $MemoryMB)
 
@@ -10,7 +12,9 @@ if ($NeedShutdown -and $VM.Status -eq 'Running'){
     Stop-SCVirtualMachine -VM $VM | Out-Null
 }
 
-Set-SCVirtualMachine -VM $VM -Description $Description -CPUCount $CPUCount -MemoryMB $MemoryMB | Out-Null
+{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if dynamic_memory else "" %}
+
+Set-SCVirtualMachine -VM $VM -Description $Description -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $DynamicMemory {{ memoria_dinamica_params_adic }} | Out-Null
 
 if ($NeedShutdown){
     Start-SCVirtualMachine -VM $VM | Out-Null
