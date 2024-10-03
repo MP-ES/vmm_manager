@@ -53,7 +53,7 @@ if ($MsgsErro){
   $TemplateBase = Get-SCVMTemplate -VMMServer $VMMServer -Name $TemplateName
   $CPUType = $TemplateBase.CPUType
   $CapabilityProfile = $TemplateBase.CapabilityProfile
-  $MemoryMBMin = [math]::min( 1024 , $MemoryMB )
+  $MemoryMBMin = [math]::min( 2048 , $MemoryMB )
 
   New-SCVirtualScsiAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -AdapterID 7 -ShareVirtualScsiAdapter $false -ScsiControllerType DefaultTypeNoType
   New-SCVirtualDVDDrive -VMMServer $VMMServer -JobGroup $JobGroupID -Bus 0 -LUN 1
@@ -63,7 +63,7 @@ if ($MsgsErro){
   New-SCVirtualNetworkAdapter -VMMServer $VMMServer -JobGroup $JobGroupID -VMNetwork $VMNetwork{{ loop.index }} -MACAddress "00:00:00:00:00:00" -MACAddressType Static -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -DevicePropertiesAdapterNameMode Disabled 
   {% endfor %}
 
-  {% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if dynamic_memory else "" %}
+  {% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 35" if dynamic_memory else "" %}
 
   $HardwareProfile = New-SCHardwareProfile -VMMServer $VMMServer -JobGroup $JobGroupID -Name $TemporaryName -CPUType $CPUType -CapabilityProfile $CapabilityProfile -Description "Perfil temporário do vmm_manager" -CPUCount $CPUCount -MemoryMB $MemoryMB -DynamicMemoryEnabled $DynamicMemory {{ memoria_dinamica_params_adic }} -MemoryWeight 5000 -CPUExpectedUtilizationPercent 20 -DiskIops 0 -CPUMaximumPercent 100 -CPUReserve 0 -NumaIsolationRequired $false -NetworkUtilizationMbps 0 -CPURelativeWeight 100 -HighlyAvailable $true -HAVMPriority 2000 -DRProtectionRequired $false -SecureBootEnabled $false -CPULimitFunctionality $false -CPULimitForMigration $false -CheckpointType Production -Generation 2
   $Template = New-SCVMTemplate -JobGroup $JobGroupID -Name $TemporaryName -ComputerName $VMName -Template $TemplateBase -HardwareProfile $HardwareProfile

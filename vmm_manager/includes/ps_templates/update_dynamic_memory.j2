@@ -20,9 +20,9 @@ foreach($vm_obj in $vms_nuvem) {
 }
 
 $MemoryMB = $VM.Memory
-$MemoryMBMin = [math]::min( 1024 , $MemoryMB )
+$MemoryMBMin = [math]::min( 2048 , $MemoryMB )
 $DynamicMemory = {{ "$true" if dynamic_memory else "$false" }}
-{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 20" if dynamic_memory else "" %}
+{% set memoria_dinamica_params_adic = "-DynamicMemoryMinimumMB $MemoryMBMin -DynamicMemoryMaximumMB $MemoryMB -DynamicMemoryBufferPercentage 35" if dynamic_memory else "" %}
 
 # Máquina deve estar desligada
 if ($VM.Status -ne "Poweroff"){
