@@ -63,7 +63,7 @@ class ParserRemote:
 
         if not status:
             raise Exception(  # pylint: disable=broad-exception-raised
-                f"Error getting VMs: {vms}")
+                f'Error getting VMs: {vms}')
 
         return vms
 

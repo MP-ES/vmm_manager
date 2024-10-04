@@ -90,7 +90,7 @@ poetry add <pacote> [--dev]
 poetry update
 
 # Run linting
-flake8 . && isort --check-only --diff .
+./lint.sh
 
 # Fix dependencies sorting
 isort .

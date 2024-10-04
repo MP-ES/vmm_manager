@@ -16,7 +16,7 @@ class Utils():
     def get_random_regiao_vm(qtde_regioes):
         return chr(ord('A') + randint(0, qtde_regioes - 1))
 
-    @ staticmethod
+    @staticmethod
     def get_random_string_com_excecao(excecao):
         faker = Faker()
         string_random = faker.format('word')
