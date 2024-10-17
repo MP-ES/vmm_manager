@@ -7,6 +7,9 @@ from vmm_manager.entity.action import Action
 
 
 class VMDisk:
+    # Limit before recreating the disk to reduce the size.
+    DISK_SIZE_TOLERANCE_BEFORE_REDUCE_MB = 200
+
     def __init__(self, bus_type, file, size_mb, size_type, path=None):
         self.bus_type = bus_type
         self.file = file
@@ -91,7 +94,7 @@ class VMDisk:
 
         # Alteração de tipo ou redução de disco exige a recriação
         if ((self.bus_type != disco_remoto.bus_type) or
-                (self.size_mb < disco_remoto.size_mb)):
+                (self.size_mb + self.DISK_SIZE_TOLERANCE_BEFORE_REDUCE_MB < disco_remoto.size_mb)):
             actions.append(disco_remoto.get_acao_excluir_disco(vm_id, vm_name))
             actions.append(self.get_acao_criar_disco(vm_name))
         else:
