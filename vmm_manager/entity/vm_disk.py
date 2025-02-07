@@ -8,7 +8,7 @@ from vmm_manager.entity.action import Action
 
 class VMDisk:
     # Limit before recreating the disk to reduce the size.
-    DISK_SIZE_TOLERANCE_BEFORE_REDUCE_MB = 200
+    DISK_SIZE_TOLERANCE_BEFORE_REDUCE_MB = 500
 
     def __init__(self, bus_type, file, size_mb, size_type, path=None):
         self.bus_type = bus_type
