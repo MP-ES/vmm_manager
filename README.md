@@ -80,9 +80,6 @@ poetry run python -m vmm_manager -h
 ### Helpful commands
 
 ```shell
-# Poetry shell
-poetry shell
-
 # Add a dependency
 poetry add <pacote> [--dev]
 
@@ -90,13 +87,13 @@ poetry add <pacote> [--dev]
 poetry update
 
 # Run linting
-./lint.sh
+poetry run ./lint.sh
 
 # Fix dependencies sorting
-isort .
+poetry run isort .
 
 # Run tests
-python -m pytest -vv
+poetry run python -m pytest -vv
 
 # List virtualenvs
 poetry env list
