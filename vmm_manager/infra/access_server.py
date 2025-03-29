@@ -20,7 +20,7 @@ class AccessServer:
     __PASTA_TEMPORARIA = 'vmm_temp'
     __ENCODE_CMD = 'cp850'
     __ENCODE_WINDOWS = 'iso-8859-1'
-    __TIMEOUT_CONEXAO = 60
+    __TIMEOUT_CONEXAO = 120
     __DEFAULT_SSH_PORT = 22
 
     @staticmethod
@@ -86,13 +86,7 @@ class AccessServer:
 
     def __conectar_sftp(self):
         try:
-            paramiko_transport = paramiko.Transport(
-                (self.servidor, self.__DEFAULT_SSH_PORT))
-            paramiko_transport.connect(
-                username=self.usuario, password=self.senha)
-            self.conexao_sftp = paramiko.SFTPClient.from_transport(
-                paramiko_transport)
-
+            self.conexao_sftp = self.conexao.open_sftp()
         except paramiko.AuthenticationException:
             self.__msg_erro_conexao_sftp = 'User or password invalid.'
         except paramiko.SSHException as ex:
