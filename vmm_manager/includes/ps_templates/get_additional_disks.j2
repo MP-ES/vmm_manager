@@ -15,8 +15,8 @@ foreach($vm in $vms_nuvem) {
 
     $discos = @()
     foreach($drive in $vm.VirtualDiskDrives) {
-      # Skip the SO disk: the SO disk name ends with ".vhdx".
-      if ($drive.VirtualHardDisk.Name -like "*.vhdx"){Continue}
+      # Skip the SO disk. By convention, it should be on Bus 0 Lun 0.
+      if ($drive.Bus -eq 0 -and $drive.Lun -eq 0){Continue}
 
       $disco = [PSCustomObject]@{
       DriveID = $drive.ID
