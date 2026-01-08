@@ -62,13 +62,13 @@ poetry completions bash >> ~/.bash_completion
 
 ### Environment variables (optional)
 
-Use the **.env.default** file as a template to create a **.env** file with the environment variables needed to run the script. You can load them by running the command `export $(cat .env | xargs)` before executing the script.
+Use the **.env.default** file as a template to create a **.env** file with the environment variables needed to run the script. You can load them by running the command `export $(grep -v '^#' .env | grep -v '^$' | xargs)` before executing the script.
 
 ### How to run
 
 ```shell
 # Loading environment variables (optional)
-export $(cat .env | xargs)
+export $(grep -v '^#' .env | grep -v '^$' | xargs)
 
 # Install dependencies
 poetry install --no-root
